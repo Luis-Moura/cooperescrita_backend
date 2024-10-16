@@ -55,8 +55,25 @@ export class AuthService {
           access_token: this.jwtService.sign(payload),
         };
       }
-
-      throw new ConflictException('Invalid credentials');
     }
+
+    throw new ConflictException('Invalid credentials');
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.usersService.findByEmailUtil(email);
+
+    if (user) {
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+      if (isPasswordMatch) {
+        return {
+          ...user,
+          password: undefined,
+        };
+      }
+    }
+
+    return null;
   }
 }
