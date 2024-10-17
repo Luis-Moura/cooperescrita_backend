@@ -4,14 +4,15 @@ import {
   Get,
   HttpCode,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/users.dto';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { ISignIn } from './models/signIn.interface';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('')
 export class AuthController {
@@ -20,6 +21,11 @@ export class AuthController {
   @Post('signup')
   signUp(@Body() createUserDto: UserDto) {
     return this.authService.signUp(createUserDto);
+  }
+
+  @Get('verify')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @UseGuards(LocalAuthGuard)

@@ -7,6 +7,8 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ISignIn } from './models/signIn.interface';
+import { EmailsService } from 'src/emails/emails.service';
+import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailsService,
   ) {}
 
   async signUp(createUserDto: UserDto) {
@@ -25,22 +28,45 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
 
-    const data: UserDto = {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const newUser = this.usersRepository.create({
       ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
-    };
+      password: hashedPassword,
+      verified: false,
+    });
 
-    const createdUser = this.usersRepository.create(data);
-    await this.usersRepository.save(createdUser);
+    const token = this.jwtService.sign(
+      { sub: newUser.id },
+      { expiresIn: '15m' },
+    );
+    await this.usersRepository.save(newUser);
+
+    await this.emailService.sendVerificationEmail(newUser.email, token);
 
     return {
-      ...createdUser,
-      password: undefined,
+      message:
+        'User registered successfully. Please check your email for verification instructions.',
     };
+  }
+
+  async verifyEmail(token: string) {
+    const decoded: IFindByEmail = this.jwtService.verify(token);
+    const user = await this.usersService.findByEmailUtil(decoded.email);
+
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+
+    user.verified = true;
+    await this.usersRepository.save(user);
   }
 
   async signIn(data: ISignIn) {
     const user = await this.usersService.findByEmailUtil(data.email);
+
+    if (!user.verified) {
+      throw new ConflictException('User not verified');
+    }
 
     if (user) {
       const isPasswordMatch = await bcrypt.compare(
