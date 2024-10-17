@@ -118,13 +118,10 @@ export class AuthService {
       this.invalidatedTokens.add(decodedToken.jti);
     }
 
-    console.log(this.invalidatedTokens);
     return { message: 'Logout successful' };
   }
 
   isTokenInvalidated(token: string): boolean {
-    console.log(this.invalidatedTokens);
-    console.log(this.invalidatedTokens.has(token));
     return this.invalidatedTokens.has(token);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as nodemailer from 'nodemailer';
 dotenv.config();
@@ -19,10 +19,15 @@ export class EmailsService {
 
   async sendVerificationEmail(email: string, token: string) {
     const url = `http://localhost:3000/verify?token=${token}`;
-    await this.transporter.sendMail({
-      to: email,
-      subject: 'Verificação de Email',
-      html: `Clique <a href="${url}">aqui</a> para verificar seu email.`,
-    });
+    try {
+      await this.transporter.sendMail({
+        to: email,
+        subject: 'Verificação de Email',
+        html: `Clique <a href="${url}">aqui</a> para verificar seu email.`,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Failed to send email');
+    }
   }
 }
