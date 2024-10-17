@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -12,6 +13,8 @@ import { ISignIn } from './models/signIn.interface';
 
 @Injectable()
 export class AuthService {
+  private invalidatedTokens: Set<string> = new Set();
+
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly usersService: UsersService,
@@ -75,7 +78,12 @@ export class AuthService {
       );
 
       if (isPasswordMatch) {
-        const payload = { sub: user.id, email: user.email, name: user.name };
+        const payload = {
+          jti: uuidv4(),
+          sub: user.id,
+          email: user.email,
+          name: user.name,
+        };
 
         return {
           access_token: this.jwtService.sign(payload),
@@ -101,5 +109,22 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async logout(token: string) {
+    const decodedToken = this.jwtService.decode(token) as { jti: string };
+
+    if (decodedToken && decodedToken.jti) {
+      this.invalidatedTokens.add(decodedToken.jti);
+    }
+
+    console.log(this.invalidatedTokens);
+    return { message: 'Logout successful' };
+  }
+
+  isTokenInvalidated(token: string): boolean {
+    console.log(this.invalidatedTokens);
+    console.log(this.invalidatedTokens.has(token));
+    return this.invalidatedTokens.has(token);
   }
 }

@@ -3,11 +3,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import * as dotenv from 'dotenv';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
+import { AuthService } from '../auth.service';
 dotenv.config();
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly usersService: UsersService) {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,6 +24,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     if (!user) {
       throw new UnauthorizedException('User not found');
+    }
+
+    const isTokenInvalidated = this.authService.isTokenInvalidated(payload.jti);
+    // console.log(isTokenInvalidated);
+
+    if (isTokenInvalidated) {
+      throw new UnauthorizedException('Token invalidated');
     }
 
     if (!user.verified) {

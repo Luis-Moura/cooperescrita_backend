@@ -36,6 +36,14 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('signout')
+  @HttpCode(200)
+  async logout(@Request() req) {
+    const token = req.headers.authorization.split(' ')[1];
+    return this.authService.logout(token);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Request() req) {
     return req.user;
