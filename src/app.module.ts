@@ -4,6 +4,10 @@ import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { EmailsModule } from './emails/emails.module';
+import { TasksService } from './tasks/tasks.service';
+import { TasksModule } from './tasks/tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config();
 
 @Module({
@@ -21,8 +25,11 @@ dotenv.config();
 
     UsersModule,
     AuthModule,
+    EmailsModule,
+    TasksModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
-  providers: [],
+  providers: [TasksService],
 })
 export class AppModule {}
