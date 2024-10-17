@@ -2,13 +2,13 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { EmailsService } from 'src/emails/emails.service';
 import { UserDto } from 'src/users/dto/users.dto';
 import { User } from 'src/users/entities/user.entity';
+import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ISignIn } from './models/signIn.interface';
-import { EmailsService } from 'src/emails/emails.service';
-import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 
 @Injectable()
 export class AuthService {

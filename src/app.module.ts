@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
+import { EmailsModule } from './emails/emails.module';
+import { TasksModule } from './tasks/tasks.module';
+import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { EmailsModule } from './emails/emails.module';
-import { TasksService } from './tasks/tasks.service';
-import { TasksModule } from './tasks/tasks.module';
-import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config();
 
 @Module({

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { LessThan, Repository } from 'typeorm';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TasksService {
