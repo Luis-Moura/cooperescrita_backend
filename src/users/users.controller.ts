@@ -15,6 +15,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  //implementar um role de admin para somente administradores poderem acessar
   @Get()
   async findByEmail(@Body() data: IFindByEmail) {
     return await this.usersService.findByEmail(data);

@@ -30,4 +30,18 @@ export class EmailsService {
       throw new InternalServerErrorException('Failed to send email');
     }
   }
+
+  async sendResetPasswordEmail(email: string, token: string) {
+    const url = `http://localhost:3000/reset-password?token=${token}`;
+    try {
+      await this.transporter.sendMail({
+        to: email,
+        subject: 'Redefinição de Senha',
+        html: `Clique <a href="${url}">aqui</a> para redefinir sua senha.`,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Failed to send email');
+    }
+  }
 }

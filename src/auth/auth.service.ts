@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +18,7 @@ import { ISignIn } from './models/signIn.interface';
 
 @Injectable()
 export class AuthService {
-  private invalidatedTokens: Set<string> = new Set();
+  invalidatedTokens: Set<string> = new Set();
 
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
@@ -123,5 +128,67 @@ export class AuthService {
 
   isTokenInvalidated(token: string): boolean {
     return this.invalidatedTokens.has(token);
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmailUtil(email);
+
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+
+    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '1h' });
+
+    await this.emailService.sendResetPasswordEmail(user.email, token);
+
+    return {
+      message: 'Email sent with instructions to reset your password',
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.usersService.findByEmailUtil(decoded.email);
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (this.isTokenInvalidated(token)) {
+        throw new ConflictException('Invalid or expired token');
+      }
+
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        throw new ConflictException('Password cannot be the same');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await this.usersRepository.save(user);
+
+      this.invalidatedTokens.add(token);
+
+      return { message: 'Password reset successfully' };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new ConflictException('Invalid token or password');
+    }
+  }
+
+  async validateResetToken(token: string) {
+    try {
+      if (this.isTokenInvalidated(token)) {
+        // Alteração: Melhoria na nomenclatura das variáveis
+        return { tokenIsValid: false, tokenIsExpired: false };
+      }
+
+      const tokenIsValid = this.jwtService.verify(token);
+
+      return { tokenIsValid, tokenIsExpired: false };
+    } catch (error) {
+      return { tokenIsValid: false, tokenIsExpired: true };
+    }
   }
 }
