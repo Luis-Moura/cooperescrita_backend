@@ -1,0 +1,31 @@
+[x]Cadastro de Usuário: Implementar cadastro de usuário com verificação de email.
+
+[x]Login de Usuário: Implementar login de usuário com autenticação JWT.
+
+[x]Logout de Usuário: Implementar logout de usuário invalidando o token JWT.
+
+[x]Verificação de Email: Enviar email de verificação para confirmar se o usuário é dono do email.
+    
+[x]Recuperação de Senha: Implementar recuperação de senha via email com um token de reset.
+
+[x]Alteração de Senha Autenticada: Permitir que o usuário altere a senha atual informando a senha antiga.
+
+[x]Criação de Tarefas: Implementar serviço de tarefas agendadas para remover usuários não verificados após um período.
+
+[]Adicionar um retorno ao verificar o usuário cadastrado
+
+[]Melhoria na Validação de Dados: Implementar validações adicionais para garantir a integridade dos dados.
+
+[]Documentação da API
+
+[]Rate Limiting: Implementar limitação de taxa para proteger a aplicação contra ataques de força bruta.
+
+[]Implementação de Papéis (Roles): Proteger rotas específicas para administradores, como deletar usuário e listar todos os usuários.
+
+[]Autenticação via OAuth: Integrar login com Google, GitHub ou outras plataformas (OAuth2).
+
+[]Bloqueio de Conta: Implementar bloqueio temporário após várias tentativas de login falhas.
+
+[]Notificação de Login Suspeito: Enviar alerta por email ou SMS se um login for detectado em um local ou dispositivo desconhecido.
+
+[]Registro de Atividades de Segurança: Logar eventos de segurança como mudanças de senha e tentativas de login falhas.
