@@ -4,17 +4,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
-import { UserDto } from 'src/users/dto/users.dto';
 import { User } from 'src/users/entities/user.entity';
 import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
-import { ISignIn } from './models/signIn.interface';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +29,21 @@ export class AuthService {
     private readonly emailService: EmailsService,
   ) {}
 
-  async signUp(createUserDto: UserDto) {
+  async signUp(createUserDto: CreateUserDto) {
     const existingUser = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
     });
 
     if (existingUser) {
       throw new ConflictException('User already exists');
+    }
+
+    if (
+      !createUserDto.email ||
+      !createUserDto.name ||
+      !createUserDto.password
+    ) {
+      throw new ConflictException('Invalid data');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -57,7 +67,11 @@ export class AuthService {
     };
   }
 
-  async verifyEmail(token: string) {
+  async verifyAccount(token: string) {
+    if (!token) {
+      throw new ConflictException('Invalid token');
+    }
+
     const decoded: IFindByEmail = this.jwtService.verify(token);
     const user = await this.usersService.findByEmailUtil(decoded.email);
 
@@ -67,10 +81,11 @@ export class AuthService {
 
     user.verified = true;
     await this.usersRepository.save(user);
+    return { message: 'Email verified successfully' };
   }
 
-  async signIn(data: ISignIn) {
-    const user = await this.usersService.findByEmailUtil(data.email);
+  async signIn(signInDto: SignInDto) {
+    const user = await this.usersService.findByEmailUtil(signInDto.email);
 
     if (!user.verified) {
       throw new ConflictException('User not verified');
@@ -78,7 +93,7 @@ export class AuthService {
 
     if (user) {
       const isPasswordMatch = await bcrypt.compare(
-        data.password,
+        signInDto.password,
         user.password,
       );
 
@@ -130,8 +145,10 @@ export class AuthService {
     return this.invalidatedTokens.has(token);
   }
 
-  async forgotPassword(email: string) {
-    const user = await this.usersService.findByEmailUtil(email);
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user = await this.usersService.findByEmailUtil(
+      forgotPasswordDto.email,
+    );
 
     if (!user) {
       throw new ConflictException('User not found');
@@ -146,7 +163,21 @@ export class AuthService {
     };
   }
 
-  async resetPassword(token: string, newPassword: string) {
+  async getResetPasswordForm(token: string) {
+    try {
+      if (this.isTokenInvalidated(token)) {
+        return { tokenIsValid: false, tokenIsExpired: false };
+      }
+
+      const tokenIsValid = this.jwtService.verify(token);
+
+      return { tokenIsValid, tokenIsExpired: false };
+    } catch (error) {
+      return { tokenIsValid: false, tokenIsExpired: true };
+    }
+  }
+
+  async postResetPassword(token: string, resetPasswordDto: ResetPasswordDto) {
     try {
       const decoded = this.jwtService.verify(token);
       const user = await this.usersService.findByEmailUtil(decoded.email);
@@ -159,12 +190,18 @@ export class AuthService {
         throw new ConflictException('Invalid or expired token');
       }
 
-      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      const isSamePassword = await bcrypt.compare(
+        resetPasswordDto.newPassword,
+        user.password,
+      );
       if (isSamePassword) {
         throw new ConflictException('Password cannot be the same');
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(
+        resetPasswordDto.newPassword,
+        10,
+      );
       user.password = hashedPassword;
       await this.usersRepository.save(user);
 
@@ -174,21 +211,6 @@ export class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new ConflictException('Invalid token or password');
-    }
-  }
-
-  async validateResetToken(token: string) {
-    try {
-      if (this.isTokenInvalidated(token)) {
-        // Alteração: Melhoria na nomenclatura das variáveis
-        return { tokenIsValid: false, tokenIsExpired: false };
-      }
-
-      const tokenIsValid = this.jwtService.verify(token);
-
-      return { tokenIsValid, tokenIsExpired: false };
-    } catch (error) {
-      return { tokenIsValid: false, tokenIsExpired: true };
     }
   }
 }

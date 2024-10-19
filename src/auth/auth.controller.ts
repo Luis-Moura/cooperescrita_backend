@@ -11,31 +11,33 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserDto } from 'src/users/dto/users.dto';
 import { AuthService } from './auth.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ISignIn } from './models/signIn.interface';
 
 @Controller('')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body() createUserDto: UserDto) {
+  signUp(@Body() createUserDto: CreateUserDto) {
     return this.authService.signUp(createUserDto);
   }
 
-  @Get('verify')
-  async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmail(token);
+  @Get('verify-account')
+  async verifyAccount(@Query('token') token: string) {
+    return this.authService.verifyAccount(token);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   @HttpCode(200)
-  signIn(@Body() data: ISignIn) {
-    return this.authService.signIn(data);
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.signIn(signInDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -47,20 +49,19 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body('email') email: string) {
-    return this.authService.forgotPassword(email);
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
+  //melhorar as lógicas de erro e validações de token depois e colocar essa lógica no service
   @Get('reset-password')
   async resetPasswordForm(@Query('token') token: string, @Res() res: Response) {
     const { tokenIsValid, tokenIsExpired } =
-      await this.authService.validateResetToken(token);
+      await this.authService.getResetPasswordForm(token);
 
     if (!tokenIsValid) {
       return res.redirect('/password-created');
     }
-
-    console.log(tokenIsExpired);
 
     if (tokenIsExpired) {
       return res.redirect('/password-created');
@@ -70,11 +71,11 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(
+  async postResetPassword(
     @Query('token') token: string,
-    @Body('newPassword') newPassword: string,
+    @Body() resetPasswordDto: ResetPasswordDto,
   ) {
-    return this.authService.resetPassword(token, newPassword);
+    return this.authService.postResetPassword(token, resetPasswordDto);
   }
 
   @Get('password-created')
