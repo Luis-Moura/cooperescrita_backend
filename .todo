@@ -16,7 +16,7 @@
 
 [x]Melhoria na Validação de Dados: Implementar validações adicionais para garantir a integridade dos dados.
 
-[]Documentação da API
+[x]Documentação da API
 
 []Rate Limiting: Implementar limitação de taxa para proteger a aplicação contra ataques de força bruta.
 
@@ -25,7 +25,5 @@
 []Autenticação via OAuth: Integrar login com Google, GitHub ou outras plataformas (OAuth2).
 
 []Bloqueio de Conta: Implementar bloqueio temporário após várias tentativas de login falhas.
-
-[]Notificação de Login Suspeito: Enviar alerta por email ou SMS se um login for detectado em um local ou dispositivo desconhecido.
 
 []Registro de Atividades de Segurança: Logar eventos de segurança como mudanças de senha e tentativas de login falhas.
