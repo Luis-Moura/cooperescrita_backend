@@ -12,9 +12,9 @@
 
 [x]Criação de Tarefas: Implementar serviço de tarefas agendadas para remover usuários não verificados após um período.
 
-[]Adicionar um retorno ao verificar o usuário cadastrado
+[x]Adicionar um retorno ao verificar o usuário cadastrado
 
-[]Melhoria na Validação de Dados: Implementar validações adicionais para garantir a integridade dos dados.
+[x]Melhoria na Validação de Dados: Implementar validações adicionais para garantir a integridade dos dados.
 
 []Documentação da API
 
