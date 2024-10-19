@@ -7,6 +7,9 @@ import {
 } from 'class-validator';
 
 export class ResetPasswordDto {
+  @IsNotEmpty()
+  token: string;
+
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @MaxLength(20, { message: 'Password must be at most 20 characters long' })
   @Matches(/(?=.*[A-Z])/, {

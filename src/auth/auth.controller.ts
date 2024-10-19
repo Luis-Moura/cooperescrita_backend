@@ -53,18 +53,13 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
-  //melhorar as lógicas de erro e validações de token depois e colocar essa lógica no service
+  //melhorar as lógicas de erro e validações de token e colocar essa lógica no service
   @Get('reset-password')
   async resetPasswordForm(@Query('token') token: string, @Res() res: Response) {
-    const { tokenIsValid, tokenIsExpired } =
-      await this.authService.getResetPasswordForm(token);
+    const result = await this.authService.getResetPasswordForm(token);
 
-    if (!tokenIsValid) {
-      return res.redirect('/password-created');
-    }
-
-    if (tokenIsExpired) {
-      return res.redirect('/password-created');
+    if (result.redirectUrl) {
+      return res.redirect(result.redirectUrl);
     }
 
     return res.render('reset-password', { token });
@@ -75,7 +70,7 @@ export class AuthController {
     @Query('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ) {
-    return this.authService.postResetPassword(token, resetPasswordDto);
+    return this.authService.postResetPassword({ token, ...resetPasswordDto });
   }
 
   @Get('password-created')

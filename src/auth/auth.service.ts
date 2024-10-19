@@ -165,19 +165,22 @@ export class AuthService {
 
   async getResetPasswordForm(token: string) {
     try {
-      if (this.isTokenInvalidated(token)) {
-        return { tokenIsValid: false, tokenIsExpired: false };
+      if (!token) {
+        throw new ConflictException('Invalid token');
       }
 
-      const tokenIsValid = this.jwtService.verify(token);
+      if (this.isTokenInvalidated(token) || !this.jwtService.verify(token)) {
+        return { redirectUrl: '/password-created' };
+      }
 
-      return { tokenIsValid, tokenIsExpired: false };
-    } catch (error) {
-      return { tokenIsValid: false, tokenIsExpired: true };
+      return { view: 'reset-password', token };
+    } catch (err) {
+      throw new ConflictException('Invalid token');
     }
   }
 
-  async postResetPassword(token: string, resetPasswordDto: ResetPasswordDto) {
+  async postResetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { token, newPassword } = resetPasswordDto;
     try {
       const decoded = this.jwtService.verify(token);
       const user = await this.usersService.findByEmailUtil(decoded.email);
@@ -190,25 +193,18 @@ export class AuthService {
         throw new ConflictException('Invalid or expired token');
       }
 
-      const isSamePassword = await bcrypt.compare(
-        resetPasswordDto.newPassword,
-        user.password,
-      );
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
       if (isSamePassword) {
         throw new ConflictException('Password cannot be the same');
       }
 
-      const hashedPassword = await bcrypt.hash(
-        resetPasswordDto.newPassword,
-        10,
-      );
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
       await this.usersRepository.save(user);
 
       this.invalidatedTokens.add(token);
 
       return { message: 'Password reset successfully' };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new ConflictException('Invalid token or password');
     }
