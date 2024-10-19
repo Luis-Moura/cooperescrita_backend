@@ -3,12 +3,12 @@ import {
   Controller,
   Get,
   Post,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { IChangePassword } from './models/changePassword.interface';
-import { IFindByEmail } from './models/findByEmail.interface';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { FindByEmailDto } from './dto/find-by-email.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -17,19 +17,21 @@ export class UsersController {
 
   //implementar um role de admin para somente administradores poderem acessar
   @Get()
-  async findByEmail(@Body() data: IFindByEmail) {
-    return await this.usersService.findByEmail(data);
+  async findByEmail(@Body() findByEmailDto: FindByEmailDto) {
+    return await this.usersService.findByEmail(findByEmailDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/change-password')
-  async changePassword(@Body() data: IChangePassword, @Request() req) {
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Request() req,
+  ) {
     const email = req.user.email;
 
-    const { oldPassword, newPassword } = data;
-
-    const newData = { email, oldPassword, newPassword };
-
-    return await this.usersService.changePassword(newData);
+    return await this.usersService.changePassword({
+      email,
+      ...changePasswordDto,
+    });
   }
 }

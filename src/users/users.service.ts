@@ -2,9 +2,9 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
-import { IChangePassword } from './models/changePassword.interface';
-import { IFindByEmail } from './models/findByEmail.interface';
 
 @Injectable()
 export class UsersService {
@@ -22,8 +22,8 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(data: IFindByEmail) {
-    const user = await this.findByEmailUtil(data.email);
+  async findByEmail(findByEmailDto: FindByEmailDto) {
+    const user = await this.findByEmailUtil(findByEmailDto.email);
 
     if (!user) {
       throw new ConflictException('User not found');
@@ -32,17 +32,20 @@ export class UsersService {
     return { ...user, password: undefined };
   }
 
-  async changePassword(data: IChangePassword) {
-    const user = await this.findByEmailUtil(data.email);
+  async changePassword(changePasswordDto: ChangePasswordDto) {
+    const user = await this.findByEmailUtil(changePasswordDto.email);
 
     if (user) {
       const isPasswordMatching = await bcrypt.compare(
-        data.oldPassword,
+        changePasswordDto.oldPassword,
         user.password,
       );
 
       if (isPasswordMatching) {
-        const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+        const hashedPassword = await bcrypt.hash(
+          changePasswordDto.newPassword,
+          10,
+        );
         user.password = hashedPassword;
         await this.usersRepository.save(user);
 
