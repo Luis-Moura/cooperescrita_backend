@@ -24,4 +24,10 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lockUntil: Date | null;
 }

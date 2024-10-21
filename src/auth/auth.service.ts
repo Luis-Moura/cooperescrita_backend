@@ -3,13 +3,14 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
+import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { User } from 'src/users/entities/user.entity';
-// import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,7 +19,8 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { isTokenInvalidated } from './utils/isTokenInvalidated';
-import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class AuthService {
@@ -32,9 +34,9 @@ export class AuthService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
-    const existingUser = await this.usersRepository.findOne({
-      where: { email: createUserDto.email },
-    });
+    const existingUser = await this.usersService.findByEmailUtil(
+      createUserDto.email,
+    );
 
     if (existingUser) {
       throw new ConflictException('User already exists');
@@ -87,50 +89,53 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.usersService.findByEmailUtil(signInDto.email);
+    const user = await this.validateUser(signInDto.email, signInDto.password);
 
-    if (!user.verified) {
-      throw new ConflictException('User not verified');
-    }
+    const payload = {
+      jti: uuidv4(),
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    };
 
-    if (user) {
-      const isPasswordMatch = await bcrypt.compare(
-        signInDto.password,
-        user.password,
-      );
-
-      if (isPasswordMatch) {
-        const payload = {
-          jti: uuidv4(),
-          sub: user.id,
-          email: user.email,
-          name: user.name,
-        };
-
-        return {
-          access_token: this.jwtService.sign(payload),
-        };
-      }
-    }
-
-    throw new ConflictException('Invalid credentials');
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findByEmailUtil(email);
 
-    if (user) {
-      const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-      if (isPasswordMatch) {
-        return {
-          ...user,
-          password: undefined,
-        };
-      }
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    return null;
+    if (user.lockUntil && user.lockUntil > new Date()) {
+      throw new ConflictException('Account is temporarily locked');
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+      user.failedLoginAttempts += 1;
+
+      if (user.failedLoginAttempts >= Number(process.env.MAX_FAILED_ATTEMPTS)) {
+        user.lockUntil = new Date(Date.now() + Number(process.env.LOCK_TIME));
+        user.failedLoginAttempts = 0;
+      }
+
+      await this.usersRepository.save(user);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    user.failedLoginAttempts = 0;
+    user.lockUntil = null;
+    await this.usersRepository.save(user);
+
+    return {
+      ...user,
+      password: undefined,
+    };
   }
 
   async logout(token: string) {
