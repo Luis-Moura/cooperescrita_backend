@@ -62,20 +62,28 @@ export class AuthService {
   }
 
   async verifyAccount(token: string) {
-    if (!token) {
-      throw new ConflictException('Invalid token');
+    try {
+      if (!token) {
+        throw new ConflictException('Invalid token');
+      }
+
+      const decoded: FindByEmailDto = this.jwtService.verify(token);
+      const user = await this.usersService.findByEmailUtil(decoded.email);
+
+      if (!user) {
+        throw new ConflictException('User not found');
+      }
+
+      if (user.verified) {
+        throw new ConflictException('User already verified');
+      }
+
+      user.verified = true;
+      await this.usersRepository.save(user);
+      return { message: 'Email verified successfully' };
+    } catch (error) {
+      throw new ConflictException('Invalid or expired token');
     }
-
-    const decoded: FindByEmailDto = this.jwtService.verify(token);
-    const user = await this.usersService.findByEmailUtil(decoded.email);
-
-    if (!user) {
-      throw new ConflictException('User not found');
-    }
-
-    user.verified = true;
-    await this.usersRepository.save(user);
-    return { message: 'Email verified successfully' };
   }
 
   async signIn(signInDto: SignInDto) {
