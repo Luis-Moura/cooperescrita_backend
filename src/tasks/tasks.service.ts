@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { LessThan, Repository } from 'typeorm';
@@ -10,18 +10,22 @@ export class TasksService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
-  @Cron('* * * * *')
+  @Cron(CronExpression.EVERY_DAY_AT_6PM)
   async handleCron() {
-    const expirationTime = new Date();
-    expirationTime.setHours(expirationTime.getHours() - 1);
+    try {
+      const expirationTime = new Date();
+      expirationTime.setHours(expirationTime.getHours() - 1);
 
-    const users = await this.usersRepository.find({
-      where: { verified: false, createdAt: LessThan(expirationTime) },
-    });
+      const users = await this.usersRepository.find({
+        where: { verified: false, createdAt: LessThan(expirationTime) },
+      });
 
-    if (users.length > 0) {
-      console.log('Users to delete:', users);
-      await this.usersRepository.remove(users);
+      if (users.length > 0) {
+        console.log('Users to delete:', users);
+        await this.usersRepository.remove(users);
+      }
+    } catch (error) {
+      console.error('Failed to handle cron job', error.stack);
     }
   }
 }
