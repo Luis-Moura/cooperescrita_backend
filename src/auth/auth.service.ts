@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
-import { IFindByEmail } from 'src/users/models/findByEmail.interface';
+// import { IFindByEmail } from 'src/users/models/findByEmail.interface';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +18,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { isTokenInvalidated } from './utils/isTokenInvalidated';
+import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -65,7 +66,7 @@ export class AuthService {
       throw new ConflictException('Invalid token');
     }
 
-    const decoded: IFindByEmail = this.jwtService.verify(token);
+    const decoded: FindByEmailDto = this.jwtService.verify(token);
     const user = await this.usersService.findByEmailUtil(decoded.email);
 
     if (!user) {
