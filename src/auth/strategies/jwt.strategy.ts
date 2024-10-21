@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from '../auth.service';
+import { isTokenInvalidated } from '../utils/isTokenInvalidated';
 dotenv.config();
 
 @Injectable()
@@ -26,10 +27,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User not found');
     }
 
-    const isTokenInvalidated = this.authService.isTokenInvalidated(payload.jti);
+    const TokenInvalidated = isTokenInvalidated(
+      payload.jti,
+      this.authService.invalidatedTokens,
+    );
     // console.log(isTokenInvalidated);
 
-    if (isTokenInvalidated) {
+    if (TokenInvalidated) {
       throw new UnauthorizedException('Token invalidated');
     }
 

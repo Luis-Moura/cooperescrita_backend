@@ -17,6 +17,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { isTokenInvalidated } from './utils/isTokenInvalidated';
 
 @Injectable()
 export class AuthService {
@@ -36,14 +37,6 @@ export class AuthService {
 
     if (existingUser) {
       throw new ConflictException('User already exists');
-    }
-
-    if (
-      !createUserDto.email ||
-      !createUserDto.name ||
-      !createUserDto.password
-    ) {
-      throw new ConflictException('Invalid data');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -141,10 +134,6 @@ export class AuthService {
     return { message: 'Logout successful' };
   }
 
-  isTokenInvalidated(token: string): boolean {
-    return this.invalidatedTokens.has(token);
-  }
-
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const user = await this.usersService.findByEmailUtil(
       forgotPasswordDto.email,
@@ -169,7 +158,10 @@ export class AuthService {
         throw new ConflictException('Invalid token');
       }
 
-      if (this.isTokenInvalidated(token) || !this.jwtService.verify(token)) {
+      if (
+        isTokenInvalidated(token, this.invalidatedTokens) ||
+        !this.jwtService.verify(token)
+      ) {
         return { redirectUrl: '/password-created' };
       }
 
@@ -189,7 +181,7 @@ export class AuthService {
         throw new NotFoundException('User not found');
       }
 
-      if (this.isTokenInvalidated(token)) {
+      if (isTokenInvalidated(token, this.invalidatedTokens)) {
         throw new ConflictException('Invalid or expired token');
       }
 
