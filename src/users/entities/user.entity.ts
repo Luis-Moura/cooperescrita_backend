@@ -30,4 +30,7 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   lockUntil: Date | null;
+
+  @Column({ default: 'user' })
+  role: string;
 }

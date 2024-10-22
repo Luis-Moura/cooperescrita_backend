@@ -18,12 +18,12 @@
 
 [x]Documentação da API
 
-[]Rate Limiting: Implementar limitação de taxa para proteger a aplicação contra ataques de força bruta.
+[x]Bloqueio de Conta: Implementar bloqueio temporário após várias tentativas de login falhas.
 
-[]Implementação de Papéis (Roles): Proteger rotas específicas para administradores, como deletar usuário e listar todos os usuários.
+[x]Implementação de Papéis (Roles): Proteger rotas específicas para administradores, como deletar usuário e listar todos os usuários.
+
+[]Usuário poder deletar sua conta
 
 []Autenticação via OAuth: Integrar login com Google, GitHub ou outras plataformas (OAuth2).
-
-[]Bloqueio de Conta: Implementar bloqueio temporário após várias tentativas de login falhas.
 
 []Registro de Atividades de Segurança: Logar eventos de segurança como mudanças de senha e tentativas de login falhas.

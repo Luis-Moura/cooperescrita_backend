@@ -33,13 +33,17 @@ export class AuthService {
     private readonly emailService: EmailsService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto, creatorRole: string) {
     const existingUser = await this.usersService.findByEmailUtil(
       createUserDto.email,
     );
 
     if (existingUser) {
       throw new ConflictException('User already exists');
+    }
+
+    if (createUserDto.role === 'admin' && creatorRole !== 'admin') {
+      throw new ConflictException('Only admins can create admin accounts');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -50,7 +54,7 @@ export class AuthService {
     });
 
     const token = this.jwtService.sign(
-      { sub: newUser.id },
+      { sub: newUser.id, email: newUser.email },
       { expiresIn: '15m' },
     );
     await this.usersRepository.save(newUser);
@@ -84,6 +88,7 @@ export class AuthService {
       await this.usersRepository.save(user);
       return { message: 'Email verified successfully' };
     } catch (error) {
+      console.log(error);
       throw new ConflictException('Invalid or expired token');
     }
   }

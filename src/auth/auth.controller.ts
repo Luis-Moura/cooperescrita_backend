@@ -12,23 +12,36 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Controller('')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
+  @HttpCode(200)
   signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+    return this.authService.signUp(createUserDto, 'user');
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Post('signup-admin')
+  @HttpCode(200)
+  signUpAdmin(@Body() createUserDto: CreateUserDto, @Request() req) {
+    const creatorRole = req.user.role;
+    return this.authService.signUp(createUserDto, creatorRole);
   }
 
   @Get('verify-account')
+  @HttpCode(200)
   async verifyAccount(@Query('token') token: string) {
     return this.authService.verifyAccount(token);
   }
@@ -49,11 +62,11 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @HttpCode(200)
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
-  //melhorar as lógicas de erro e validações de token e colocar essa lógica no service
   @Get('reset-password')
   async resetPasswordForm(@Query('token') token: string, @Res() res: Response) {
     const result = await this.authService.getResetPasswordForm(token);
@@ -66,6 +79,7 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @HttpCode(200)
   async postResetPassword(
     @Query('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,

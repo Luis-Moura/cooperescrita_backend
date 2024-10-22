@@ -1,5 +1,3 @@
-# Documentação da API - AuthController
-
 ## 1. Criar Usuário (Signup)
 
 - **Método:** POST
@@ -16,7 +14,24 @@
 
 ---
 
-## 2. Verificar Conta (Verify Account)
+## 2. Criar Usuário Admin (Signup Admin)
+
+- **Método:** POST
+- **Rota:** `/signup-admin`
+- **Descrição:** Registra um novo usuário admin. Apenas usuários com papel de admin podem criar outros admins.
+- **Parâmetros:**
+  - **Body:**
+    - `email`: string - Email do usuário.
+    - `name`: string - Nome do usuário.
+    - `password`: string - Senha do usuário.
+- **Autenticação:** Necessita de um token JWT no header `Authorization` com papel de admin.
+- **Resposta:**
+  - **200 OK:** `{ message: 'User registered successfully. Please check your email for verification instructions.' }`
+  - **409 Conflict:** `{ message: 'User already exists' }` ou `{ message: 'Only admins can create admin accounts' }`
+
+---
+
+## 3. Verificar Conta (Verify Account)
 
 - **Método:** GET
 - **Rota:** `/verify-account`
@@ -30,7 +45,7 @@
 
 ---
 
-## 3. Login (Sign In)
+## 4. Login (Sign In)
 
 - **Método:** POST
 - **Rota:** `/signin`
@@ -45,7 +60,7 @@
 
 ---
 
-## 4. Logout (Sign Out)
+## 5. Logout (Sign Out)
 
 - **Método:** POST
 - **Rota:** `/signout`
@@ -56,7 +71,7 @@
 
 ---
 
-## 5. Esqueci a Senha (Forgot Password)
+## 6. Esqueci a Senha (Forgot Password)
 
 - **Método:** POST
 - **Rota:** `/forgot-password`
@@ -70,7 +85,7 @@
 
 ---
 
-## 6. Formulário de Redefinição de Senha (Reset Password Form)
+## 7. Formulário de Redefinição de Senha (Reset Password Form)
 
 - **Método:** GET
 - **Rota:** `/reset-password`
@@ -83,7 +98,7 @@
 
 ---
 
-## 7. Redefinir Senha (Post Reset Password)
+## 8. Redefinir Senha (Post Reset Password)
 
 - **Método:** POST
 - **Rota:** `/reset-password`
@@ -99,7 +114,17 @@
 
 ---
 
-## 8. Ver Detalhes do Usuário (Get Me)
+## 9. Senha Criada (Password Created)
+
+- **Método:** GET
+- **Rota:** `/password-created`
+- **Descrição:** Renderiza a página de confirmação de senha criada.
+- **Resposta:**
+  - **200 OK:** Renderiza a página de confirmação de senha criada.
+
+---
+
+## 10. Ver Detalhes do Usuário (Get Me)
 
 - **Método:** GET
 - **Rota:** `/me`
