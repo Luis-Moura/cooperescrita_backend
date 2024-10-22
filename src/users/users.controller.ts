@@ -13,19 +13,19 @@ import { UsersService } from './users.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 
-@Controller('users')
+@Controller('')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Get()
+  @Get('/admin/find-by-email')
   async findByEmail(@Body() findByEmailDto: FindByEmailDto) {
     return await this.usersService.findByEmail(findByEmailDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/change-password')
+  @Post('/users/change-password')
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Request() req,
