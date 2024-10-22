@@ -8,10 +8,11 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
 import { EmailsService } from 'src/emails/emails.service';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/users/services/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,7 +20,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { isTokenInvalidated } from './utils/isTokenInvalidated';
-import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Injectable()

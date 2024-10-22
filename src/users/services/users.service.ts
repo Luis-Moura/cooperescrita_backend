@@ -2,9 +2,9 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { FindByEmailDto } from './dto/find-by-email.dto';
-import { User } from './entities/user.entity';
+import { ChangePasswordDto } from '../dto/change-password.dto';
+import { FindByEmailDto } from '../dto/find-by-email.dto';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
