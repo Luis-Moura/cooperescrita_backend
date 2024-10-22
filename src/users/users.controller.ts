@@ -12,6 +12,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { UsersService } from './users.service';
+import { FindByNameDto } from './dto/find-by-name.dto';
 
 @Controller('')
 export class UsersController {
@@ -22,6 +23,13 @@ export class UsersController {
   @Get('/admin/find-by-email')
   async findByEmail(@Body() findByEmailDto: FindByEmailDto) {
     return await this.usersService.findByEmail(findByEmailDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('/admin/find-by-name')
+  async findByName(@Body() findByNameDto: FindByNameDto) {
+    return await this.usersService.findByName(findByNameDto);
   }
 
   @UseGuards(JwtAuthGuard)

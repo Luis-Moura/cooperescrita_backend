@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
+import { FindByNameDto } from './dto/find-by-name.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,18 @@ export class UsersService {
 
   async findByEmail(findByEmailDto: FindByEmailDto) {
     const user = await this.findByEmailUtil(findByEmailDto.email);
+
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+
+    return { ...user, password: undefined };
+  }
+
+  async findByName(findByNameDto: FindByNameDto) {
+    const user = await this.usersRepository.findOne({
+      where: { name: findByNameDto.name },
+    });
 
     if (!user) {
       throw new ConflictException('User not found');
