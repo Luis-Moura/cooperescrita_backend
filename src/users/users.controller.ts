@@ -9,9 +9,9 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { ChangePasswordDto } from '../dto/change-password.dto';
-import { FindByEmailDto } from '../dto/find-by-email.dto';
-import { UsersService } from '../services/users.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { FindByEmailDto } from './dto/find-by-email.dto';
+import { UsersService } from './users.service';
 
 @Controller('')
 export class UsersController {

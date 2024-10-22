@@ -12,7 +12,7 @@ import * as dotenv from 'dotenv';
 import { EmailsService } from 'src/emails/emails.service';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';

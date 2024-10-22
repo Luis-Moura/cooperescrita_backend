@@ -5,5 +5,3 @@ export class FindByEmailDto {
   @IsEmail()
   email: string;
 }
-
-
