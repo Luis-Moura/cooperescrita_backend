@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Request,
@@ -30,6 +31,13 @@ export class UsersController {
   @Get('/admin/find-by-name')
   async findByName(@Body() findByNameDto: FindByNameDto) {
     return await this.usersService.findByName(findByNameDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Delete('/admin/delete-user-by-email')
+  async deleteUserByEmail(@Body() findByEmailDto: FindByEmailDto) {
+    return await this.usersService.deleteUserByEmail(findByEmailDto);
   }
 
   @UseGuards(JwtAuthGuard)

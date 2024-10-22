@@ -6,6 +6,8 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
 import { FindByNameDto } from './dto/find-by-name.dto';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class UsersService {
@@ -43,6 +45,24 @@ export class UsersService {
     }
 
     return { ...user, password: undefined };
+  }
+
+  async deleteUserByEmail(findByEmailDto: FindByEmailDto) {
+    const user = await this.findByEmailUtil(findByEmailDto.email);
+
+    if (user.email === process.env.MAIN_ADMIN) {
+      throw new ConflictException(
+        'Cannot delete main admin, a segurance alert has been sent to the main admin',
+      );
+    }
+
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+
+    await this.usersRepository.delete(user.id);
+
+    return { message: 'User deleted successfully' };
   }
 
   async changePassword(changePasswordDto: ChangePasswordDto) {
