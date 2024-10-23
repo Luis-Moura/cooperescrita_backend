@@ -39,7 +39,11 @@ export class AuthService {
     );
 
     if (existingUser) {
-      throw new ConflictException('User already exists');
+      if (!existingUser.verified) {
+        await this.usersRepository.remove(existingUser);
+      } else {
+        throw new ConflictException('User already exists');
+      }
     }
 
     if (createUserDto.role === 'admin' && creatorRole !== 'admin') {
