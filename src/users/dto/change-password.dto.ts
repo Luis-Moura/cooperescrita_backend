@@ -1,16 +1,15 @@
 import {
-  IsEmail,
   IsNotEmpty,
-  MinLength,
-  MaxLength,
-  Matches,
+  IsOptional,
   IsString,
+  Matches,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class ChangePasswordDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @MaxLength(20, { message: 'Password must be at most 20 characters long' })
