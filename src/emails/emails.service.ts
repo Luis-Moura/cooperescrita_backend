@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as nodemailer from 'nodemailer';
+import { sendVerificationEmailHtml } from './html/sendVerificationEmailHtml';
+import { sendResetPasswordEmailHtml } from './html/sendResetPasswordEmailHtml';
 dotenv.config();
 
 @Injectable()
@@ -32,13 +34,13 @@ export class EmailsService {
 
   async sendVerificationEmail(email: string, token: string) {
     const url = `${process.env.BASE_URL}/verify-account?token=${token}`;
-    const html = `Clique <a href="${url}">aqui</a> para verificar sua conta.`;
+    const html = sendVerificationEmailHtml(url);
     await this.sendEmail(email, 'Verificação de Conta', html);
   }
 
   async sendResetPasswordEmail(email: string, token: string) {
     const url = `${process.env.BASE_URL}/reset-password?token=${token}`;
-    const html = `Clique <a href="${url}">aqui</a> para redefinir sua senha.`;
+    const html = sendResetPasswordEmailHtml(url);
     await this.sendEmail(email, 'Redefinição de Senha', html);
   }
 }
