@@ -90,4 +90,22 @@ export class UsersService {
 
     throw new ConflictException('User not found');
   }
+
+  async deleteAccount(email: string) {
+    const user = await this.findByEmailUtil(email);
+
+    if (user.email === process.env.MAIN_ADMIN) {
+      throw new ConflictException(
+        'Cannot delete main admin, a segurance alert has been sent to the main admin',
+      );
+    }
+
+    if (user) {
+      await this.usersRepository.delete(user.id);
+
+      return { message: 'Account deleted successfully' };
+    }
+
+    throw new ConflictException('User not found');
+  }
 }

@@ -22,7 +22,7 @@
 
 [x]Implementação de Papéis (Roles): Proteger rotas específicas para administradores, como deletar usuário e listar todos os usuários.
 
-[]Usuário poder deletar sua conta
+[x]Usuário poder deletar sua conta
 
 []Autenticação via OAuth: Integrar login com Google, GitHub ou outras plataformas (OAuth2).
 

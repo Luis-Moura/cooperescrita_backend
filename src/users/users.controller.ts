@@ -53,4 +53,12 @@ export class UsersController {
       ...changePasswordDto,
     });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/users/delete-account')
+  async deleteAccount(@Request() req) {
+    const email = req.user.email;
+
+    return await this.usersService.deleteAccount(email);
+  }
 }

@@ -56,3 +56,13 @@
 - **Resposta:**
   - **200 OK:** `{ message: 'Password changed successfully' }`
   - **409 Conflict:** `{ message: 'Invalid password' }` ou `{ message: 'User not found' }`
+
+## 5. Deletar Conta (Delete Account)
+
+- **Método:** POST
+- **Rota:** `/users/delete-account`
+- **Descrição:** Deleta a conta do usuário autenticado.
+- **Autenticação:** Necessita de um token JWT no header `Authorization`.
+- **Resposta:**
+  - **200 OK:** `{ message: 'Account deleted successfully' }`
+  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot delete main admin, a security alert has been sent to the main admin' }`
