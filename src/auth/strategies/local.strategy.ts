@@ -19,7 +19,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not verified');
     }
 
-    console.log(user);
     return user;
   }
 }

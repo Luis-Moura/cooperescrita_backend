@@ -32,6 +32,12 @@ export class UsersService {
       throw new ConflictException('User not found');
     }
 
+    if (user.email === process.env.MAIN_ADMIN) {
+      throw new ConflictException(
+        'Cannot acess, a segurance alert has been sent to the main admin',
+      );
+    }
+
     return { ...user, password: undefined };
   }
 
@@ -44,6 +50,12 @@ export class UsersService {
       throw new ConflictException('User not found');
     }
 
+    if (user.email === process.env.MAIN_ADMIN) {
+      throw new ConflictException(
+        'Cannot acess, a segurance alert has been sent to the main admin',
+      );
+    }
+
     return { ...user, password: undefined };
   }
 
@@ -52,7 +64,7 @@ export class UsersService {
 
     if (user.email === process.env.MAIN_ADMIN) {
       throw new ConflictException(
-        'Cannot delete main admin, a segurance alert has been sent to the main admin',
+        'Cannot delete, a segurance alert has been sent to the main admin',
       );
     }
 
