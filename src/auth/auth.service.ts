@@ -92,7 +92,6 @@ export class AuthService {
       await this.usersRepository.save(user);
       return { message: 'Email verified successfully' };
     } catch (error) {
-      console.log(error);
       throw new ConflictException('Invalid or expired token');
     }
   }
@@ -166,7 +165,10 @@ export class AuthService {
       throw new ConflictException('User not found');
     }
 
-    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '1h' });
+    const token = this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      { expiresIn: '1h' },
+    );
 
     await this.emailService.sendResetPasswordEmail(user.email, token);
 
