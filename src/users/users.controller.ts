@@ -46,7 +46,7 @@ export class UsersController {
     @Body() changePasswordDto: ChangePasswordDto,
     @Request() req,
   ) {
-    const email = req.user.email;
+    const email = req.user.email.toLowerCase();
 
     return await this.usersService.changePassword({
       email,
@@ -57,7 +57,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete('/users/delete-account')
   async deleteAccount(@Request() req) {
-    const email = req.user.email;
+    const email = req.user.email.toLowerCase();
 
     return await this.usersService.deleteAccount(email);
   }
