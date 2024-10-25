@@ -22,7 +22,7 @@ export class EmailsService {
   private async sendEmail(email: string, subject: string, html?: string) {
     try {
       await this.transporter.sendMail({
-        to: email,
+        to: email.toLowerCase(),
         subject,
         html,
       });

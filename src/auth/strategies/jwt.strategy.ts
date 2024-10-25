@@ -21,7 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any) {
-    const user = await this.usersService.findByEmailUtil(payload.email);
+    const user = await this.usersService.findByEmailUtil(
+      payload.email.toLowerCase(),
+    );
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -31,7 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       payload.jti,
       this.authService.invalidatedTokens,
     );
-    // console.log(isTokenInvalidated);
 
     if (TokenInvalidated) {
       throw new UnauthorizedException('Token invalidated');

@@ -35,7 +35,7 @@ export class AuthService {
 
   async signUp(createUserDto: CreateUserDto, creatorRole: string) {
     const existingUser = await this.usersService.findByEmailUtil(
-      createUserDto.email,
+      createUserDto.email.toLowerCase(),
     );
 
     if (existingUser) {
@@ -53,6 +53,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = this.usersRepository.create({
       ...createUserDto,
+      email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
       verified: false,
     });
@@ -78,7 +79,9 @@ export class AuthService {
       }
 
       const decoded: FindByEmailDto = this.jwtService.verify(token);
-      const user = await this.usersService.findByEmailUtil(decoded.email);
+      const user = await this.usersService.findByEmailUtil(
+        decoded.email.toLowerCase(),
+      );
 
       if (!user) {
         throw new ConflictException('User not found');
@@ -97,7 +100,10 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.validateUser(signInDto.email, signInDto.password);
+    const user = await this.validateUser(
+      signInDto.email.toLowerCase(),
+      signInDto.password,
+    );
 
     const payload = {
       jti: uuidv4(),
@@ -112,7 +118,7 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.findByEmailUtil(email);
+    const user = await this.usersService.findByEmailUtil(email.toLowerCase());
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -158,7 +164,7 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const user = await this.usersService.findByEmailUtil(
-      forgotPasswordDto.email,
+      forgotPasswordDto.email.toLowerCase(),
     );
 
     if (!user) {
@@ -170,7 +176,10 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    await this.emailService.sendResetPasswordEmail(user.email, token);
+    await this.emailService.sendResetPasswordEmail(
+      user.email.toLowerCase(),
+      token,
+    );
 
     return {
       message: 'Email sent with instructions to reset your password',
@@ -200,7 +209,9 @@ export class AuthService {
     const { token, newPassword } = resetPasswordDto;
     try {
       const decoded = this.jwtService.verify(token);
-      const user = await this.usersService.findByEmailUtil(decoded.email);
+      const user = await this.usersService.findByEmailUtil(
+        decoded.email.toLowerCase(),
+      );
 
       if (!user) {
         throw new NotFoundException('User not found');
