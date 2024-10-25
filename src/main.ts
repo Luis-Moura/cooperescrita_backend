@@ -21,6 +21,8 @@ async function bootstrap() {
   app.setViewEngine('hbs');
   hbs.registerPartials(join(__dirname, './', 'views/partials'));
 
+  app.useStaticAssets(join(__dirname, './', '/views/svg'));
+
   await app.listen(3000);
 }
 bootstrap();

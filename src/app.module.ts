@@ -8,10 +8,16 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 dotenv.config();
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/views/svg'),
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
