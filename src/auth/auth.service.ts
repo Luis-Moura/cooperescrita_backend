@@ -8,6 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
 import { EmailsService } from 'src/emails/emails.service';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
@@ -15,10 +16,12 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { ActivateTwoFADto } from './dto/activateTwoFA.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { VerifyCodeDto } from './dto/verifyCode.dto';
 import { isTokenInvalidated } from './utils/isTokenInvalidated';
 dotenv.config();
 
@@ -56,6 +59,7 @@ export class AuthService {
       email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
       verified: false,
+      twoFA: createUserDto.role === 'admin',
     });
 
     const token = this.jwtService.sign(
@@ -100,10 +104,15 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.validateUser(
+    const user = await this.usersService.findByEmailUtil(
       signInDto.email.toLowerCase(),
-      signInDto.password,
     );
+
+    if (user.twoFA) {
+      return {
+        message: 'Verification code sent to your email',
+      };
+    }
 
     const payload = {
       jti: uuidv4(),
@@ -146,9 +155,59 @@ export class AuthService {
     user.lockUntil = null;
     await this.usersRepository.save(user);
 
+    if (user.twoFA) {
+      const verificationCode = crypto.randomBytes(3).toString('hex');
+      user.verificationCode = verificationCode;
+      user.verificationCodeExpires = new Date(Date.now() + 600000);
+      await this.usersRepository.save(user);
+
+      await this.emailService.sendVerificationCodeEmail(
+        user.email,
+        verificationCode,
+      );
+
+      return {
+        ...user,
+        password: undefined,
+      };
+    }
+
     return {
       ...user,
       password: undefined,
+    };
+  }
+
+  async verifyCode(verifyCodeDto: VerifyCodeDto) {
+    const user = await this.usersService.findByEmailUtil(
+      verifyCodeDto.email.toLowerCase(),
+    );
+
+    if (!user) {
+      throw new NotFoundException('Invalid Crenditials');
+    }
+
+    if (user.verificationCode !== verifyCodeDto.verificationCode) {
+      throw new ConflictException('Invalid verification code');
+    }
+
+    if (user.verificationCodeExpires < new Date()) {
+      throw new ConflictException('Verification code expired');
+    }
+
+    user.verificationCode = null;
+    user.verificationCodeExpires = null;
+    await this.usersRepository.save(user);
+
+    const payload = {
+      jti: uuidv4(),
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
     };
   }
 
