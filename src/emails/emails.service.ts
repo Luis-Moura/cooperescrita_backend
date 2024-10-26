@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import * as nodemailer from 'nodemailer';
 import { sendVerificationEmailHtml } from './html/sendVerificationEmailHtml';
 import { sendResetPasswordEmailHtml } from './html/sendResetPasswordEmailHtml';
+import { sendReportAlertAdminHtml } from './html/sendReportAlertAdminHtml';
 dotenv.config();
 
 @Injectable()
@@ -42,5 +43,10 @@ export class EmailsService {
     const url = `${process.env.BASE_URL}/reset-password?token=${token}`;
     const html = sendResetPasswordEmailHtml(url);
     await this.sendEmail(email, 'Redefinição de Senha', html);
+  }
+
+  async sendReportAlertAdmin(report: string) {
+    const html = sendReportAlertAdminHtml(report);
+    await this.sendEmail(process.env.MAIN_ADMIN, 'Security Alert', html);
   }
 }
