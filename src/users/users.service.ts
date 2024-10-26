@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -114,6 +118,46 @@ export class UsersService {
     }
 
     throw new ConflictException('User not found');
+  }
+
+  async activateTwoFA(email: string) {
+    const user = await this.findByEmailUtil(email.toLowerCase());
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.twoFA) {
+      throw new ConflictException('Two-factor authentication already enabled');
+    }
+
+    user.twoFA = true;
+    await this.usersRepository.save(user);
+
+    return { message: 'Two-factor authentication activated' };
+  }
+
+  async desactivateTwoFA(email: string) {
+    const user = await this.findByEmailUtil(email.toLowerCase());
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.role === 'admin') {
+      throw new ConflictException(
+        'Cannot disable two-factor authentication for admins',
+      );
+    }
+
+    if (!user.twoFA) {
+      throw new ConflictException('Two-factor authentication already disabled');
+    }
+
+    user.twoFA = false;
+    await this.usersRepository.save(user);
+
+    return { message: 'Two-factor authentication disabled' };
   }
 
   async deleteAccount(email: string) {

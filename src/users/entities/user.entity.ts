@@ -33,4 +33,13 @@ export class User {
 
   @Column({ default: 'user' })
   role: string;
+
+  @Column({ nullable: true, default: false })
+  twoFA: boolean;
+
+  @Column({ nullable: true })
+  verificationCode: string;
+
+  @Column({ nullable: true })
+  verificationCodeExpires: Date;
 }

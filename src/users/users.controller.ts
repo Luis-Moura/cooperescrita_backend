@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Post,
   Request,
   UseGuards,
@@ -58,6 +59,20 @@ export class UsersController {
       email,
       ...changePasswordDto,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('activate-twoFA')
+  @HttpCode(200)
+  async activateTwoFA(@Request() req) {
+    return this.usersService.activateTwoFA(req.user.email);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('desativate-twoFA')
+  @HttpCode(200)
+  async desativateTwoFa(@Request() req) {
+    return this.usersService.desactivateTwoFA(req.user.email);
   }
 
   @UseGuards(JwtAuthGuard)
