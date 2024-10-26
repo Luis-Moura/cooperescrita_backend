@@ -1,12 +1,14 @@
-## 1. Criar Usuário (Signup)
+# Documentação da API de Autenticação
+
+## 1. Registrar Usuário (Sign Up)
 
 - **Método:** POST
 - **Rota:** `/signup`
 - **Descrição:** Registra um novo usuário.
 - **Parâmetros:**
   - **Body:**
-    - `email`: string - Email do usuário.
     - `name`: string - Nome do usuário.
+    - `email`: string - Email do usuário.
     - `password`: string - Senha do usuário.
 - **Resposta:**
   - **200 OK:** `{ message: 'User registered successfully. Please check your email for verification instructions.' }`
@@ -14,16 +16,17 @@
 
 ---
 
-## 2. Criar Usuário Admin (Signup Admin)
+## 2. Criar Usuário Admin (Sign Up Admin)
 
 - **Método:** POST
 - **Rota:** `/signup-admin`
 - **Descrição:** Registra um novo usuário admin. Apenas usuários com papel de admin podem criar outros admins.
 - **Parâmetros:**
   - **Body:**
-    - `email`: string - Email do usuário.
     - `name`: string - Nome do usuário.
+    - `email`: string - Email do usuário.
     - `password`: string - Senha do usuário.
+    - `role`: string - Colocar o role como "admin"
 - **Autenticação:** Necessita de um token JWT no header `Authorization` com papel de admin.
 - **Resposta:**
   - **200 OK:** `{ message: 'User registered successfully. Please check your email for verification instructions.' }`
@@ -49,18 +52,34 @@
 
 - **Método:** POST
 - **Rota:** `/signin`
-- **Descrição:** Faz login do usuário e retorna um token de acesso.
+- **Descrição:** Faz login do usuário e retorna um token de acesso. Se o usuário tiver autenticação de duas etapas, retorna uma mensagem indicando que um código de verificação foi enviado para o email.
 - **Parâmetros:**
   - **Body:**
     - `email`: string - Email do usuário.
     - `password`: string - Senha do usuário.
 - **Resposta:**
   - **200 OK:** `{ access_token: '...' }`
+  - **200 OK:** `{ message: 'Verification code sent to your email' }` (caso o usuário tenha autenticação de duas etapas)
   - **409 Conflict:** `{ message: 'User not verified' }` ou `{ message: 'Invalid credentials' }`
 
 ---
 
-## 5. Logout (Sign Out)
+## 5. Verificar Código (Verify Code)
+
+- **Método:** POST
+- **Rota:** `/verify-code`
+- **Descrição:** Verifica o código de autenticação de dois fatores.
+- **Parâmetros:**
+  - **Body:**
+    - `email`: string - Email do usuário.
+    - `verificationCode`: string - Código de verificação.
+- **Resposta:**
+  - **200 OK:** `{ access_token: '...' }`
+  - **409 Conflict:** `{ message: 'Invalid verification code' }` ou `{ message: 'Verification code expired' }`
+
+---
+
+## 6. Logout (Sign Out)
 
 - **Método:** POST
 - **Rota:** `/signout`
@@ -71,7 +90,7 @@
 
 ---
 
-## 6. Esqueci a Senha (Forgot Password)
+## 7. Esqueci a Senha (Forgot Password)
 
 - **Método:** POST
 - **Rota:** `/forgot-password`
@@ -85,7 +104,7 @@
 
 ---
 
-## 7. Formulário de Redefinição de Senha (Reset Password Form)
+## 8. Formulário de Redefinição de Senha (Reset Password Form)
 
 - **Método:** GET
 - **Rota:** `/reset-password`
@@ -98,7 +117,7 @@
 
 ---
 
-## 8. Redefinir Senha (Post Reset Password)
+## 9. Redefinir Senha (Post Reset Password)
 
 - **Método:** POST
 - **Rota:** `/reset-password`
@@ -114,7 +133,7 @@
 
 ---
 
-## 9. Senha Criada (Password Created)
+## 10. Senha Criada (Password Created)
 
 - **Método:** GET
 - **Rota:** `/password-created`
@@ -124,7 +143,7 @@
 
 ---
 
-## 10. Ver Detalhes do Usuário (Get Me)
+## 11. Ver Detalhes do Usuário (Get Me)
 
 - **Método:** GET
 - **Rota:** `/me`

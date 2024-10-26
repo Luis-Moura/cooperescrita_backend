@@ -1,3 +1,5 @@
+# Documentação da API de Usuários
+
 ## 1. Buscar Usuário por Email
 
 - **Método:** GET
@@ -9,7 +11,7 @@
     - `email`: string - Email do usuário a ser buscado.
 - **Resposta:**
   - **200 OK:** `{ id: ..., email: ..., name: ... }` (sem a senha)
-  - **409 Conflict:** `{ message: 'User not found' }`
+  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
 
 ---
 
@@ -24,7 +26,7 @@
     - `name`: string - Nome do usuário a ser buscado.
 - **Resposta:**
   - **200 OK:** `{ id: ..., email: ..., name: ... }` (sem a senha)
-  - **409 Conflict:** `{ message: 'User not found' }`
+  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
 
 ---
 
@@ -57,9 +59,35 @@
   - **200 OK:** `{ message: 'Password changed successfully' }`
   - **409 Conflict:** `{ message: 'Invalid password' }` ou `{ message: 'User not found' }`
 
-## 5. Deletar Conta (Delete Account)
+---
+
+## 5. Ativar Autenticação de Dois Fatores (Activate Two-Factor Authentication)
 
 - **Método:** POST
+- **Rota:** `/users/activate-twoFA`
+- **Descrição:** Ativa a autenticação de dois fatores para o usuário autenticado.
+- **Autenticação:** Necessita de um token JWT no header `Authorization`.
+- **Resposta:**
+  - **200 OK:** `{ message: 'Two-factor authentication activated' }`
+  - **409 Conflict:** `{ message: 'Two-factor authentication already enabled' }` ou `{ message: 'User not found' }`
+
+---
+
+## 6. Desativar Autenticação de Dois Fatores (Deactivate Two-Factor Authentication)
+
+- **Método:** POST
+- **Rota:** `/users/desativate-twoFA`
+- **Descrição:** Desativa a autenticação de dois fatores para o usuário autenticado. Não pode ser desativada para administradores.
+- **Autenticação:** Necessita de um token JWT no header `Authorization`.
+- **Resposta:**
+  - **200 OK:** `{ message: 'Two-factor authentication disabled' }`
+  - **409 Conflict:** `{ message: 'Two-factor authentication already disabled' }` ou `{ message: 'User not found' }` ou `{ message: 'Cannot disable two-factor authentication for admins' }`
+
+---
+
+## 7. Deletar Conta (Delete Account)
+
+- **Método:** DELETE
 - **Rota:** `/users/delete-account`
 - **Descrição:** Deleta a conta do usuário autenticado.
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
