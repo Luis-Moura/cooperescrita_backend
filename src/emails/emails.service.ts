@@ -4,6 +4,7 @@ import * as nodemailer from 'nodemailer';
 import { sendVerificationEmailHtml } from './html/sendVerificationEmailHtml';
 import { sendResetPasswordEmailHtml } from './html/sendResetPasswordEmailHtml';
 import { sendReportAlertAdminHtml } from './html/sendReportAlertAdminHtml';
+import { sendVerificationCodeHtml } from './html/sendVerificationCodeHtml';
 dotenv.config();
 
 @Injectable()
@@ -48,5 +49,10 @@ export class EmailsService {
   async sendReportAlertAdmin(report: string) {
     const html = sendReportAlertAdminHtml(report);
     await this.sendEmail(process.env.MAIN_ADMIN, 'Security Alert', html);
+  }
+
+  async sendVerificationCodeEmail(email: string, code: string) {
+    const html = sendVerificationCodeHtml(code);
+    await this.sendEmail(email, 'Código de Verificação', html);
   }
 }
