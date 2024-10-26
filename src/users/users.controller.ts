@@ -22,22 +22,28 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('/admin/find-by-email')
-  async findByEmail(@Body() findByEmailDto: FindByEmailDto) {
-    return await this.usersService.findByEmail(findByEmailDto);
+  async findByEmail(@Body() findByEmailDto: FindByEmailDto, @Request() req) {
+    const sender = req.user.email.toLowerCase();
+    return await this.usersService.findByEmail(findByEmailDto, sender);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('/admin/find-by-name')
-  async findByName(@Body() findByNameDto: FindByNameDto) {
-    return await this.usersService.findByName(findByNameDto);
+  async findByName(@Body() findByNameDto: FindByNameDto, @Request() req) {
+    const sender = req.user.email.toLowerCase();
+    return await this.usersService.findByName(findByNameDto, sender);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Delete('/admin/delete-user-by-email')
-  async deleteUserByEmail(@Body() findByEmailDto: FindByEmailDto) {
-    return await this.usersService.deleteUserByEmail(findByEmailDto);
+  async deleteUserByEmail(
+    @Body() findByEmailDto: FindByEmailDto,
+    @Request() req,
+  ) {
+    const sender = req.user.email.toLowerCase();
+    return await this.usersService.deleteUserByEmail(findByEmailDto, sender);
   }
 
   @UseGuards(JwtAuthGuard)

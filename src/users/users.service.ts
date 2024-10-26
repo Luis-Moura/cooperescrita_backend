@@ -7,12 +7,14 @@ import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
 import { FindByNameDto } from './dto/find-by-name.dto';
 import * as dotenv from 'dotenv';
+import { EmailsService } from 'src/emails/emails.service';
 dotenv.config();
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    private readonly emailService: EmailsService,
   ) {}
 
   async findByEmailUtil(email: string) {
@@ -27,7 +29,7 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(findByEmailDto: FindByEmailDto) {
+  async findByEmail(findByEmailDto: FindByEmailDto, sender: string) {
     const user = await this.findByEmailUtil(findByEmailDto.email);
 
     if (!user) {
@@ -35,6 +37,9 @@ export class UsersService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
+      const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
+      await this.emailService.sendReportAlertAdmin(report);
+
       throw new ConflictException(
         'Cannot acess, a segurance alert has been sent to the main admin',
       );
@@ -43,7 +48,7 @@ export class UsersService {
     return { ...user, password: undefined };
   }
 
-  async findByName(findByNameDto: FindByNameDto) {
+  async findByName(findByNameDto: FindByNameDto, sender: string) {
     const user = await this.usersRepository.findOne({
       where: { name: findByNameDto.name },
     });
@@ -53,6 +58,9 @@ export class UsersService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
+      const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
+      await this.emailService.sendReportAlertAdmin(report);
+
       throw new ConflictException(
         'Cannot acess, a segurance alert has been sent to the main admin',
       );
@@ -61,10 +69,13 @@ export class UsersService {
     return { ...user, password: undefined };
   }
 
-  async deleteUserByEmail(findByEmailDto: FindByEmailDto) {
+  async deleteUserByEmail(findByEmailDto: FindByEmailDto, sender: string) {
     const user = await this.findByEmailUtil(findByEmailDto.email);
 
     if (user.email === process.env.MAIN_ADMIN) {
+      const report = `O usuário ${sender} tentou DELETAR o usuário ${user.email}`;
+      await this.emailService.sendReportAlertAdmin(report);
+
       throw new ConflictException(
         'Cannot delete, a segurance alert has been sent to the main admin',
       );
@@ -108,18 +119,21 @@ export class UsersService {
   async deleteAccount(email: string) {
     const user = await this.findByEmailUtil(email);
 
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+
     if (user.email === process.env.MAIN_ADMIN) {
+      const report = `Houve uma tentativa de remoção do usuário ${user.email}`;
+      await this.emailService.sendReportAlertAdmin(report);
+
       throw new ConflictException(
         'Cannot delete main admin, a segurance alert has been sent to the main admin',
       );
     }
 
-    if (user) {
-      await this.usersRepository.delete(user.id);
+    await this.usersRepository.delete(user.id);
 
-      return { message: 'Account deleted successfully' };
-    }
-
-    throw new ConflictException('User not found');
+    return { message: 'Account deleted successfully' };
   }
 }
