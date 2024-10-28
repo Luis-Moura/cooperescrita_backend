@@ -230,6 +230,18 @@ export class AuthService {
     return { message: 'Logout successful' };
   }
 
+  async verifyToken(token: string) {
+    if (
+      !token ||
+      !this.jwtService.verify(token) ||
+      isTokenInvalidated(token, this.invalidatedTokens)
+    ) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    return { message: 'Token is valid' };
+  }
+
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const user = await this.usersService.findByEmailUtil(
       forgotPasswordDto.email.toLowerCase(),

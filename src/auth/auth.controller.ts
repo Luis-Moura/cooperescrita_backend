@@ -61,6 +61,13 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('verify-token')
+  async verifyToken(@Request() req) {
+    const token = req.headers['authorization'].split(' ')[1];
+    return this.authService.verifyToken(token);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('signout')
   @HttpCode(200)
   async logout(@Request() req) {
