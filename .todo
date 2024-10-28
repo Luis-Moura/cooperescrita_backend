@@ -25,5 +25,3 @@
 [x]Usuário poder deletar sua conta
 
 []Autenticação via OAuth: Integrar login com Google, GitHub ou outras plataformas (OAuth2).
-
-[]Registro de Atividades de Segurança: Logar eventos de segurança como mudanças de senha e tentativas de login falhas.

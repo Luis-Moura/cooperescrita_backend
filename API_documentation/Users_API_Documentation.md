@@ -1,5 +1,3 @@
-# Documentação da API de Usuários
-
 ## 1. Buscar Usuário por Email
 
 - **Método:** GET
@@ -11,7 +9,8 @@
     - `email`: string - Email do usuário a ser buscado.
 - **Resposta:**
   - **200 OK:** `{ id: ..., email: ..., name: ... }` (sem a senha)
-  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **403 Forbidden:** `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
 
 ---
 
@@ -26,7 +25,8 @@
     - `name`: string - Nome do usuário a ser buscado.
 - **Resposta:**
   - **200 OK:** `{ id: ..., email: ..., name: ... }` (sem a senha)
-  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **403 Forbidden:** `{ message: 'Cannot access, a security alert has been sent to the main admin' }`
 
 ---
 
@@ -41,7 +41,8 @@
     - `email`: string - Email do usuário a ser deletado.
 - **Resposta:**
   - **200 OK:** `{ message: 'User deleted successfully' }`
-  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot delete main admin, a security alert has been sent to the main admin' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **403 Forbidden:** `{ message: 'Cannot delete, a security alert has been sent to the main admin' }`
 
 ---
 
@@ -57,7 +58,8 @@
     - `newPassword`: string - Nova senha do usuário.
 - **Resposta:**
   - **200 OK:** `{ message: 'Password changed successfully' }`
-  - **409 Conflict:** `{ message: 'Invalid password' }` ou `{ message: 'User not found' }`
+  - **400 Bad Request:** `{ message: 'Invalid password' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
 
 ---
 
@@ -69,7 +71,8 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
 - **Resposta:**
   - **200 OK:** `{ message: 'Two-factor authentication activated' }`
-  - **409 Conflict:** `{ message: 'Two-factor authentication already enabled' }` ou `{ message: 'User not found' }`
+  - **409 Conflict:** `{ message: 'Two-factor authentication already enabled' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
 
 ---
 
@@ -81,7 +84,9 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
 - **Resposta:**
   - **200 OK:** `{ message: 'Two-factor authentication disabled' }`
-  - **409 Conflict:** `{ message: 'Two-factor authentication already disabled' }` ou `{ message: 'User not found' }` ou `{ message: 'Cannot disable two-factor authentication for admins' }`
+  - **409 Conflict:** `{ message: 'Two-factor authentication already disabled' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **403 Forbidden:** `{ message: 'Cannot disable two-factor authentication for admins' }`
 
 ---
 
@@ -93,4 +98,5 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
 - **Resposta:**
   - **200 OK:** `{ message: 'Account deleted successfully' }`
-  - **409 Conflict:** `{ message: 'User not found' }` ou `{ message: 'Cannot delete main admin, a security alert has been sent to the main admin' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **403 Forbidden:** `{ message: 'Cannot delete main admin, a security alert has been sent to the main admin' }`

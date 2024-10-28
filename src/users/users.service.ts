@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -37,15 +39,15 @@ export class UsersService {
     const user = await this.findByEmailUtil(findByEmailDto.email);
 
     if (!user) {
-      throw new ConflictException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
       const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
-      throw new ConflictException(
-        'Cannot acess, a segurance alert has been sent to the main admin',
+      throw new ForbiddenException(
+        'Cannot access, a security alert has been sent to the main admin',
       );
     }
 
@@ -58,15 +60,15 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new ConflictException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
       const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
-      throw new ConflictException(
-        'Cannot acess, a segurance alert has been sent to the main admin',
+      throw new ForbiddenException(
+        'Cannot access, a security alert has been sent to the main admin',
       );
     }
 
@@ -76,17 +78,17 @@ export class UsersService {
   async deleteUserByEmail(findByEmailDto: FindByEmailDto, sender: string) {
     const user = await this.findByEmailUtil(findByEmailDto.email);
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     if (user.email === process.env.MAIN_ADMIN) {
       const report = `O usuário ${sender} tentou DELETAR o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
-      throw new ConflictException(
-        'Cannot delete, a segurance alert has been sent to the main admin',
+      throw new ForbiddenException(
+        'Cannot delete, a security alert has been sent to the main admin',
       );
-    }
-
-    if (!user) {
-      throw new ConflictException('User not found');
     }
 
     await this.usersRepository.delete(user.id);
@@ -97,27 +99,24 @@ export class UsersService {
   async changePassword(changePasswordDto: ChangePasswordDto) {
     const user = await this.findByEmailUtil(changePasswordDto.email);
 
-    if (user) {
-      const isPasswordMatching = await bcrypt.compare(
-        changePasswordDto.oldPassword,
-        user.password,
-      );
-
-      if (isPasswordMatching) {
-        const hashedPassword = await bcrypt.hash(
-          changePasswordDto.newPassword,
-          10,
-        );
-        user.password = hashedPassword;
-        await this.usersRepository.save(user);
-
-        return { message: 'Password changed successfully' };
-      }
-
-      throw new ConflictException('Invalid password');
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
-    throw new ConflictException('User not found');
+    const isPasswordMatching = await bcrypt.compare(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordMatching) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    user.password = hashedPassword;
+    await this.usersRepository.save(user);
+
+    return { message: 'Password changed successfully' };
   }
 
   async activateTwoFA(email: string) {
@@ -145,7 +144,7 @@ export class UsersService {
     }
 
     if (user.role === 'admin') {
-      throw new ConflictException(
+      throw new ForbiddenException(
         'Cannot disable two-factor authentication for admins',
       );
     }
@@ -164,15 +163,15 @@ export class UsersService {
     const user = await this.findByEmailUtil(email);
 
     if (!user) {
-      throw new ConflictException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
       const report = `Houve uma tentativa de remoção do usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
-      throw new ConflictException(
-        'Cannot delete main admin, a segurance alert has been sent to the main admin',
+      throw new ForbiddenException(
+        'Cannot delete main admin, a security alert has been sent to the main admin',
       );
     }
 
