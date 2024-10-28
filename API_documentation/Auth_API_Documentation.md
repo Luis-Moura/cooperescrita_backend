@@ -159,3 +159,13 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
 - **Resposta:**
   - **200 OK:** `{ id: ..., email: ..., name: ... }`
+
+## 12. Verificar Token (Verify Token)
+
+- **Método:** GET
+- **Rota:** `/verify-token`
+- **Descrição:** Verifica a validade de um token JWT.
+- **Autenticação:** Necessita de um token JWT no header `Authorization`.
+- **Resposta:**
+  - **200 OK:** `{ message: 'Token is valid' }`
+  - **400 Bad Request:** `{ message: 'Invalid token' }`
