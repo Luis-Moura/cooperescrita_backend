@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -16,7 +18,6 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivateTwoFADto } from './dto/activateTwoFA.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -50,7 +51,7 @@ export class AuthService {
     }
 
     if (createUserDto.role === 'admin' && creatorRole !== 'admin') {
-      throw new ConflictException('Only admins can create admin accounts');
+      throw new ForbiddenException('Only admins can create admin accounts');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -79,7 +80,7 @@ export class AuthService {
   async verifyAccount(token: string) {
     try {
       if (!token) {
-        throw new ConflictException('Invalid token');
+        throw new BadRequestException('Invalid token');
       }
 
       const decoded: FindByEmailDto = this.jwtService.verify(token);
@@ -88,7 +89,7 @@ export class AuthService {
       );
 
       if (!user) {
-        throw new ConflictException('User not found');
+        throw new NotFoundException('User not found');
       }
 
       if (user.verified) {
@@ -99,7 +100,7 @@ export class AuthService {
       await this.usersRepository.save(user);
       return { message: 'Email verified successfully' };
     } catch (error) {
-      throw new ConflictException('Invalid or expired token');
+      throw new BadRequestException('Invalid or expired token');
     }
   }
 
@@ -107,6 +108,10 @@ export class AuthService {
     const user = await this.usersService.findByEmailUtil(
       signInDto.email.toLowerCase(),
     );
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     if (user.twoFA) {
       return {
@@ -134,7 +139,7 @@ export class AuthService {
     }
 
     if (user.lockUntil && user.lockUntil > new Date()) {
-      throw new ConflictException('Account is temporarily locked');
+      throw new ForbiddenException('Account is temporarily locked');
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -188,11 +193,11 @@ export class AuthService {
     }
 
     if (user.verificationCode !== verifyCodeDto.verificationCode) {
-      throw new ConflictException('Invalid verification code');
+      throw new BadRequestException('Invalid verification code');
     }
 
     if (user.verificationCodeExpires < new Date()) {
-      throw new ConflictException('Verification code expired');
+      throw new BadRequestException('Verification code expired');
     }
 
     user.verificationCode = null;
@@ -212,6 +217,10 @@ export class AuthService {
   }
 
   async logout(token: string) {
+    if (!token || !this.jwtService.verify(token)) {
+      throw new BadRequestException('Invalid token');
+    }
+
     const decodedToken = this.jwtService.decode(token) as { jti: string };
 
     if (decodedToken && decodedToken.jti) {
@@ -227,7 +236,7 @@ export class AuthService {
     );
 
     if (!user) {
-      throw new ConflictException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const token = this.jwtService.sign(
@@ -248,7 +257,7 @@ export class AuthService {
   async getResetPasswordForm(token: string) {
     try {
       if (!token) {
-        throw new ConflictException('Invalid token');
+        throw new BadRequestException('Invalid token');
       }
 
       if (
@@ -277,7 +286,7 @@ export class AuthService {
       }
 
       if (isTokenInvalidated(token, this.invalidatedTokens)) {
-        throw new ConflictException('Invalid or expired token');
+        throw new BadRequestException('Invalid or expired token');
       }
 
       const isSamePassword = await bcrypt.compare(newPassword, user.password);
@@ -293,7 +302,7 @@ export class AuthService {
 
       return { message: 'Password reset successfully' };
     } catch (error) {
-      throw new ConflictException('Invalid token or password');
+      throw new BadRequestException('Invalid token or password');
     }
   }
 }

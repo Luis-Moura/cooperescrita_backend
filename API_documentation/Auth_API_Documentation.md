@@ -12,7 +12,8 @@
     - `password`: string - Senha do usuário.
 - **Resposta:**
   - **200 OK:** `{ message: 'User registered successfully. Please check your email for verification instructions.' }`
-  - **409 Conflict:** `{ message: 'User already exists' }` ou `{ message: 'Invalid data' }`
+  - **409 Conflict:** `{ message: 'User already exists' }`
+  - **403 Forbidden:** `{ message: 'Only admins can create admin accounts' }`
 
 ---
 
@@ -30,7 +31,8 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization` com papel de admin.
 - **Resposta:**
   - **200 OK:** `{ message: 'User registered successfully. Please check your email for verification instructions.' }`
-  - **409 Conflict:** `{ message: 'User already exists' }` ou `{ message: 'Only admins can create admin accounts' }`
+  - **409 Conflict:** `{ message: 'User already exists' }`
+  - **403 Forbidden:** `{ message: 'Only admins can create admin accounts' }`
 
 ---
 
@@ -44,7 +46,9 @@
     - `token`: string - Token de verificação.
 - **Resposta:**
   - **200 OK:** `{ message: 'Email verified successfully' }`
-  - **409 Conflict:** `{ message: 'Invalid token' }` ou `{ message: 'User not found' }`
+  - **400 Bad Request:** `{ message: 'Invalid or expired token' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
+  - **409 Conflict:** `{ message: 'User already verified' }`
 
 ---
 
@@ -60,7 +64,7 @@
 - **Resposta:**
   - **200 OK:** `{ access_token: '...' }`
   - **200 OK:** `{ message: 'Verification code sent to your email' }` (caso o usuário tenha autenticação de duas etapas)
-  - **409 Conflict:** `{ message: 'User not verified' }` ou `{ message: 'Invalid credentials' }`
+  - **401 Unauthorized:** `{ message: 'Invalid credentials' }`
 
 ---
 
@@ -75,7 +79,8 @@
     - `verificationCode`: string - Código de verificação.
 - **Resposta:**
   - **200 OK:** `{ access_token: '...' }`
-  - **409 Conflict:** `{ message: 'Invalid verification code' }` ou `{ message: 'Verification code expired' }`
+  - **400 Bad Request:** `{ message: 'Invalid verification code' }` ou `{ message: 'Verification code expired' }`
+  - **404 Not Found:** `{ message: 'Invalid credentials' }`
 
 ---
 
@@ -87,6 +92,7 @@
 - **Autenticação:** Necessita de um token JWT no header `Authorization`.
 - **Resposta:**
   - **200 OK:** `{ message: 'Logout successful' }`
+  - **400 Bad Request:** `{ message: 'Invalid token' }`
 
 ---
 
@@ -100,7 +106,7 @@
     - `email`: string - Email do usuário.
 - **Resposta:**
   - **200 OK:** `{ message: 'Email sent with instructions to reset your password' }`
-  - **409 Conflict:** `{ message: 'User not found' }`
+  - **404 Not Found:** `{ message: 'User not found' }`
 
 ---
 
@@ -114,6 +120,7 @@
     - `token`: string - Token de redefinição.
 - **Resposta:**
   - **200 OK:** Renderiza a página de redefinição de senha ou redireciona se o token for inválido.
+  - **400 Bad Request:** `{ message: 'Invalid token' }`
 
 ---
 
@@ -129,7 +136,8 @@
     - `newPassword`: string - Nova senha do usuário.
 - **Resposta:**
   - **200 OK:** `{ message: 'Password reset successfully' }`
-  - **409 Conflict:** `{ message: 'Invalid or expired token' }` ou `{ message: 'Password cannot be the same' }`
+  - **400 Bad Request:** `{ message: 'Invalid or expired token' }` ou `{ message: 'Invalid token or password' }`
+  - **409 Conflict:** `{ message: 'Password cannot be the same' }`
 
 ---
 
