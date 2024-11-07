@@ -17,6 +17,8 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors(); // Habilita o CORS globalmente
+
   app.setBaseViewsDir(join(__dirname, './', 'views'));
   app.setViewEngine('hbs');
   hbs.registerPartials(join(__dirname, './', 'views/partials'));
