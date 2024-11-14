@@ -1,4 +1,4 @@
-import { Redacao } from 'src/redacoes/entities/redacoe.entity';
+import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import {
   Column,
   CreateDateColumn,

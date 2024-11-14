@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedacoesModule } from './redacoes/redacoes.module';
-import { Redacao } from './redacoes/entities/redacoe.entity';
+import { Redacao } from './redacoes/entities/redacao.entity';
 dotenv.config();
 
 @Module({

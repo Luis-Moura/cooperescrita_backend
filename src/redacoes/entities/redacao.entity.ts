@@ -18,7 +18,7 @@ export class Redacao {
   @Column()
   topic: string;
 
-  @Column()
+  @Column({ type: 'text' })
   content: string;
 
   @CreateDateColumn()
