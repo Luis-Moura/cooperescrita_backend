@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedacoesModule } from './redacoes/redacoes.module';
+import { Redacao } from './redacoes/entities/redacoe.entity';
 dotenv.config();
 
 @Module({
@@ -26,7 +27,7 @@ dotenv.config();
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User],
+      entities: [User, Redacao],
       synchronize: true,
     }),
 

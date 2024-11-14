@@ -1,7 +1,9 @@
+import { Redacao } from 'src/redacoes/entities/redacoe.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -46,4 +48,7 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Redacao, (redacao) => redacao.user)
+  redacoes: Redacao[];
 }
