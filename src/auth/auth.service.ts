@@ -104,6 +104,8 @@ export class AuthService {
     }
   }
 
+  // fazer aqui a renderização da página de verificação de email
+
   async signIn(signInDto: SignInDto) {
     const user = await this.usersService.findByEmailUtil(
       signInDto.email.toLowerCase(),

@@ -10,6 +10,7 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RedacoesModule } from './redacoes/redacoes.module';
 dotenv.config();
 
 @Module({
@@ -34,6 +35,7 @@ dotenv.config();
     EmailsModule,
     TasksModule,
     ScheduleModule.forRoot(),
+    RedacoesModule,
   ],
   controllers: [],
   providers: [TasksService],
