@@ -10,10 +10,10 @@ export class Redacao {
   title: string;
 
   @Column()
-  content: string;
+  topic: string;
 
   @Column()
-  topic: string;
+  content: string;
 
   @Column()
   createdAt: Date;

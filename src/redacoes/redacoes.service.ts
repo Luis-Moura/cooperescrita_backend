@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RedacaoDto } from './dto/redacao.dto';
+import { CreateRedacaoDto } from './dto/create-redacao.dto';
 
 @Injectable()
 export class RedacoesService {
-  create(redacaoDto: RedacaoDto) {
+  create(redacaoDto: CreateRedacaoDto) {
     return 'This action adds a new redacoe' + redacaoDto;
   }
 }
