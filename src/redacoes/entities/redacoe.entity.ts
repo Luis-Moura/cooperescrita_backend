@@ -1,12 +1,18 @@
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Redacao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   title: string;
 
   @Column()
@@ -15,11 +21,8 @@ export class Redacao {
   @Column()
   content: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
-
-  @Column()
-  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.redacoes, { onDelete: 'CASCADE' })
   user: User;

@@ -1,13 +1,17 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
 import { CreateRedacaoDto } from './dto/create-redacao.dto';
 import { RedacoesService } from './redacoes.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@Controller('redacoes')
+@Controller('redacao')
 export class RedacoesController {
   constructor(private readonly redacoesService: RedacoesService) {}
 
-  @Post()
-  create(@Body() redacaoDTo: CreateRedacaoDto) {
-    return this.redacoesService.create(redacaoDTo);
+  @UseGuards(JwtAuthGuard)
+  @Post('create-redacao')
+  create(@Body() redacaoDTo: CreateRedacaoDto, @Request() req) {
+    const userId = req.user.userId;
+
+    return this.redacoesService.create(redacaoDTo, userId);
   }
 }
