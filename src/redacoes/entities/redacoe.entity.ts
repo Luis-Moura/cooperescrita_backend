@@ -21,6 +21,6 @@ export class Redacao {
   @Column()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.redacoes)
+  @ManyToOne(() => User, (user) => user.redacoes, { onDelete: 'CASCADE' })
   user: User;
 }
