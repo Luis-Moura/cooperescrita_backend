@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRedacaoDto } from './dto/create-redacao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Redacao } from './entities/redacoe.entity';
+import { Redacao } from './entities/redacao.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -22,5 +22,17 @@ export class RedacoesService {
     });
 
     return await this.redacaoRepository.save(redacao);
+  }
+
+  async getRedacoes(userId: string) {
+    if (!userId) {
+      throw new Error('User not found');
+    }
+
+    const redacoes = await this.redacaoRepository.find({
+      where: { user: { id: userId } },
+    });
+
+    return redacoes;
   }
 }
