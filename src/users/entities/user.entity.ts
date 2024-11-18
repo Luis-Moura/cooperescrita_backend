@@ -5,49 +5,53 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string; // Alterado para string para UUID
+  id: string;
 
   // Informações Básicas do Usuário
-  @Column()
+  @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 150, unique: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100 })
   password: string;
 
   // Status do Usuário
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   verified: boolean;
 
   @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
   role: string;
 
-  @Column({ nullable: true, default: false })
+  @Column({ type: 'boolean', nullable: true, default: false })
   twoFA: boolean;
 
   // Controle de Segurança e Login
-  @Column({ default: 0 })
+  @Column({ type: 'int', default: 0 })
   failedLoginAttempts: number;
 
   @Column({ type: 'timestamp', nullable: true })
   lockUntil: Date | null;
 
   // Verificação e Data de Criação
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   verificationCode: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   verificationCodeExpires: Date;
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Redacao, (redacao) => redacao.user, { cascade: true })
   redacoes: Redacao[];
