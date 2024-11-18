@@ -16,7 +16,10 @@ export class RedacoesController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create-redacao')
-  create(@Body() redacaoDTo: createDefinitiveRedacaoDto, @Request() req) {
+  createDefinitiveRedacao(
+    @Body() redacaoDTo: createDefinitiveRedacaoDto,
+    @Request() req,
+  ) {
     const userId = req.user.userId;
 
     return this.redacoesService.createDefinitiveRedacao(redacaoDTo, userId);

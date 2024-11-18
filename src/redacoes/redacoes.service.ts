@@ -36,7 +36,7 @@ export class RedacoesService {
 
     const redacao: Redacao = this.redacaoRepository.create({
       ...redacaoDto,
-      status: 'enviada',
+      status: 'enviado',
       user: { id: userId },
     });
 
