@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateRedacaoDto } from './dto/create-redacao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redacao } from './entities/redacao.entity';
@@ -15,7 +19,7 @@ export class RedacoesService {
 
   async create(redacaoDto: CreateRedacaoDto, userId: string): Promise<Redacao> {
     if (!userId) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const user: User = await this.userRepository.findOne({
@@ -23,7 +27,7 @@ export class RedacoesService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const redacao: Redacao = this.redacaoRepository.create({
@@ -31,12 +35,16 @@ export class RedacoesService {
       user: { id: userId },
     });
 
-    return await this.redacaoRepository.save(redacao);
+    try {
+      return await this.redacaoRepository.save(redacao);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getRedacoes(userId: string): Promise<Redacao[]> {
     if (!userId) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const user: User = await this.userRepository.findOne({
@@ -44,23 +52,27 @@ export class RedacoesService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const redacoes: Redacao[] = await this.redacaoRepository.find({
-      where: { user: { id: userId } },
-    });
+    try {
+      const redacoes: Redacao[] = await this.redacaoRepository.find({
+        where: { user: { id: userId } },
+      });
 
-    if (redacoes.length === 0) {
-      throw new Error('Redacoes not found');
+      if (redacoes.length === 0) {
+        throw new NotFoundException('Redacoes not found');
+      }
+
+      return redacoes;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-
-    return redacoes;
   }
 
   async getRedacaoById(userId: string, id: number) {
     if (!userId) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const user: User = await this.userRepository.findOne({
@@ -68,23 +80,27 @@ export class RedacoesService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const redacao: Redacao = await this.redacaoRepository.findOne({
-      where: { id, user: { id: userId } },
-    });
+    try {
+      const redacao: Redacao = await this.redacaoRepository.findOne({
+        where: { id, user: { id: userId } },
+      });
 
-    if (!redacao) {
-      throw new Error('Redacao not found');
+      if (!redacao) {
+        throw new NotFoundException('Redacao not found');
+      }
+
+      return redacao;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-
-    return redacao;
   }
 
   async getRedacaoByStatus(userId: string, status: 'rascunho' | 'enviado') {
     if (!userId) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const user: User = await this.userRepository.findOne({
@@ -92,17 +108,21 @@ export class RedacoesService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const redacoes: Redacao[] = await this.redacaoRepository.find({
-      where: { user: { id: userId }, status: status },
-    });
+    try {
+      const redacoes: Redacao[] = await this.redacaoRepository.find({
+        where: { user: { id: userId }, status: status },
+      });
 
-    if (redacoes.length === 0) {
-      throw new Error('Redacoes not found');
+      if (redacoes.length === 0) {
+        throw new NotFoundException('Redacoes not found');
+      }
+
+      return redacoes;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-
-    return redacoes;
   }
 }
