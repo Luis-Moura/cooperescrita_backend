@@ -6,7 +6,7 @@ import {
   Request,
   Get,
 } from '@nestjs/common';
-import { CreateRedacaoDto } from './dto/create-redacao.dto';
+import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { RedacoesService } from './redacoes.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -16,10 +16,10 @@ export class RedacoesController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create-redacao')
-  create(@Body() redacaoDTo: CreateRedacaoDto, @Request() req) {
+  create(@Body() redacaoDTo: createDefinitiveRedacaoDto, @Request() req) {
     const userId = req.user.userId;
 
-    return this.redacoesService.create(redacaoDTo, userId);
+    return this.redacoesService.createDefinitiveRedacao(redacaoDTo, userId);
   }
 
   @UseGuards(JwtAuthGuard)

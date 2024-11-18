@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 
-export class CreateRedacaoDto {
+export class createDefinitiveRedacaoDto {
   @IsOptional()
   @IsString()
   title: string;

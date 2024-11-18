@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateRedacaoDto } from './dto/create-redacao.dto';
+import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redacao } from './entities/redacao.entity';
 import { Repository } from 'typeorm';
@@ -18,7 +18,10 @@ export class RedacoesService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(redacaoDto: CreateRedacaoDto, userId: string): Promise<Redacao> {
+  async createDefinitiveRedacao(
+    redacaoDto: createDefinitiveRedacaoDto,
+    userId: string,
+  ): Promise<Redacao> {
     if (!userId) {
       throw new NotFoundException('User not found');
     }
@@ -33,6 +36,7 @@ export class RedacoesService {
 
     const redacao: Redacao = this.redacaoRepository.create({
       ...redacaoDto,
+      status: 'enviada',
       user: { id: userId },
     });
 
@@ -42,6 +46,8 @@ export class RedacoesService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  // rota de salvar redação como rascunho
 
   async getRedacoes(userId: string): Promise<Redacao[]> {
     if (!userId) {
