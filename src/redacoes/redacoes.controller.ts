@@ -29,4 +29,13 @@ export class RedacoesController {
 
     return this.redacoesService.getRedacoes(userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-redacao/:id')
+  getRedacaoById(@Request() req) {
+    const userId = req.user.userId;
+    const id = req.params.id;
+
+    return this.redacoesService.getRedacaoById(userId, id);
+  }
 }

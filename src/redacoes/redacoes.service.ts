@@ -57,4 +57,28 @@ export class RedacoesService {
 
     return redacoes;
   }
+
+  async getRedacaoById(userId: any, id: number) {
+    if (!userId) {
+      throw new Error('User not found');
+    }
+
+    const user: User = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const redacao: Redacao = await this.redacaoRepository.findOne({
+      where: { id, user: { id: userId } },
+    });
+
+    if (!redacao) {
+      throw new Error('Redacao not found');
+    }
+
+    return redacao;
+  }
 }
