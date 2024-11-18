@@ -31,11 +31,20 @@ export class RedacoesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-redacao/:id')
+  @Get('get-redacao-id/:id')
   getRedacaoById(@Request() req) {
     const userId = req.user.userId;
     const id = req.params.id;
 
     return this.redacoesService.getRedacaoById(userId, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-redacao-status/:status')
+  getRedacaoByStatus(@Request() req) {
+    const userId: string = req.user.userId;
+    const status: 'rascunho' | 'enviado' = req.params.status;
+
+    return this.redacoesService.getRedacaoByStatus(userId, status);
   }
 }

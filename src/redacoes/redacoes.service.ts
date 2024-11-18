@@ -58,7 +58,7 @@ export class RedacoesService {
     return redacoes;
   }
 
-  async getRedacaoById(userId: any, id: number) {
+  async getRedacaoById(userId: string, id: number) {
     if (!userId) {
       throw new Error('User not found');
     }
@@ -80,5 +80,29 @@ export class RedacoesService {
     }
 
     return redacao;
+  }
+
+  async getRedacaoByStatus(userId: string, status: 'rascunho' | 'enviado') {
+    if (!userId) {
+      throw new Error('User not found');
+    }
+
+    const user: User = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const redacoes: Redacao[] = await this.redacaoRepository.find({
+      where: { user: { id: userId }, status: status },
+    });
+
+    if (redacoes.length === 0) {
+      throw new Error('Redacoes not found');
+    }
+
+    return redacoes;
   }
 }
