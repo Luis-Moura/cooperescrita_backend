@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -12,17 +13,23 @@ export class Redacao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 200, nullable: true })
   title: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 200 })
   topic: string;
 
   @Column({ type: 'text' })
   content: string;
 
+  @Column({ type: 'enum', enum: ['rascunho', 'enviado'], default: 'rascunho' })
+  status: string;
+
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.redacoes, { onDelete: 'CASCADE' })
   user: User;
