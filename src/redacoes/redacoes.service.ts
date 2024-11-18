@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateRedacaoDto } from './dto/create-redacao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -55,19 +56,15 @@ export class RedacoesService {
       throw new NotFoundException('User not found');
     }
 
-    try {
-      const redacoes: Redacao[] = await this.redacaoRepository.find({
-        where: { user: { id: userId } },
-      });
+    const redacoes: Redacao[] = await this.redacaoRepository.find({
+      where: { user: { id: userId } },
+    });
 
-      if (redacoes.length === 0) {
-        throw new NotFoundException('Redacoes not found');
-      }
-
-      return redacoes;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
+    if (redacoes.length === 0) {
+      throw new NotFoundException('Redacoes not found');
     }
+
+    return redacoes;
   }
 
   async getRedacaoById(userId: string, id: number) {
@@ -83,19 +80,19 @@ export class RedacoesService {
       throw new NotFoundException('User not found');
     }
 
-    try {
-      const redacao: Redacao = await this.redacaoRepository.findOne({
-        where: { id, user: { id: userId } },
-      });
-
-      if (!redacao) {
-        throw new NotFoundException('Redacao not found');
-      }
-
-      return redacao;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('Invalid id');
     }
+
+    const redacao: Redacao = await this.redacaoRepository.findOne({
+      where: { id, user: { id: userId } },
+    });
+
+    if (!redacao) {
+      throw new NotFoundException('Redacao not found');
+    }
+
+    return redacao;
   }
 
   async getRedacaoByStatus(userId: string, status: 'rascunho' | 'enviado') {
@@ -111,18 +108,18 @@ export class RedacoesService {
       throw new NotFoundException('User not found');
     }
 
-    try {
-      const redacoes: Redacao[] = await this.redacaoRepository.find({
-        where: { user: { id: userId }, status: status },
-      });
-
-      if (redacoes.length === 0) {
-        throw new NotFoundException('Redacoes not found');
-      }
-
-      return redacoes;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
+    if (status !== 'rascunho' && status !== 'enviado') {
+      throw new BadRequestException('Invalid status');
     }
+
+    const redacoes: Redacao[] = await this.redacaoRepository.find({
+      where: { user: { id: userId }, status: status },
+    });
+
+    if (redacoes.length === 0) {
+      throw new NotFoundException('Redacoes not found');
+    }
+
+    return redacoes;
   }
 }
