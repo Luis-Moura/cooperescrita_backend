@@ -35,7 +35,7 @@ export class EmailsService {
   }
 
   async sendVerificationEmail(email: string, token: string) {
-    const url = `${process.env.BASE_URL}/verify-account?token=${token}`;
+    const url = `${process.env.BASE_URL_FRONTEND}/redirect/verify-account?token=${token}`;
     const html = sendVerificationEmailHtml(url);
     await this.sendEmail(email, 'Verificação de Conta', html);
   }
