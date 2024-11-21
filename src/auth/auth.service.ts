@@ -104,8 +104,6 @@ export class AuthService {
     }
   }
 
-  // fazer aqui a renderização da página de verificação de email
-
   async signIn(signInDto: SignInDto) {
     const user = await this.usersService.findByEmailUtil(
       signInDto.email.toLowerCase(),
@@ -266,25 +264,6 @@ export class AuthService {
     return {
       message: 'Email sent with instructions to reset your password',
     };
-  }
-
-  async getResetPasswordForm(token: string) {
-    try {
-      if (!token) {
-        throw new BadRequestException('Invalid token');
-      }
-
-      if (
-        isTokenInvalidated(token, this.invalidatedTokens) ||
-        !this.jwtService.verify(token)
-      ) {
-        return { redirectUrl: '/password-created' };
-      }
-
-      return { view: 'reset-password', token };
-    } catch (err) {
-      throw new ConflictException('Invalid token');
-    }
   }
 
   async postResetPassword(resetPasswordDto: ResetPasswordDto) {

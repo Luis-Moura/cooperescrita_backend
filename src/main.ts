@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as hbs from 'hbs';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -18,12 +16,6 @@ async function bootstrap() {
   );
 
   app.enableCors(); // Habilita o CORS globalmente
-
-  app.setBaseViewsDir(join(__dirname, './', 'views'));
-  app.setViewEngine('hbs');
-  hbs.registerPartials(join(__dirname, './', 'views/partials'));
-
-  app.useStaticAssets(join(__dirname, './', '/views/svg'));
 
   await app.listen(3000);
 }

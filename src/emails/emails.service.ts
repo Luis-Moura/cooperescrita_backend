@@ -41,7 +41,7 @@ export class EmailsService {
   }
 
   async sendResetPasswordEmail(email: string, token: string) {
-    const url = `${process.env.BASE_URL}/reset-password?token=${token}`;
+    const url = `${process.env.BASE_URL_FRONTEND}/redirect/reset-password?token=${token}`;
     const html = sendResetPasswordEmailHtml(url);
     await this.sendEmail(email, 'Redefinição de Senha', html);
   }

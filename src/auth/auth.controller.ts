@@ -5,12 +5,9 @@ import {
   HttpCode,
   Post,
   Query,
-  Render,
   Request,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -41,6 +38,7 @@ export class AuthController {
     return this.authService.signUp(createUserDto, creatorRole);
   }
 
+  //aqui
   @Get('verify-account')
   @HttpCode(200)
   async verifyAccount(@Query('token') token: string) {
@@ -67,6 +65,11 @@ export class AuthController {
     return this.authService.verifyToken(token);
   }
 
+  @Get('verify-reset-token')
+  async verifyResetToken(@Query('token') token: string) {
+    return this.authService.verifyToken(token);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('signout')
   @HttpCode(200)
@@ -81,17 +84,6 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
-  @Get('reset-password')
-  async resetPasswordForm(@Query('token') token: string, @Res() res: Response) {
-    const result = await this.authService.getResetPasswordForm(token);
-
-    if (result.redirectUrl) {
-      return res.redirect(result.redirectUrl);
-    }
-
-    return res.render('reset-password', { token });
-  }
-
   @Post('reset-password')
   @HttpCode(200)
   async postResetPassword(
@@ -99,12 +91,6 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
   ) {
     return this.authService.postResetPassword({ token, ...resetPasswordDto });
-  }
-
-  @Get('password-created')
-  @Render('password-created')
-  passwordCreated() {
-    return;
   }
 
   @UseGuards(JwtAuthGuard)
