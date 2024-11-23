@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,6 +19,6 @@ async function bootstrap() {
 
   app.enableCors(); // Habilita o CORS globalmente
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
