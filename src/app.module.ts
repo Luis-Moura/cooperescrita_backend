@@ -10,6 +10,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { BullModule } from '@nestjs/bull';
 dotenv.config();
 
 @Module({
@@ -24,6 +25,13 @@ dotenv.config();
       // database: process.env.DATABASE_NAME,
       entities: [User, Redacao],
       synchronize: true,
+    }),
+
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
     }),
 
     UsersModule,
