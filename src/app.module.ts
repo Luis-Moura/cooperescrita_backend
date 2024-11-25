@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,8 +11,9 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { BullModule } from '@nestjs/bull';
 dotenv.config();
+
+const redisUrl = new URL(process.env.REDIS_URL || '');
 
 @Module({
   imports: [
@@ -29,8 +31,9 @@ dotenv.config();
 
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
-        port: 6379,
+        host: redisUrl.hostname,
+        port: parseInt(redisUrl.port, 10),
+        password: redisUrl.password || undefined,
       },
     }),
 
