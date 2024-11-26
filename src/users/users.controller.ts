@@ -55,10 +55,7 @@ export class UsersController {
   ) {
     const email = req.user.email.toLowerCase();
 
-    return await this.usersService.changePassword({
-      email,
-      ...changePasswordDto,
-    });
+    return await this.usersService.changePassword(changePasswordDto, email);
   }
 
   @UseGuards(JwtAuthGuard)

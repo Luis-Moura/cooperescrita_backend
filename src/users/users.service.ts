@@ -96,8 +96,8 @@ export class UsersService {
     return { message: 'User deleted successfully' };
   }
 
-  async changePassword(changePasswordDto: ChangePasswordDto) {
-    const user = await this.findByEmailUtil(changePasswordDto.email);
+  async changePassword(changePasswordDto: ChangePasswordDto, email: string) {
+    const user = await this.findByEmailUtil(email);
 
     if (!user) {
       throw new NotFoundException('User not found');
