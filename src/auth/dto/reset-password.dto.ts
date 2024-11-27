@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   MinLength,
   MaxLength,
@@ -7,9 +8,15 @@ import {
 } from 'class-validator';
 
 export class ResetPasswordDto {
+  @ApiProperty({ description: 'Token de redefinição de senha' })
   @IsNotEmpty()
   token: string;
 
+  @ApiProperty({
+    description: 'Nova senha do usuário',
+    minLength: 8,
+    maxLength: 20,
+  })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @MaxLength(20, { message: 'Password must be at most 20 characters long' })
   @Matches(/(?=.*[A-Z])/, {

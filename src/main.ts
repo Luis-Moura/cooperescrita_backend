@@ -23,7 +23,6 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
       .setTitle('aplicação cooperescrita backend')
-      .setDescription('API description')
       .setVersion('1.0')
       .addBearerAuth()
       .build();
