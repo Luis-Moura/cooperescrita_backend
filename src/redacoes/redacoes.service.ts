@@ -52,10 +52,16 @@ export class RedacoesService {
 
   async getRedacoes(
     userId: string,
+    limit: number,
+    offset: number,
     orderQuery: IOrderQuery,
   ): Promise<Redacao[]> {
     if (!userId) {
       throw new NotFoundException('User not found');
+    }
+
+    if (isNaN(limit) || isNaN(offset) || !limit || !offset) {
+      throw new BadRequestException('Invalid limit or offset');
     }
 
     const user: User = await this.userRepository.findOne({
@@ -90,6 +96,8 @@ export class RedacoesService {
     const redacoes: Redacao[] = await this.redacaoRepository.find({
       where,
       order,
+      take: limit,
+      skip: offset,
     });
 
     if (redacoes.length === 0) {

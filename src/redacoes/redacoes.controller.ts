@@ -51,13 +51,18 @@ export class RedacoesController {
   })
   getRedacoes(
     @Request() req,
+    @Query('limit') limit: number,
+    @Query('offset') offset: number,
     @Query('order') order?: 'crescente' | 'decrescente',
     @Query('statusEnvio') statusEnvio?: 'rascunho' | 'enviada',
     @Query('statusCorrecao') statusCorrecao?: 'corrigidas' | 'nao-corrigidas',
   ) {
     const userId = req.user.userId;
+    const maxLimit = 50;
 
-    return this.redacoesService.getRedacoes(userId, {
+    limit = limit > maxLimit ? maxLimit : limit;
+
+    return this.redacoesService.getRedacoes(userId, limit, offset, {
       order,
       statusEnvio,
       statusCorrecao,
