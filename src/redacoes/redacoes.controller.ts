@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -38,6 +39,7 @@ export class RedacoesController {
     return this.redacoesService.createDefinitiveRedacao(redacaoDTo, userId);
   }
 
+  // criação, não corrigidas, corrigidas, rascunhos, enviadas por definitivo
   @UseGuards(JwtAuthGuard)
   @Get('get-redacoes')
   @ApiBearerAuth()
@@ -47,14 +49,23 @@ export class RedacoesController {
     status: 404,
     description: 'Usuário ou redações não encontradas.',
   })
-  getRedacoes(@Request() req) {
+  getRedacoes(
+    @Request() req,
+    @Query('order') order?: 'crescente' | 'decrescente',
+    @Query('statusEnvio') statusEnvio?: 'rascunho' | 'enviada',
+    @Query('statusCorrecao') statusCorrecao?: 'corrigidas' | 'nao-corrigidas',
+  ) {
     const userId = req.user.userId;
 
-    return this.redacoesService.getRedacoes(userId);
+    return this.redacoesService.getRedacoes(userId, {
+      order,
+      statusEnvio,
+      statusCorrecao,
+    });
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-redacao-id/:id')
+  @Get('get-redacao/:id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Buscar uma redação específica pelo ID' })
   @ApiParam({ name: 'id', description: 'ID da redação' })
@@ -69,26 +80,5 @@ export class RedacoesController {
     const id = req.params.id;
 
     return this.redacoesService.getRedacaoById(userId, id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('get-redacao-status/:status')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Buscar redações pelo status' })
-  @ApiParam({
-    name: 'status',
-    description: 'Status da redação (rascunho ou enviado)',
-  })
-  @ApiResponse({ status: 200, description: 'Redações encontradas.' })
-  @ApiResponse({ status: 400, description: 'Status inválido.' })
-  @ApiResponse({
-    status: 404,
-    description: 'Usuário ou redações não encontradas.',
-  })
-  getRedacaoByStatus(@Request() req) {
-    const userId: string = req.user.userId;
-    const status: 'rascunho' | 'enviado' = req.params.status;
-
-    return this.redacoesService.getRedacaoByStatus(userId, status);
   }
 }

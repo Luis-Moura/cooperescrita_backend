@@ -1,14 +1,15 @@
 import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
   BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
-import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Redacao } from './entities/redacao.entity';
-import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
+import { Redacao } from './entities/redacao.entity';
+import { IOrderQuery } from './interfaces/IOrderQuery';
 
 @Injectable()
 export class RedacoesService {
@@ -36,7 +37,7 @@ export class RedacoesService {
 
     const redacao: Redacao = this.redacaoRepository.create({
       ...redacaoDto,
-      status: 'enviado',
+      statusEnvio: 'enviado',
       user: { id: userId },
     });
 
@@ -49,7 +50,10 @@ export class RedacoesService {
 
   // rota de salvar redação como rascunho
 
-  async getRedacoes(userId: string): Promise<Redacao[]> {
+  async getRedacoes(
+    userId: string,
+    orderQuery: IOrderQuery,
+  ): Promise<Redacao[]> {
     if (!userId) {
       throw new NotFoundException('User not found');
     }
@@ -62,8 +66,30 @@ export class RedacoesService {
       throw new NotFoundException('User not found');
     }
 
+    let order = {};
+    const where: any = { user: { id: userId } };
+
+    if (orderQuery.order) {
+      order =
+        orderQuery.order === 'crescente'
+          ? { createdAt: 'ASC' }
+          : { createdAt: 'DESC' };
+    }
+
+    if (orderQuery.statusEnvio) {
+      where.statusEnvio = orderQuery.statusEnvio;
+    }
+
+    if (orderQuery.statusCorrecao) {
+      where.statusCorrecao =
+        orderQuery.statusCorrecao === 'corrigidas'
+          ? 'corrigida'
+          : 'nao_corrigida';
+    }
+
     const redacoes: Redacao[] = await this.redacaoRepository.find({
-      where: { user: { id: userId } },
+      where,
+      order,
     });
 
     if (redacoes.length === 0) {
@@ -99,33 +125,5 @@ export class RedacoesService {
     }
 
     return redacao;
-  }
-
-  async getRedacaoByStatus(userId: string, status: 'rascunho' | 'enviado') {
-    if (!userId) {
-      throw new NotFoundException('User not found');
-    }
-
-    const user: User = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    if (status !== 'rascunho' && status !== 'enviado') {
-      throw new BadRequestException('Invalid status');
-    }
-
-    const redacoes: Redacao[] = await this.redacaoRepository.find({
-      where: { user: { id: userId }, status: status },
-    });
-
-    if (redacoes.length === 0) {
-      throw new NotFoundException('Redacoes not found');
-    }
-
-    return redacoes;
   }
 }
