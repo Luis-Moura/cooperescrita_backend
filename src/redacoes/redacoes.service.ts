@@ -60,7 +60,12 @@ export class RedacoesService {
       throw new NotFoundException('User not found');
     }
 
-    if (isNaN(limit) || isNaN(offset) || !limit || !offset) {
+    if (
+      isNaN(limit) ||
+      isNaN(offset) ||
+      limit === undefined ||
+      offset === undefined
+    ) {
       throw new BadRequestException('Invalid limit or offset');
     }
 
