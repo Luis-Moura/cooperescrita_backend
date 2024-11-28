@@ -23,7 +23,14 @@ export class Redacao {
   content: string;
 
   @Column({ type: 'enum', enum: ['rascunho', 'enviado'], default: 'rascunho' })
-  status: string;
+  statusEnvio: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['nao_corrigida', 'corrigida'],
+    default: 'nao_corrigida',
+  })
+  statusCorrecao: string;
 
   @CreateDateColumn()
   createdAt: Date;
