@@ -20,6 +20,7 @@ import { GetRedacoesDecoratorsDocs } from './decorators/getRedacoesDocs.decorato
 import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { RedacoesService } from './redacoes.service';
 import { createDraftRedacaoDto } from './dto/createDraftRedacaoDto';
+import { IOrderQuery } from './interfaces/IOrderQuery';
 
 @ApiTags('redacoes')
 @Controller('redacao')
@@ -82,20 +83,14 @@ export class RedacoesController {
     @Request() req,
     @Query('limit') limit: number,
     @Query('offset') offset: number,
-    @Query('order') order?: 'crescente' | 'decrescente',
-    @Query('statusEnvio') statusEnvio?: 'rascunho' | 'enviada',
-    @Query('statusCorrecao') statusCorrecao?: 'corrigidas' | 'nao-corrigidas',
+    @Query() orderQuery: IOrderQuery,
   ) {
     const userId = req.user.userId;
     const maxLimit = 50;
 
     limit = limit > maxLimit ? maxLimit : limit;
 
-    return this.redacoesService.getRedacoes(userId, limit, offset, {
-      order,
-      statusEnvio,
-      statusCorrecao,
-    });
+    return this.redacoesService.getRedacoes(userId, limit, offset, orderQuery);
   }
 
   @UseGuards(JwtAuthGuard)
