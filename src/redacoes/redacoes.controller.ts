@@ -11,6 +11,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -18,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetRedacoesDecoratorsDocs } from './decorators/getRedacoesDocs.decorator';
 import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { RedacoesService } from './redacoes.service';
+import { createDraftRedacaoDto } from './dto/createDraftRedacaoDto';
 
 @ApiTags('redacoes')
 @Controller('redacao')
@@ -27,17 +29,50 @@ export class RedacoesController {
   @UseGuards(JwtAuthGuard)
   @Post('create-redacao')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Criar uma nova redação' })
+  @ApiOperation({
+    summary:
+      'Criar uma nova redação ou atualiza uma redacao existente(caso não tenha sido enviada em definitivo)',
+  })
   @ApiResponse({ status: 201, description: 'Redação criada com sucesso.' })
-  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário ou rascunho não encontrados.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Redação já enviada em definitivo.',
+  })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({
+    name: 'redacaoId',
+    required: false,
+    description: 'ID de uma redação que esteja em estado de rascunho',
+  })
   createDefinitiveRedacao(
     @Body() redacaoDTo: createDefinitiveRedacaoDto,
     @Request() req,
+    @Query('redacaoId') redacaoId?: number,
   ) {
     const userId = req.user.userId;
 
-    return this.redacoesService.createDefinitiveRedacao(redacaoDTo, userId);
+    return this.redacoesService.createDefinitiveRedacao(
+      redacaoDTo,
+      userId,
+      redacaoId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create-draft')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Criar um rascunho de redação' })
+  @ApiResponse({ status: 201, description: 'Rascunho criado com sucesso.' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  createDraft(@Request() req, @Body() createDraft: createDraftRedacaoDto) {
+    const userId = req.user.userId;
+
+    return this.redacoesService.createDraft(userId, createDraft);
   }
 
   @UseGuards(JwtAuthGuard)

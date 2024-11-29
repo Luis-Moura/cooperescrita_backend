@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { Redacao } from './entities/redacao.entity';
 import { IOrderQuery } from './interfaces/IOrderQuery';
+import { createDraftRedacaoDto } from './dto/createDraftRedacaoDto';
 
 @Injectable()
 export class RedacoesService {
@@ -22,6 +23,56 @@ export class RedacoesService {
   async createDefinitiveRedacao(
     redacaoDto: createDefinitiveRedacaoDto,
     userId: string,
+    redacaoId?: number,
+  ): Promise<Redacao> {
+    if (!userId) {
+      throw new NotFoundException('User not found');
+    }
+
+    const user: User = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    let redacao: Redacao;
+
+    if (redacaoId) {
+      redacao = await this.redacaoRepository.findOne({
+        where: { id: redacaoId, user: { id: userId } },
+      });
+
+      if (!redacao) {
+        throw new NotFoundException('Redacao not found');
+      }
+
+      if (redacao.statusEnvio === 'enviado') {
+        throw new BadRequestException('Redacao already sent');
+      }
+
+      redacao = this.redacaoRepository.merge(redacao, redacaoDto, {
+        statusEnvio: 'enviado',
+      });
+    } else {
+      redacao = this.redacaoRepository.create({
+        ...redacaoDto,
+        statusEnvio: 'enviado',
+        user: { id: userId },
+      });
+    }
+
+    try {
+      return await this.redacaoRepository.save(redacao);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async createDraft(
+    userId: string,
+    redacaoDto: createDraftRedacaoDto,
   ): Promise<Redacao> {
     if (!userId) {
       throw new NotFoundException('User not found');
@@ -37,7 +88,7 @@ export class RedacoesService {
 
     const redacao: Redacao = this.redacaoRepository.create({
       ...redacaoDto,
-      statusEnvio: 'enviado',
+      statusEnvio: 'rascunho',
       user: { id: userId },
     });
 
@@ -47,8 +98,6 @@ export class RedacoesService {
       throw new InternalServerErrorException(error.message);
     }
   }
-
-  // rota de salvar redação como rascunho
 
   async getRedacoes(
     userId: string,
