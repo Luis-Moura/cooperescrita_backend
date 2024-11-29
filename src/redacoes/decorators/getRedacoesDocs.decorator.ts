@@ -23,12 +23,12 @@ export function GetRedacoesDecoratorsDocs() {
     }),
     ApiQuery({
       name: 'limit',
-      required: false,
+      required: true,
       description: 'Número máximo de redações a serem retornadas',
     }),
     ApiQuery({
       name: 'offset',
-      required: false,
+      required: true,
       description:
         'Número de redações a serem puladas antes de começar a coletar os resultados',
     }),
