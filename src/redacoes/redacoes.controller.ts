@@ -15,6 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GetRedacoesDecoratorsDocs } from './decorators/getRedacoesDocs.decorator';
 import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
 import { RedacoesService } from './redacoes.service';
 
@@ -39,16 +40,9 @@ export class RedacoesController {
     return this.redacoesService.createDefinitiveRedacao(redacaoDTo, userId);
   }
 
-  // criação, não corrigidas, corrigidas, rascunhos, enviadas por definitivo
   @UseGuards(JwtAuthGuard)
   @Get('get-redacoes')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Buscar todas as redações do usuário autenticado' })
-  @ApiResponse({ status: 200, description: 'Redações encontradas.' })
-  @ApiResponse({
-    status: 404,
-    description: 'Usuário ou redações não encontradas.',
-  })
+  @GetRedacoesDecoratorsDocs()
   getRedacoes(
     @Request() req,
     @Query('limit') limit: number,
