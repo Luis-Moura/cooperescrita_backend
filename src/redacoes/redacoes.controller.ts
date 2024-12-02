@@ -7,48 +7,25 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetRedacoesDecoratorsDocs } from './decorators/getRedacoesDocs.decorator';
+import { CreateDefinitiveRedacaoDocs } from './docs/controllers/createDefinitiveRedacaoDocs.decorator';
+import { CreateDraftDocs } from './docs/controllers/createDraftDocs.decorator';
+import { GetRedacaoByIdDocs } from './docs/controllers/getRedacaoByIdDocs.decorator';
+import { GetRedacoesDecoratorsDocs } from './docs/controllers/getRedacoesDocs.decorator';
 import { createDefinitiveRedacaoDto } from './dto/createDefinitiveRedacaoDto';
-import { RedacoesService } from './redacoes.service';
 import { createDraftRedacaoDto } from './dto/createDraftRedacaoDto';
 import { IOrderQuery } from './interfaces/IOrderQuery';
+import { RedacoesService } from './redacoes.service';
 
 @ApiTags('redacoes')
 @Controller('redacao')
 export class RedacoesController {
   constructor(private readonly redacoesService: RedacoesService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('create-redacao')
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary:
-      'Criar uma nova redação ou atualiza uma redacao existente(caso não tenha sido enviada em definitivo)',
-  })
-  @ApiResponse({ status: 201, description: 'Redação criada com sucesso.' })
-  @ApiResponse({
-    status: 404,
-    description: 'Usuário ou rascunho não encontrados.',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Redação já enviada em definitivo.',
-  })
-  @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiQuery({
-    name: 'redacaoId',
-    required: false,
-    description: 'ID de uma redação que esteja em estado de rascunho',
-  })
+  @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Post('create-redacao') // rota para criar redação
+  @CreateDefinitiveRedacaoDocs() // gera a documentação da rota
   createDefinitiveRedacao(
     @Body() redacaoDTo: createDefinitiveRedacaoDto,
     @Request() req,
@@ -63,22 +40,18 @@ export class RedacoesController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('create-draft')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Criar um rascunho de redação' })
-  @ApiResponse({ status: 201, description: 'Rascunho criado com sucesso.' })
-  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
-  @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Post('create-draft') // rota para criar rascunho de redação
+  @CreateDraftDocs() // gera a documentação da rota
   createDraft(@Request() req, @Body() createDraft: createDraftRedacaoDto) {
     const userId = req.user.userId;
 
     return this.redacoesService.createDraft(userId, createDraft);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('get-redacoes')
-  @GetRedacoesDecoratorsDocs()
+  @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Get('get-redacoes') // rota para buscar redações
+  @GetRedacoesDecoratorsDocs() // gera a documentação da rota
   getRedacoes(
     @Request() req,
     @Query('limit') limit: number,
@@ -93,17 +66,9 @@ export class RedacoesController {
     return this.redacoesService.getRedacoes(userId, limit, offset, orderQuery);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('get-redacao/:id')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Buscar uma redação específica pelo ID' })
-  @ApiParam({ name: 'id', description: 'ID da redação' })
-  @ApiResponse({ status: 200, description: 'Redação encontrada.' })
-  @ApiResponse({ status: 400, description: 'ID inválido.' })
-  @ApiResponse({
-    status: 404,
-    description: 'Usuário ou redação não encontrados.',
-  })
+  @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Get('get-redacao/:id') // rota para buscar redação por ID
+  @GetRedacaoByIdDocs() // gera a documentação da rota
   getRedacaoById(@Request() req) {
     const userId = req.user.userId;
     const id = req.params.id;
