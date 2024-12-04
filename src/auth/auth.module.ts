@@ -6,8 +6,12 @@ import * as dotenv from 'dotenv';
 import { EmailsModule } from 'src/emails/emails.module';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { PasswordController } from './controllers/password.controller';
+import { SessionController } from './controllers/session.controller';
+import { SigninController } from './controllers/signin.controller';
+import { SignupController } from './controllers/signup.controller';
+import { VerificationController } from './controllers/verification.controller';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -24,7 +28,13 @@ dotenv.config();
     }),
     EmailsModule,
   ],
-  controllers: [AuthController],
+  controllers: [
+    SignupController,
+    SigninController,
+    VerificationController,
+    PasswordController,
+    SessionController,
+  ],
   providers: [
     AuthService,
     UsersService,
