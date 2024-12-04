@@ -22,7 +22,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
-import { VerifyCodeDto } from './dto/verifyCode.dto';
+import { Verify2FACodeDto } from './dto/verify2FACode.dto';
 import { isTokenInvalidated } from './utils/isTokenInvalidated';
 dotenv.config();
 
@@ -183,16 +183,16 @@ export class AuthService {
     };
   }
 
-  async verifyCode(verifyCodeDto: VerifyCodeDto) {
+  async verify2FACode(verify2FACodeDto: Verify2FACodeDto) {
     const user = await this.usersService.findByEmailUtil(
-      verifyCodeDto.email.toLowerCase(),
+      verify2FACodeDto.email.toLowerCase(),
     );
 
     if (!user) {
       throw new NotFoundException('Invalid Crenditials');
     }
 
-    if (user.verificationCode !== verifyCodeDto.verificationCode) {
+    if (user.verificationCode !== verify2FACodeDto.verificationCode) {
       throw new BadRequestException('Invalid verification code');
     }
 

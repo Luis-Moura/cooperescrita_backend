@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function VerifyTokenDocs() {
+export function VerifyAccessTokenDocs() {
   return applyDecorators(
     ApiBearerAuth(),
     ApiOperation({ summary: 'Verificar validade do token JWT' }),

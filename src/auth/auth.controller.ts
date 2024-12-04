@@ -22,14 +22,14 @@ import { PostResetPasswordDocs } from './docs/controller/postResetPasswordDocs.d
 import { SignInDocs } from './docs/controller/signInDocs.decorator';
 import { SignUpAdminDocs } from './docs/controller/signUpAdminDocs.decorator';
 import { SignUpDocs } from './docs/controller/signUpDocs.decorator';
+import { VerifyAccessTokenDocs } from './docs/controller/verifyAccessTokenDocs.decorator';
 import { VerifyEmailDocs } from './docs/controller/verifyEmailDocs.decorator';
-import { VerifyResetTokenDocs } from './docs/controller/verifyResetTokenDocs.decorator';
-import { VerifyTokenDocs } from './docs/controller/verifyTokenDocs.decorator';
+import { VerifyResetPasswordTokenDocs } from './docs/controller/verifyResetPasswordTokenDocs.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
-import { VerifyCodeDto } from './dto/verifyCode.dto';
+import { Verify2FACodeDto } from './dto/verify2FACode.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -71,7 +71,7 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-  @Post('verify-code')
+  @Post('verify-2fa-code')
   @HttpCode(200)
   @ApiOperation({ summary: 'Verificar código de autenticação de dois fatores' })
   @ApiResponse({ status: 200, description: 'Código verificado com sucesso.' })
@@ -80,21 +80,21 @@ export class AuthController {
     description: 'Código de verificação inválido ou expirado.',
   })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
-  async verifyAdminAccount(@Body() verifyCodeDto: VerifyCodeDto) {
-    return this.authService.verifyCode(verifyCodeDto);
+  async verify2FACode(@Body() verify2FACodeDto: Verify2FACodeDto) {
+    return this.authService.verify2FACode(verify2FACodeDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('verify-token')
-  @VerifyTokenDocs()
-  async verifyToken(@Request() req) {
+  @Get('verify-access-token')
+  @VerifyAccessTokenDocs()
+  async verifyAccessToken(@Request() req) {
     const token = req.headers['authorization'].split(' ')[1];
     return this.authService.verifyToken(token);
   }
 
-  @Get('verify-reset-token')
-  @VerifyResetTokenDocs()
-  async verifyResetToken(@Query('token') token: string) {
+  @Get('verify-reset-password-token')
+  @VerifyResetPasswordTokenDocs()
+  async verifyResetPasswordToken(@Query('token') token: string) {
     return this.authService.verifyToken(token);
   }
 
