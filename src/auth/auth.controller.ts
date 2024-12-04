@@ -24,6 +24,15 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { SignUpDocs } from './docs/controller/signUpDocs.decorator';
+import { SignUpAdminDocs } from './docs/controller/signUpAdminDocs.decorator';
+import { VerifyAccountDocs } from './docs/controller/verifyAccountDocs.decorator';
+import { SignInDocs } from './docs/controller/signInDocs.decorator';
+import { VerifyTokenDocs } from './docs/controller/verifyTokenDocs.decorator';
+import { VerifyResetTokenDocs } from './docs/controller/verifyResetTokenDocs.decorator';
+import { LogoutDocs } from './docs/controller/logoutDocs.decorator';
+import { ForgotPasswordDocs } from './docs/controller/forgotPasswordDocs.decorator';
+import { PostResetPasswordDocs } from './docs/controller/postResetPasswordDocs.decorator';
 
 @ApiTags('auth')
 @Controller('')
@@ -32,13 +41,7 @@ export class AuthController {
 
   @Post('signup')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Registrar um novo usuário' })
-  @ApiResponse({ status: 200, description: 'Usuário registrado com sucesso.' })
-  @ApiResponse({ status: 409, description: 'Usuário já existe.' })
-  @ApiResponse({
-    status: 403,
-    description: 'Apenas administradores podem criar contas de administrador.',
-  })
+  @SignUpDocs()
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.authService.signUp(createUserDto, 'user');
   }
@@ -47,29 +50,15 @@ export class AuthController {
   @Roles('admin')
   @Post('signup-admin')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Registrar um novo administrador' })
-  @ApiResponse({
-    status: 200,
-    description: 'Administrador registrado com sucesso.',
-  })
-  @ApiResponse({ status: 409, description: 'Usuário já existe.' })
-  @ApiResponse({
-    status: 403,
-    description: 'Apenas administradores podem criar contas de administrador.',
-  })
+  @SignUpAdminDocs()
   signUpAdmin(@Body() createUserDto: CreateUserDto, @Request() req) {
     const creatorRole = req.user.role;
     return this.authService.signUp(createUserDto, creatorRole);
   }
 
-  //aqui
   @Get('verify-account')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Verificar conta de usuário' })
-  @ApiResponse({ status: 200, description: 'Email verificado com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Token inválido ou expirado.' })
-  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
-  @ApiResponse({ status: 409, description: 'Usuário já verificado.' })
+  @VerifyAccountDocs()
   async verifyAccount(@Query('token') token: string) {
     return this.authService.verifyAccount(token);
   }
@@ -77,10 +66,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Fazer login do usuário' })
-  @ApiResponse({ status: 200, description: 'Login bem-sucedido.' })
-  @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })
-  @ApiResponse({ status: 403, description: 'Conta temporariamente bloqueada.' })
+  @SignInDocs()
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
   }
@@ -100,20 +86,14 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('verify-token')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Verificar validade do token JWT' })
-  @ApiResponse({ status: 200, description: 'Token é válido.' })
-  @ApiResponse({ status: 400, description: 'Token inválido.' })
+  @VerifyTokenDocs()
   async verifyToken(@Request() req) {
     const token = req.headers['authorization'].split(' ')[1];
     return this.authService.verifyToken(token);
   }
 
   @Get('verify-reset-token')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Verificar validade do token JWT' })
-  @ApiResponse({ status: 200, description: 'Token é válido.' })
-  @ApiResponse({ status: 400, description: 'Token inválido.' })
+  @VerifyResetTokenDocs()
   async verifyResetToken(@Query('token') token: string) {
     return this.authService.verifyToken(token);
   }
@@ -121,10 +101,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('signout')
   @HttpCode(200)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Fazer logout do usuário' })
-  @ApiResponse({ status: 200, description: 'Logout bem-sucedido.' })
-  @ApiResponse({ status: 400, description: 'Token inválido.' })
+  @LogoutDocs()
   async logout(@Request() req) {
     const token = req.headers.authorization.split(' ')[1];
     return this.authService.logout(token);
@@ -132,25 +109,14 @@ export class AuthController {
 
   @Post('forgot-password')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Solicitar redefinição de senha' })
-  @ApiResponse({
-    status: 200,
-    description: 'Email enviado com instruções para redefinir a senha.',
-  })
-  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  @ForgotPasswordDocs()
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Redefinir senha do usuário' })
-  @ApiResponse({ status: 200, description: 'Senha redefinida com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Token ou senha inválidos.' })
-  @ApiResponse({
-    status: 409,
-    description: 'A nova senha não pode ser igual à anterior.',
-  })
+  @PostResetPasswordDocs()
   async postResetPassword(
     @Query('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
