@@ -224,7 +224,7 @@ export class AuthService {
     const decodedToken = this.jwtService.decode(token) as { jti: string };
 
     if (decodedToken && decodedToken.jti) {
-      this.invalidatedTokens.add(decodedToken.jti);
+      this.invalidatedTokens.add(decodedToken.jti); // isso aqui deve ser melhorado, e o quanto antes
     }
 
     return { message: 'Logout successful' };

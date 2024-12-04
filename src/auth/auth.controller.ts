@@ -33,6 +33,7 @@ import { Verify2FACodeDto } from './dto/verify2FACode.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { Verify2FACodeDocs } from './docs/controller/verify2FACodeDocs.decorator';
 
 @ApiTags('auth')
 @Controller('')
@@ -73,13 +74,7 @@ export class AuthController {
 
   @Post('verify-2fa-code')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Verificar código de autenticação de dois fatores' })
-  @ApiResponse({ status: 200, description: 'Código verificado com sucesso.' })
-  @ApiResponse({
-    status: 400,
-    description: 'Código de verificação inválido ou expirado.',
-  })
-  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  @Verify2FACodeDocs()
   async verify2FACode(@Body() verify2FACodeDto: Verify2FACodeDto) {
     return this.authService.verify2FACode(verify2FACodeDto);
   }
