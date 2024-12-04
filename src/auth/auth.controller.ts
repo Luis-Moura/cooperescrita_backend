@@ -8,8 +8,23 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
+import { ForgotPasswordDocs } from './docs/controller/forgotPasswordDocs.decorator';
+import { LogoutDocs } from './docs/controller/logoutDocs.decorator';
+import { PostResetPasswordDocs } from './docs/controller/postResetPasswordDocs.decorator';
+import { SignInDocs } from './docs/controller/signInDocs.decorator';
+import { SignUpAdminDocs } from './docs/controller/signUpAdminDocs.decorator';
+import { SignUpDocs } from './docs/controller/signUpDocs.decorator';
+import { VerifyEmailDocs } from './docs/controller/verifyEmailDocs.decorator';
+import { VerifyResetTokenDocs } from './docs/controller/verifyResetTokenDocs.decorator';
+import { VerifyTokenDocs } from './docs/controller/verifyTokenDocs.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -18,21 +33,6 @@ import { VerifyCodeDto } from './dto/verifyCode.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { SignUpDocs } from './docs/controller/signUpDocs.decorator';
-import { SignUpAdminDocs } from './docs/controller/signUpAdminDocs.decorator';
-import { VerifyAccountDocs } from './docs/controller/verifyAccountDocs.decorator';
-import { SignInDocs } from './docs/controller/signInDocs.decorator';
-import { VerifyTokenDocs } from './docs/controller/verifyTokenDocs.decorator';
-import { VerifyResetTokenDocs } from './docs/controller/verifyResetTokenDocs.decorator';
-import { LogoutDocs } from './docs/controller/logoutDocs.decorator';
-import { ForgotPasswordDocs } from './docs/controller/forgotPasswordDocs.decorator';
-import { PostResetPasswordDocs } from './docs/controller/postResetPasswordDocs.decorator';
 
 @ApiTags('auth')
 @Controller('')
@@ -56,11 +56,11 @@ export class AuthController {
     return this.authService.signUp(createUserDto, creatorRole);
   }
 
-  @Get('verify-account')
+  @Get('verify-email')
   @HttpCode(200)
-  @VerifyAccountDocs()
-  async verifyAccount(@Query('token') token: string) {
-    return this.authService.verifyAccount(token);
+  @VerifyEmailDocs()
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @UseGuards(LocalAuthGuard)

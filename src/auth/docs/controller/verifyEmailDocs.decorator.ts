@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function VerifyAccountDocs() {
+export function VerifyEmailDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Verificar conta de usuário' }),
     ApiResponse({ status: 200, description: 'Email verificado com sucesso.' }),

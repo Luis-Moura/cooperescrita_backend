@@ -77,7 +77,7 @@ export class AuthService {
     };
   }
 
-  async verifyAccount(token: string) {
+  async verifyEmail(token: string) {
     try {
       if (!token) {
         throw new BadRequestException('Invalid token');
