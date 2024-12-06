@@ -6,24 +6,24 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { SignUpAdminDocs } from '../docs/controller/signUpAdminDocs.decorator';
 import { SignUpDocs } from '../docs/controller/signUpDocs.decorator';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { SignUpService } from '../services/signup.service';
 
 @ApiTags('auth')
 @Controller('auth/signup')
 export class SignupController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly signUpService: SignUpService) {}
   @Post()
   @HttpCode(200)
   @SignUpDocs()
   signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto, 'user');
+    return this.signUpService.signUp(createUserDto, 'user');
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,6 +33,6 @@ export class SignupController {
   @SignUpAdminDocs()
   signUpAdmin(@Body() createUserDto: CreateUserDto, @Request() req) {
     const creatorRole = req.user.role;
-    return this.authService.signUp(createUserDto, creatorRole);
+    return this.signUpService.signUp(createUserDto, creatorRole);
   }
 }

@@ -1,21 +1,21 @@
 import { Body, Controller, HttpCode, Post, Query } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import { ApiTags } from '@nestjs/swagger';
 import { ForgotPasswordDocs } from '../docs/controller/forgotPasswordDocs.decorator';
 import { PostResetPasswordDocs } from '../docs/controller/postResetPasswordDocs.decorator';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { PasswordService } from '../services/password.service';
 
 @ApiTags('auth')
 @Controller('auth/password')
 export class PasswordController {
-  constructor(private authService: AuthService) {}
+  constructor(private passwordService: PasswordService) {}
 
   @Post('forgot-password')
   @HttpCode(200)
   @ForgotPasswordDocs()
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+    return this.passwordService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
@@ -25,6 +25,9 @@ export class PasswordController {
     @Query('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ) {
-    return this.authService.postResetPassword({ token, ...resetPasswordDto });
+    return this.passwordService.postResetPassword({
+      token,
+      ...resetPasswordDto,
+    });
   }
 }

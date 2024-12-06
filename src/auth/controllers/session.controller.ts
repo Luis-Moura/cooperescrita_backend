@@ -12,14 +12,14 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from '../auth.service';
 import { LogoutDocs } from '../docs/controller/logoutDocs.decorator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { SessionService } from '../services/session.service';
 
 @ApiTags('auth')
 @Controller('auth/session')
 export class SessionController {
-  constructor(private authService: AuthService) {}
+  constructor(private sessionService: SessionService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('signout')
@@ -27,7 +27,7 @@ export class SessionController {
   @LogoutDocs()
   async logout(@Request() req) {
     const token = req.headers.authorization.split(' ')[1];
-    return this.authService.logout(token);
+    return this.sessionService.logout(token);
   }
 
   @UseGuards(JwtAuthGuard)
