@@ -1,3 +1,4 @@
+import { RedisModule } from '@nestjs-modules/ioredis';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -35,6 +36,11 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
         port: parseInt(redisUrl.port, 10),
         password: redisUrl.password || undefined,
       },
+    }),
+
+    RedisModule.forRoot({
+      type: 'single',
+      url: process.env.REDIS_URL,
     }),
 
     UsersModule,
