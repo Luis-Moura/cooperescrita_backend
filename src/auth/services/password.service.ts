@@ -10,10 +10,9 @@ import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
-import { AuthService } from '../auth.service';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
-import { isTokenInvalidated } from '../utils/isTokenInvalidated';
+import { InvalidatedTokensService } from './invalidated-tokens.service';
 
 @Injectable()
 export class PasswordService {
@@ -22,7 +21,7 @@ export class PasswordService {
     private readonly jwtService: JwtService,
     private readonly emailService: EmailsService,
     private readonly usersRepository: Repository<User>,
-    private readonly authServices: AuthService,
+    private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const user = await this.usersService.findByEmailUtil(
@@ -60,7 +59,7 @@ export class PasswordService {
         throw new NotFoundException('User not found');
       }
 
-      if (isTokenInvalidated(token, this.authServices.invalidatedTokens)) {
+      if (await this.invalidatedTokensService.isTokenInvalidated(token)) {
         throw new BadRequestException('Invalid or expired token');
       }
 
@@ -73,7 +72,7 @@ export class PasswordService {
       user.password = hashedPassword;
       await this.usersRepository.save(user);
 
-      this.authServices.invalidatedTokens.add(token);
+      this.invalidatedTokensService.addToken(token);
 
       return { message: 'Password reset successfully' };
     } catch (error) {
