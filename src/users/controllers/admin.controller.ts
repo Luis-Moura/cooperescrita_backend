@@ -15,12 +15,11 @@ import { FindByEmailDocs } from '../docs/controller/findByEmailDocs.decorator';
 import { FindByNameDocs } from '../docs/controller/findByNameDocs.decorator';
 import { FindByEmailDto } from '../dto/find-by-email.dto';
 import { FindByNameDto } from '../dto/find-by-name.dto';
-import { UsersService } from '../users.service';
-
+import { AdminService } from '../services/admin.service';
 @ApiTags('users')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -28,7 +27,7 @@ export class AdminController {
   @FindByEmailDocs()
   async findByEmail(@Body() findByEmailDto: FindByEmailDto, @Request() req) {
     const sender = req.user.email.toLowerCase();
-    return await this.usersService.findByEmail(findByEmailDto, sender);
+    return await this.adminService.findByEmail(findByEmailDto, sender);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -37,7 +36,7 @@ export class AdminController {
   @FindByNameDocs()
   async findByName(@Body() findByNameDto: FindByNameDto, @Request() req) {
     const sender = req.user.email.toLowerCase();
-    return await this.usersService.findByName(findByNameDto, sender);
+    return await this.adminService.findByName(findByNameDto, sender);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -49,6 +48,6 @@ export class AdminController {
     @Request() req,
   ) {
     const sender = req.user.email.toLowerCase();
-    return await this.usersService.deleteUserByEmail(findByEmailDto, sender);
+    return await this.adminService.deleteUserByEmail(findByEmailDto, sender);
   }
 }

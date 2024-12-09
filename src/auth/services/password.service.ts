@@ -9,23 +9,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { InvalidatedTokensService } from './invalidated-tokens.service';
+import { UtilsService } from 'src/users/services/utils.service';
 
 @Injectable()
 export class PasswordService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
+    private readonly utilsService: UtilsService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailsService,
     private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.usersService.findByEmailUtil(
+    const user = await this.utilsService.findByEmailUtil(
       forgotPasswordDto.email.toLowerCase(),
     );
 
@@ -52,7 +52,7 @@ export class PasswordService {
     const { token, newPassword } = resetPasswordDto;
     try {
       const decoded = this.jwtService.verify(token);
-      const user = await this.usersService.findByEmailUtil(
+      const user = await this.utilsService.findByEmailUtil(
         decoded.email.toLowerCase(),
       );
 

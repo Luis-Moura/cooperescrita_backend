@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 
@@ -16,13 +16,13 @@ import { CreateUserDto } from '../dto/create-user.dto';
 export class SignUpService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
+    private readonly utilsService: UtilsService,
     private readonly emailService: EmailsService,
     private readonly jwtService: JwtService,
   ) {}
 
   async signUp(createUserDto: CreateUserDto, creatorRole: string) {
-    const existingUser = await this.usersService.findByEmailUtil(
+    const existingUser = await this.utilsService.findByEmailUtil(
       createUserDto.email.toLowerCase(),
     );
 

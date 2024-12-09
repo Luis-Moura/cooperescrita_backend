@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { SignInDto } from '../dto/sign-in.dto';
@@ -18,13 +18,13 @@ import { SignInDto } from '../dto/sign-in.dto';
 export class SignInService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
+    private readonly utilsService: UtilsService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailsService,
   ) {}
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.usersService.findByEmailUtil(
+    const user = await this.utilsService.findByEmailUtil(
       signInDto.email.toLowerCase(),
     );
 
@@ -51,7 +51,7 @@ export class SignInService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.findByEmailUtil(email.toLowerCase());
+    const user = await this.utilsService.findByEmailUtil(email.toLowerCase());
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

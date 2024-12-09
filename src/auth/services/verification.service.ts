@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Verify2FACodeDto } from '../dto/verify2FACode.dto';
@@ -18,7 +18,7 @@ import { InvalidatedTokensService } from './invalidated-tokens.service';
 export class VerificationService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    private readonly usersService: UsersService,
+    private readonly utilsService: UtilsService,
     private readonly jwtService: JwtService,
     private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
@@ -34,7 +34,7 @@ export class VerificationService {
         throw new BadRequestException('Invalid token');
       }
 
-      const user = await this.usersService.findByEmailUtil(
+      const user = await this.utilsService.findByEmailUtil(
         decoded.email.toLowerCase(),
       );
 
@@ -56,7 +56,7 @@ export class VerificationService {
   }
 
   async verify2FACode(verify2FACodeDto: Verify2FACodeDto) {
-    const user = await this.usersService.findByEmailUtil(
+    const user = await this.utilsService.findByEmailUtil(
       verify2FACodeDto.email.toLowerCase(),
     );
 

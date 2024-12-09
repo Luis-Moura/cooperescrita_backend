@@ -14,12 +14,12 @@ import { ChangePasswordDocs } from '../docs/controller/changePasswordDocs.decora
 import { DeleteAccountDocs } from '../docs/controller/deleteAccountDocs.decorator';
 import { DesativateTwoFaDocs } from '../docs/controller/desativateTwoFaDocs.decorator';
 import { ChangePasswordDto } from '../dto/change-password.dto';
-import { UsersService } from '../users.service';
+import { AccountService } from '../services/account.service';
 
 @ApiTags('users')
 @Controller('users/account')
 export class AccountController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly accountService: AccountService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
@@ -30,7 +30,7 @@ export class AccountController {
   ) {
     const email = req.user.email.toLowerCase();
 
-    return await this.usersService.changePassword(changePasswordDto, email);
+    return await this.accountService.changePassword(changePasswordDto, email);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,7 +38,7 @@ export class AccountController {
   @HttpCode(200)
   @ActivateTwoFADocs()
   async activateTwoFA(@Request() req) {
-    return this.usersService.activateTwoFA(req.user.email);
+    return this.accountService.activateTwoFA(req.user.email);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -46,7 +46,7 @@ export class AccountController {
   @HttpCode(200)
   @DesativateTwoFaDocs()
   async desativateTwoFa(@Request() req) {
-    return this.usersService.desactivateTwoFA(req.user.email);
+    return this.accountService.desactivateTwoFA(req.user.email);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -55,6 +55,6 @@ export class AccountController {
   async deleteAccount(@Request() req) {
     const email = req.user.email.toLowerCase();
 
-    return await this.usersService.deleteAccount(email);
+    return await this.accountService.deleteAccount(email);
   }
 }

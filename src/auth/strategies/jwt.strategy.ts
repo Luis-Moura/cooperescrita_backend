@@ -2,15 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import * as dotenv from 'dotenv';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UsersService } from 'src/users/users.service';
+import { UtilsService } from 'src/users/services/utils.service';
 import { InvalidatedTokensService } from '../services/invalidated-tokens.service';
 dotenv.config();
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private readonly usersService: UsersService,
-    // private readonly authService: AuthService,
+    private readonly utilsService: UtilsService,
     private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {
     super({
@@ -21,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any) {
-    const user = await this.usersService.findByEmailUtil(
+    const user = await this.utilsService.findByEmailUtil(
       payload.email.toLowerCase(),
     );
 
