@@ -4,12 +4,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetRedacaoByIdDocs } from '../docs/controllers/getRedacaoByIdDocs.decorator';
 import { GetRedacoesDecoratorsDocs } from '../docs/controllers/getRedacoesDocs.decorator';
 import { IOrderQuery } from '../interfaces/IOrderQuery';
-import { RedacoesService } from '../redacoes.service';
+import { GetRedacaoService } from '../services/getRedacao.service';
 
 @ApiTags('redacao')
 @Controller('redacao')
 export class GetRedacaoController {
-  constructor(private readonly redacoesService: RedacoesService) {}
+  constructor(private readonly getRedacaoService: GetRedacaoService) {}
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
   @Get('get-redacoes') // rota para buscar redações
@@ -25,7 +25,12 @@ export class GetRedacaoController {
 
     limit = limit > maxLimit ? maxLimit : limit;
 
-    return this.redacoesService.getRedacoes(userId, limit, offset, orderQuery);
+    return this.getRedacaoService.getRedacoes(
+      userId,
+      limit,
+      offset,
+      orderQuery,
+    );
   }
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
@@ -35,6 +40,6 @@ export class GetRedacaoController {
     const userId = req.user.userId;
     const id = req.params.id;
 
-    return this.redacoesService.getRedacaoById(userId, id);
+    return this.getRedacaoService.getRedacaoById(userId, id);
   }
 }

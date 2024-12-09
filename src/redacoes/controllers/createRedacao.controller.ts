@@ -12,12 +12,12 @@ import { CreateDefinitiveRedacaoDocs } from '../docs/controllers/createDefinitiv
 import { CreateDraftDocs } from '../docs/controllers/createDraftDocs.decorator';
 import { createDefinitiveRedacaoDto } from '../dto/createDefinitiveRedacaoDto';
 import { createDraftRedacaoDto } from '../dto/createDraftRedacaoDto';
-import { RedacoesService } from '../redacoes.service';
+import { CreateRedacaoService } from '../services/createRedacao.service';
 
 @ApiTags('redacao')
 @Controller('redacao')
 export class CreateRedacaoController {
-  constructor(private readonly redacoesService: RedacoesService) {}
+  constructor(private readonly createRedacoesService: CreateRedacaoService) {}
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
   @Post('create-redacao') // rota para criar redação
@@ -29,7 +29,7 @@ export class CreateRedacaoController {
   ) {
     const userId = req.user.userId;
 
-    return this.redacoesService.createDefinitiveRedacao(
+    return this.createRedacoesService.createDefinitiveRedacao(
       redacaoDTo,
       userId,
       redacaoId,
@@ -42,6 +42,6 @@ export class CreateRedacaoController {
   createDraft(@Request() req, @Body() createDraft: createDraftRedacaoDto) {
     const userId = req.user.userId;
 
-    return this.redacoesService.createDraft(userId, createDraft);
+    return this.createRedacoesService.createDraft(userId, createDraft);
   }
 }

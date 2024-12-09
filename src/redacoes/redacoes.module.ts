@@ -4,11 +4,12 @@ import { User } from 'src/users/entities/user.entity';
 import { CreateRedacaoController } from './controllers/createRedacao.controller';
 import { GetRedacaoController } from './controllers/getRedacao.controller';
 import { Redacao } from './entities/redacao.entity';
-import { RedacoesService } from './redacoes.service';
+import { CreateRedacaoService } from './services/createRedacao.service';
+import { GetRedacaoService } from './services/getRedacao.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Redacao, User])],
   controllers: [GetRedacaoController, CreateRedacaoController],
-  providers: [RedacoesService],
+  providers: [CreateRedacaoService, GetRedacaoService],
 })
 export class RedacoesModule {}
