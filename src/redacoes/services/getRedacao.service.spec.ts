@@ -1,10 +1,10 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { GetRedacaoService } from 'src/redacoes/services/getRedacao.service';
+import { User } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
 
 describe('GetRedacaoService', () => {
   let service: GetRedacaoService;
@@ -17,11 +17,17 @@ describe('GetRedacaoService', () => {
         GetRedacaoService,
         {
           provide: getRepositoryToken(Redacao),
-          useClass: Repository,
+          useValue: {
+            findOne: jest.fn(),
+            find: jest.fn(),
+            save: jest.fn(),
+            create: jest.fn(),
+            merge: jest.fn(),
+          },
         },
         {
           provide: getRepositoryToken(User),
-          useClass: Repository,
+          useValue: { findOne: jest.fn(), find: jest.fn(), save: jest.fn() },
         },
       ],
     }).compile();
