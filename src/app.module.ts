@@ -22,7 +22,8 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [User, Redacao],
-      synchronize: true,
+      migrations: ['dist/migrations/*.js'],
+      migrationsRun: true,
     }),
 
     BullModule.forRoot({
