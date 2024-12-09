@@ -84,16 +84,16 @@ export class GetRedacaoService {
       throw new NotFoundException('User not found');
     }
 
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
     const user: User = await this.userRepository.findOne({
       where: { id: userId },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
-    }
-
-    if (!id || isNaN(id)) {
-      throw new BadRequestException('Invalid id');
     }
 
     const redacao: Redacao = await this.redacaoRepository.findOne({
