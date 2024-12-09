@@ -20,17 +20,19 @@ import { SignUpService } from './services/signup.service';
 import { VerificationService } from './services/verification.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { InvalidatedTokensService } from './services/invalidated-tokens.service';
 dotenv.config();
 
 @Module({
   imports: [
-    PassportModule,
     TypeOrmModule.forFeature([User]),
 
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
+
+    PassportModule,
     EmailsModule,
   ],
   controllers: [
@@ -41,24 +43,24 @@ dotenv.config();
     SessionController,
   ],
   providers: [
+    InvalidatedTokensService,
     PasswordService,
     SessionService,
     SignInService,
     SignUpService,
     VerificationService,
     UsersService,
-    // EmailsService,
     LocalStrategy,
     JwtStrategy,
     RolesGuard,
   ],
   exports: [
+    InvalidatedTokensService,
     PasswordService,
     SessionService,
     SignInService,
     SignUpService,
     VerificationService,
-    UsersService,
   ],
 })
 export class AuthModule {}

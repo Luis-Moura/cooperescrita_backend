@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
@@ -17,10 +18,10 @@ import { InvalidatedTokensService } from './invalidated-tokens.service';
 @Injectable()
 export class PasswordService {
   constructor(
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailsService,
-    private readonly usersRepository: Repository<User>,
     private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {

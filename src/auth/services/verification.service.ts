@@ -5,21 +5,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Verify2FACodeDto } from '../dto/verify2FACode.dto';
-import { isTokenInvalidated } from '../utils/isTokenInvalidated';
+import { InvalidatedTokensService } from './invalidated-tokens.service';
 
 @Injectable()
 export class VerificationService {
   constructor(
-    private readonly usersRepository: Repository<User>,
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly invalidatedTokens: Set<string>,
+    private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
   async verifyEmail(token: string) {
     try {
@@ -91,7 +92,7 @@ export class VerificationService {
     if (
       !token ||
       !this.jwtService.verify(token) ||
-      isTokenInvalidated(token, this.invalidatedTokens)
+      (await this.invalidatedTokensService.isTokenInvalidated(token))
     ) {
       throw new BadRequestException('Invalid token');
     }
