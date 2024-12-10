@@ -23,11 +23,17 @@ describe('GetRedacaoService', () => {
             save: jest.fn(),
             create: jest.fn(),
             merge: jest.fn(),
+            count: jest.fn(),
           },
         },
         {
           provide: getRepositoryToken(User),
-          useValue: { findOne: jest.fn(), find: jest.fn(), save: jest.fn() },
+          useValue: {
+            findOne: jest.fn(),
+            find: jest.fn(),
+            save: jest.fn(),
+            count: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -67,9 +73,10 @@ describe('GetRedacaoService', () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(user);
       const redacoes = [new Redacao()];
       jest.spyOn(redacaoRepository, 'find').mockResolvedValue(redacoes);
+      jest.spyOn(redacaoRepository, 'count').mockResolvedValue(1);
 
       const result = await service.getRedacoes('userId', 10, 0, {});
-      expect(result).toEqual(redacoes);
+      expect(result).toEqual({ redacoes, totalRedacoes: 1 });
     });
   });
 
