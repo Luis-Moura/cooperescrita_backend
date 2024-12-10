@@ -48,11 +48,13 @@ describe('GetRedacaoController', () => {
         },
       ];
 
-      jest.spyOn(service, 'getRedacoes').mockResolvedValue(result);
+      jest
+        .spyOn(service, 'getRedacoes')
+        .mockResolvedValue({ redacoes: result, totalRedacoes: 1 });
 
-      expect(await controller.getRedacoes(req, limit, offset, orderQuery)).toBe(
-        result,
-      );
+      expect(
+        await controller.getRedacoes(req, limit, offset, orderQuery),
+      ).toStrictEqual({ redacoes: result, totalRedacoes: 1 });
     });
 
     it('should limit the number of redacoes to 50', async () => {
@@ -74,11 +76,13 @@ describe('GetRedacaoController', () => {
         },
       ];
 
-      jest.spyOn(service, 'getRedacoes').mockResolvedValue(result);
+      jest
+        .spyOn(service, 'getRedacoes')
+        .mockResolvedValue({ redacoes: result, totalRedacoes: 1 });
 
-      expect(await controller.getRedacoes(req, limit, offset, orderQuery)).toBe(
-        result,
-      );
+      expect(
+        await controller.getRedacoes(req, limit, offset, orderQuery),
+      ).toStrictEqual({ redacoes: result, totalRedacoes: 1 });
       expect(service.getRedacoes).toHaveBeenCalledWith(
         '1',
         50,
