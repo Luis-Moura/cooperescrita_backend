@@ -8,6 +8,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Redacao } from '../entities/redacao.entity';
 import { IOrderQuery } from '../interfaces/IOrderQuery';
+import { IGetRedacoes } from '../interfaces/IGetRedacoes';
 
 @Injectable()
 export class GetRedacaoService {
@@ -22,7 +23,7 @@ export class GetRedacaoService {
     limit: number,
     offset: number,
     orderQuery: IOrderQuery,
-  ): Promise<Redacao[]> {
+  ): Promise<IGetRedacoes> {
     if (!userId) {
       throw new NotFoundException('User not found');
     }
@@ -72,11 +73,13 @@ export class GetRedacaoService {
       skip: offset,
     });
 
+    const totalRedacoes = await this.redacaoRepository.count({ where });
+
     if (redacoes.length === 0) {
       throw new NotFoundException('Redacoes not found');
     }
 
-    return redacoes;
+    return { redacoes, totalRedacoes };
   }
 
   async getRedacaoById(userId: string, id: number) {

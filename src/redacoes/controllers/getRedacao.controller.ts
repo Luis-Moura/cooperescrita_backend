@@ -5,6 +5,7 @@ import { GetRedacaoByIdDocs } from '../docs/controllers/getRedacaoByIdDocs.decor
 import { GetRedacoesDecoratorsDocs } from '../docs/controllers/getRedacoesDocs.decorator';
 import { IOrderQuery } from '../interfaces/IOrderQuery';
 import { GetRedacaoService } from '../services/getRedacao.service';
+import { IGetRedacoes } from '../interfaces/IGetRedacoes';
 
 @ApiTags('redacao')
 @Controller('redacao')
@@ -19,7 +20,7 @@ export class GetRedacaoController {
     @Query('limit') limit: number,
     @Query('offset') offset: number,
     @Query() orderQuery: IOrderQuery,
-  ) {
+  ): Promise<IGetRedacoes> {
     const userId = req.user.userId;
     const maxLimit = 50;
 
