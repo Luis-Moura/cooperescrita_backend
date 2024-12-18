@@ -39,9 +39,17 @@ export class CreateRedacaoController {
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
   @Post('create-draft') // rota para criar rascunho de redação
   @CreateDraftDocs() // gera a documentação da rota
-  createDraft(@Request() req, @Body() createDraft: createDraftRedacaoDto) {
+  createDraft(
+    @Request() req,
+    @Body() createDraft: createDraftRedacaoDto,
+    @Query('redacaoId') redacaoId?: number,
+  ) {
     const userId = req.user.userId;
 
-    return this.createRedacoesService.createDraft(userId, createDraft);
+    return this.createRedacoesService.createDraft(
+      userId,
+      createDraft,
+      redacaoId,
+    );
   }
 }

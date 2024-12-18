@@ -72,6 +72,7 @@ export class CreateRedacaoService {
   async createDraft(
     userId: string,
     redacaoDto: createDraftRedacaoDto,
+    redacaoId?: number,
   ): Promise<Redacao> {
     if (!userId) {
       throw new NotFoundException('User not found');
@@ -85,11 +86,25 @@ export class CreateRedacaoService {
       throw new NotFoundException('User not found');
     }
 
-    const redacao: Redacao = this.redacaoRepository.create({
-      ...redacaoDto,
-      statusEnvio: 'rascunho',
-      user: { id: userId },
-    });
+    let redacao: Redacao;
+
+    if (redacaoId) {
+      redacao = await this.redacaoRepository.findOne({
+        where: { id: redacaoId, user: { id: userId } },
+      });
+
+      if (!redacao) {
+        throw new NotFoundException('Redacao not found');
+      }
+
+      redacao = this.redacaoRepository.merge(redacao, redacaoDto);
+    } else {
+      redacao = this.redacaoRepository.create({
+        ...redacaoDto,
+        statusEnvio: 'rascunho',
+        user: { id: userId },
+      });
+    }
 
     try {
       return await this.redacaoRepository.save(redacao);
