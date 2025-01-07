@@ -1,7 +1,8 @@
-import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { deleteRedacaoDocs } from '../docs/controllers/deleteRedacaoDocs.decorator';
+import { DeleteRedacaoService } from '../services/deleteRedacao.service';
 
 @ApiTags('redacao')
 @Controller('redacao')
@@ -9,9 +10,12 @@ export class DeleteRedacaoController {
   constructor(private readonly deleteRedacaoService: DeleteRedacaoService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Delete('redacoes/:id')
+  @Delete('delete-redacao/:id')
   @deleteRedacaoDocs()
-  async delete(@Param('id') id: string) {
-    return await this.deleteRedacaoService.delete(id);
+  async deleteRedacaoById(@Request() req) {
+    const userId = req.user.userId;
+    const id = req.params.id;
+
+    return await this.deleteRedacaoService.deleteRedacaoById(userId, id);
   }
 }

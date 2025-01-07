@@ -16,6 +16,7 @@ export function deleteRedacaoDocs() {
       description: 'Id da redação a ser deletada',
     }),
     ApiResponse({ status: 200, description: 'Redação deletada com sucesso.' }),
+    ApiResponse({ status: 400, description: 'Id inválido.' }),
     ApiResponse({ status: 404, description: 'Redação não encontrada.' }),
     ApiResponse({ status: 500, description: 'Erro interno do servidor.' }),
   );
