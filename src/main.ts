@@ -18,7 +18,7 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors(); // Habilita o CORS globalmente
+  app.enableCors(); // Habilita o CORS globalmente -> isso deve ser trocado para um domínio específico em produção
 
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
