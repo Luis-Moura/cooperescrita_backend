@@ -1,17 +1,44 @@
-import {
-  BadRequestException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createDefinitiveRedacaoDto } from '../dto/createDefinitiveRedacaoDto';
-import { createDraftRedacaoDto } from '../dto/createDraftRedacaoDto';
 import { CreateRedacaoService } from '../services/createRedacao.service';
 import { CreateRedacaoController } from './createRedacao.controller';
+import { createDefinitiveRedacaoDto } from '../dto/createDefinitiveRedacaoDto';
 import { Redacao } from '../entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { createDraftRedacaoDto } from '../dto/createDraftRedacaoDto';
 
-describe('CreateRedacaoController', () => {
+const userEntity = new User({
+  id: 'userId',
+  name: 'Test User',
+  email: 'test@example.com',
+  password: 'password',
+  verified: true,
+  role: 'user',
+  twoFA: false,
+  failedLoginAttempts: 0,
+  lockUntil: null,
+  verificationCode: null,
+  verificationCodeExpires: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  redacoes: [],
+});
+
+const redacaoEntity = [
+  new Redacao({
+    id: 1,
+    content: 'test content',
+    title: 'test title',
+    topic: 'test topic',
+    createdAt: new Date(),
+    statusCorrecao: 'status test',
+    statusEnvio: 'status test',
+    updatedAt: new Date(),
+    user: userEntity,
+  }),
+];
+
+describe('createRedacaocontroller', () => {
   let controller: CreateRedacaoController;
   let service: CreateRedacaoService;
 
@@ -22,8 +49,8 @@ describe('CreateRedacaoController', () => {
         {
           provide: CreateRedacaoService,
           useValue: {
-            createDefinitiveRedacao: jest.fn(),
-            createDraft: jest.fn(),
+            createDefinitiveRedacao: jest.fn().mockResolvedValue(redacaoEntity),
+            createDraft: jest.fn().mockResolvedValue(redacaoEntity),
           },
         },
       ],
@@ -33,137 +60,129 @@ describe('CreateRedacaoController', () => {
     service = module.get<CreateRedacaoService>(CreateRedacaoService);
   });
 
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
+  });
+
   describe('createDefinitiveRedacao', () => {
-    it('should create a definitive redacao', async () => {
-      const req = { user: { userId: '1' } };
-      const redacaoDto: createDefinitiveRedacaoDto = {
-        title: 'Test Redacao',
-        topic: 'Test Topic',
-        content: 'Test Content',
-      };
-      const result: Redacao = {
-        id: 1,
-        ...redacaoDto,
-        statusEnvio: 'enviado',
-        statusCorrecao: 'pendente',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        user: new User(),
+    it('should create a new redacao and self return', async () => {
+      const body: createDefinitiveRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
 
-      jest.spyOn(service, 'createDefinitiveRedacao').mockResolvedValue(result);
+      const req = { user: { userId: 'userId' } };
 
-      expect(await controller.createDefinitiveRedacao(redacaoDto, req)).toBe(
-        result,
+      const result = await controller.createDefinitiveRedacao(body, req);
+
+      expect(result).toBe(redacaoEntity);
+      expect(service.createDefinitiveRedacao).toHaveBeenCalledWith(
+        body,
+        req.user.userId,
+        undefined,
       );
+      expect(service.createDefinitiveRedacao).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw NotFoundException if user is not found', async () => {
-      const req = { user: { userId: '1' } };
-      const redacaoDto: createDefinitiveRedacaoDto = {
-        title: 'Test Redacao',
-        topic: 'Test Topic',
-        content: 'Test Content',
+    it('should throw an NotfoundException if createDefinitiveRedacao throws', async () => {
+      const body: createDefinitiveRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
+
+      const req = { user: { userId: 'userId' } };
 
       jest
         .spyOn(service, 'createDefinitiveRedacao')
-        .mockRejectedValue(new NotFoundException());
+        .mockRejectedValue(new NotFoundException('Test error'));
 
       await expect(
-        controller.createDefinitiveRedacao(redacaoDto, req),
+        controller.createDefinitiveRedacao(body, req),
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw BadRequestException if redacao is already sent', async () => {
-      const req = { user: { userId: '1' } };
-      const redacaoDto: createDefinitiveRedacaoDto = {
-        title: 'Test Redacao',
-        topic: 'Test Topic',
-        content: 'Test Content',
+    it('should throw an BadRequestException if createDefinitiveRedacao throws', async () => {
+      const body: createDefinitiveRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
+
+      const req = { user: { userId: 'userId' } };
 
       jest
         .spyOn(service, 'createDefinitiveRedacao')
-        .mockRejectedValue(new BadRequestException());
+        .mockRejectedValue(new BadRequestException('Test error'));
 
       await expect(
-        controller.createDefinitiveRedacao(redacaoDto, req),
+        controller.createDefinitiveRedacao(body, req),
       ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw InternalServerErrorException if save fails', async () => {
-      const req = { user: { userId: '1' } };
-      const redacaoDto: createDefinitiveRedacaoDto = {
-        title: 'Test Redacao',
-        topic: 'Test Topic',
-        content: 'Test Content',
-      };
-
-      jest
-        .spyOn(service, 'createDefinitiveRedacao')
-        .mockRejectedValue(new InternalServerErrorException());
-
-      await expect(
-        controller.createDefinitiveRedacao(redacaoDto, req),
-      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
-  describe('createDraft', () => {
-    it('should create a draft redacao', async () => {
-      const req = { user: { userId: '1' } };
-      const draftDto: createDraftRedacaoDto = {
-        title: 'Test Draft',
-        topic: 'Test Topic',
-        content: 'Test Content',
-      };
-      const result: Redacao = {
-        id: 1,
-        ...draftDto,
-        statusEnvio: 'rascunho',
-        statusCorrecao: 'pendente',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        user: new User(),
+  describe('createDraftRedacao', () => {
+    it('should create a new draft and self return', async () => {
+      const body: createDraftRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
 
-      jest.spyOn(service, 'createDraft').mockResolvedValue(result);
+      const req = { user: { userId: 'userId' } };
 
-      expect(await controller.createDraft(req, draftDto)).toBe(result);
+      const id = 1;
+
+      const result = await controller.createDraft(req, body, id);
+
+      expect(result).toBe(redacaoEntity);
+      expect(service.createDraft).toHaveBeenCalledWith(
+        req.user.userId,
+        body,
+        id,
+      );
+      expect(service.createDraft).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw NotFoundException if user is not found', async () => {
-      const req = { user: { userId: '1' } };
-      const draftDto: createDraftRedacaoDto = {
-        title: 'Test Draft',
-        topic: 'Test Topic',
-        content: 'Test Content',
+    it('should throw an NotfoundException if createDraft throws', async () => {
+      const body: createDraftRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
+
+      const req = { user: { userId: 'userId' } };
+
+      const id = 1;
 
       jest
         .spyOn(service, 'createDraft')
-        .mockRejectedValue(new NotFoundException());
+        .mockRejectedValue(new NotFoundException('Test error'));
 
-      await expect(controller.createDraft(req, draftDto)).rejects.toThrow(
+      await expect(controller.createDraft(req, body, id)).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('should throw InternalServerErrorException if save fails', async () => {
-      const req = { user: { userId: '1' } };
-      const draftDto: createDraftRedacaoDto = {
-        title: 'Test Draft',
-        topic: 'Test Topic',
-        content: 'Test Content',
+    it('should throw an BadRequestException if createDraft throws', async () => {
+      const body: createDraftRedacaoDto = {
+        content: 'test content',
+        title: 'test title',
+        topic: 'test topic',
       };
+
+      const req = { user: { userId: 'userId' } };
+
+      const id = 1;
 
       jest
         .spyOn(service, 'createDraft')
-        .mockRejectedValue(new InternalServerErrorException());
+        .mockRejectedValue(new BadRequestException('Test error'));
 
-      await expect(controller.createDraft(req, draftDto)).rejects.toThrow(
-        InternalServerErrorException,
+      await expect(controller.createDraft(req, body, id)).rejects.toThrow(
+        BadRequestException,
       );
     });
   });
