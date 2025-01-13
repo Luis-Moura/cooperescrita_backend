@@ -55,4 +55,21 @@ export class User {
 
   @OneToMany(() => Redacao, (redacao) => redacao.user, { cascade: true })
   redacoes: Redacao[];
+
+  constructor(user?: Partial<User>) {
+    this.id = user?.id;
+    this.name = user?.name;
+    this.email = user?.email;
+    this.password = user?.password;
+    this.verified = user?.verified;
+    this.role = user?.role;
+    this.twoFA = user?.twoFA;
+    this.failedLoginAttempts = user?.failedLoginAttempts;
+    this.lockUntil = user?.lockUntil;
+    this.verificationCode = user?.verificationCode;
+    this.verificationCodeExpires = user?.verificationCodeExpires;
+    this.createdAt = user?.createdAt;
+    this.updatedAt = user?.updatedAt;
+    this.redacoes = user?.redacoes;
+  }
 }

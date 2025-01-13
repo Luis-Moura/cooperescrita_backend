@@ -40,4 +40,16 @@ export class Redacao {
 
   @ManyToOne(() => User, (user) => user.redacoes, { onDelete: 'CASCADE' })
   user: User;
+
+  constructor(redacao?: Partial<Redacao>) {
+    this.id = redacao?.id;
+    this.title = redacao?.title;
+    this.topic = redacao?.topic;
+    this.content = redacao?.content;
+    this.statusEnvio = redacao?.statusEnvio;
+    this.statusCorrecao = redacao?.statusCorrecao;
+    this.createdAt = redacao?.createdAt;
+    this.updatedAt = redacao?.updatedAt;
+    this.user = redacao?.user;
+  }
 }
