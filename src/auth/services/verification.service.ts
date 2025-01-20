@@ -23,36 +23,31 @@ export class VerificationService {
     private readonly invalidatedTokensService: InvalidatedTokensService,
   ) {}
   async verifyEmail(token: string) {
-    try {
-      if (!token) {
-        throw new BadRequestException('Invalid token');
-      }
-
-      const decoded: FindByEmailDto = this.jwtService.verify(token);
-
-      if (!decoded.email) {
-        throw new BadRequestException('Invalid token');
-      }
-
-      const user = await this.utilsService.findByEmailUtil(
-        decoded.email.toLowerCase(),
-      );
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      if (user.verified) {
-        throw new ConflictException('User already verified');
-      }
-
-      user.verified = true;
-      await this.usersRepository.save(user);
-      return { message: 'Email verified successfully' };
-    } catch (error) {
-      console.log('error', error);
-      throw new BadRequestException('Invalid or expired token');
+    if (!token) {
+      throw new BadRequestException('Invalid token');
     }
+
+    const decoded: FindByEmailDto = this.jwtService.verify(token);
+
+    if (!decoded.email) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const user = await this.utilsService.findByEmailUtil(
+      decoded.email.toLowerCase(),
+    );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.verified) {
+      throw new ConflictException('User already verified');
+    }
+
+    user.verified = true;
+    await this.usersRepository.save(user);
+    return { message: 'Email verified successfully' };
   }
 
   async verify2FACode(verify2FACodeDto: Verify2FACodeDto) {

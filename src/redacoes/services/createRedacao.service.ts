@@ -65,7 +65,10 @@ export class CreateRedacaoService {
     try {
       return await this.redacaoRepository.save(redacao);
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(
+        'Error saving redacao:\n',
+        error.message,
+      );
     }
   }
 
@@ -74,42 +77,45 @@ export class CreateRedacaoService {
     redacaoDto: createDraftRedacaoDto,
     redacaoId?: number,
   ): Promise<Redacao> {
-    try {
-      if (!userId) {
-        throw new NotFoundException('User not found');
-      }
+    if (!userId) {
+      throw new NotFoundException('User not found');
+    }
 
-      const user: User = await this.userRepository.findOne({
-        where: { id: userId },
+    const user: User = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    let redacao: Redacao;
+
+    if (redacaoId) {
+      redacao = await this.redacaoRepository.findOne({
+        where: { id: redacaoId, user: { id: userId } },
       });
 
-      if (!user) {
-        throw new NotFoundException('User not found');
+      if (!redacao) {
+        throw new NotFoundException('Redacao not found');
       }
 
-      let redacao: Redacao;
+      redacao = this.redacaoRepository.merge(redacao, redacaoDto);
+    } else {
+      redacao = this.redacaoRepository.create({
+        ...redacaoDto,
+        statusEnvio: 'rascunho',
+        user: { id: userId },
+      });
+    }
 
-      if (redacaoId) {
-        redacao = await this.redacaoRepository.findOne({
-          where: { id: redacaoId, user: { id: userId } },
-        });
-
-        if (!redacao) {
-          throw new NotFoundException('Redacao not found');
-        }
-
-        redacao = this.redacaoRepository.merge(redacao, redacaoDto);
-      } else {
-        redacao = this.redacaoRepository.create({
-          ...redacaoDto,
-          statusEnvio: 'rascunho',
-          user: { id: userId },
-        });
-      }
-
+    try {
       return await this.redacaoRepository.save(redacao);
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(
+        'Error saving draft:\n',
+        error.message,
+      );
     }
   }
 }

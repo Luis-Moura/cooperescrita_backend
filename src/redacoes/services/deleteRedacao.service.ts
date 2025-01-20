@@ -18,34 +18,37 @@ export class DeleteRedacaoService {
   ) {}
 
   async deleteRedacaoById(userId: string, redacaoId: number): Promise<void> {
+    if (!userId) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!redacaoId || isNaN(redacaoId)) {
+      throw new BadRequestException('Invalid Id');
+    }
+
+    const user: User = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const redacao: Redacao = await this.redacaoRepository.findOne({
+      where: { id: redacaoId, user: { id: userId } },
+    });
+
+    if (!redacao) {
+      throw new NotFoundException('Redacao not found');
+    }
+
     try {
-      if (!userId) {
-        throw new NotFoundException('User not found');
-      }
-
-      if (!redacaoId || isNaN(redacaoId)) {
-        throw new BadRequestException('Invalid Id');
-      }
-
-      const user: User = await this.userRepository.findOne({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const redacao: Redacao = await this.redacaoRepository.findOne({
-        where: { id: redacaoId, user: { id: userId } },
-      });
-
-      if (!redacao) {
-        throw new NotFoundException('Redacao not found');
-      }
-
       await this.redacaoRepository.delete({ id: redacaoId });
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(
+        'Error deleting redacao:\n',
+        error.message,
+      );
     }
   }
 }

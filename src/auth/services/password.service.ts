@@ -50,35 +50,30 @@ export class PasswordService {
 
   async postResetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword } = resetPasswordDto;
-    try {
-      const decoded = this.jwtService.verify(token);
-      const user = await this.utilsService.findByEmailUtil(
-        decoded.email.toLowerCase(),
-      );
+    const decoded = this.jwtService.verify(token);
+    const user = await this.utilsService.findByEmailUtil(
+      decoded.email.toLowerCase(),
+    );
 
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      if (await this.invalidatedTokensService.isTokenInvalidated(token)) {
-        throw new BadRequestException('Invalid or expired token');
-      }
-
-      const isSamePassword = await bcrypt.compare(newPassword, user.password);
-      if (isSamePassword) {
-        throw new ConflictException('Password cannot be the same');
-      }
-
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-      await this.usersRepository.save(user);
-
-      this.invalidatedTokensService.addToken(token);
-
-      return { message: 'Password reset successfully' };
-    } catch (error) {
-      console.log('error', error);
-      throw new BadRequestException('Invalid token or password');
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+
+    if (await this.invalidatedTokensService.isTokenInvalidated(token)) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new ConflictException('Password cannot be the same');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await this.usersRepository.save(user);
+
+    this.invalidatedTokensService.addToken(token);
+
+    return { message: 'Password reset successfully' };
   }
 }
