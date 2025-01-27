@@ -58,5 +58,6 @@ export class Redacao {
     this.createdAt = redacao?.createdAt;
     this.updatedAt = redacao?.updatedAt;
     this.user = redacao?.user;
+    this.correcoes = redacao?.correcoes;
   }
 }
