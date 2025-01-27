@@ -2,6 +2,7 @@ import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CorrecaoComments } from './correcaoComments.entity';
+import { CorrecaoHighlights } from './correcaoHighlights.entity';
 
 @Entity()
 export class Correcao {
@@ -22,6 +23,13 @@ export class Correcao {
     { onDelete: 'CASCADE' },
   )
   correcaoComments: CorrecaoComments[];
+
+  @OneToMany(
+    () => CorrecaoHighlights,
+    (correcaoHighlights) => correcaoHighlights.correcao,
+    { onDelete: 'CASCADE' },
+  )
+  correcaoHighlights: CorrecaoHighlights[];
 
   constructor(correcao?: Partial<Correcao>) {
     this.correcaoId = correcao?.correcaoId;
