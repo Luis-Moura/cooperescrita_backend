@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
+import { CorrecoesModule } from './correcoes/correcoes.module';
 import { EmailsModule } from './emails/emails.module';
 import { Redacao } from './redacoes/entities/redacao.entity';
 import { RedacoesModule } from './redacoes/redacoes.module';
@@ -44,6 +45,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     EmailsModule,
     TasksModule,
     RedacoesModule,
+    CorrecoesModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [],
