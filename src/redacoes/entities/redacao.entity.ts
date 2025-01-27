@@ -1,9 +1,11 @@
+import { Correcao } from 'src/correcoes/entities/correcao.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -40,6 +42,11 @@ export class Redacao {
 
   @ManyToOne(() => User, (user) => user.redacoes, { onDelete: 'CASCADE' })
   user: User;
+
+  @OneToMany(() => Correcao, (correcao) => correcao.redacao, {
+    onDelete: 'CASCADE',
+  })
+  correcoes: Correcao[];
 
   constructor(redacao?: Partial<Redacao>) {
     this.id = redacao?.id;

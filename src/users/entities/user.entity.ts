@@ -1,3 +1,4 @@
+import { Correcao } from 'src/correcoes/entities/correcao.entity';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import {
   Column,
@@ -55,6 +56,9 @@ export class User {
 
   @OneToMany(() => Redacao, (redacao) => redacao.user, { cascade: true })
   redacoes: Redacao[];
+
+  @OneToMany(() => Correcao, (correcao) => correcao.user, { cascade: true })
+  correcoes: Correcao[];
 
   constructor(user?: Partial<User>) {
     this.id = user?.id;
