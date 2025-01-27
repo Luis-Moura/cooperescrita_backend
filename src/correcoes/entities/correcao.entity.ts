@@ -3,6 +3,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CorrecaoComments } from './correcaoComments.entity';
 import { CorrecaoHighlights } from './correcaoHighlights.entity';
+import { CorrecaoSugestions } from './correcaoSugestions.entity';
 
 @Entity()
 export class Correcao {
@@ -31,10 +32,19 @@ export class Correcao {
   )
   correcaoHighlights: CorrecaoHighlights[];
 
+  @OneToMany(
+    () => CorrecaoSugestions,
+    (correcaoSugestions) => correcaoSugestions.correcao,
+    { onDelete: 'CASCADE' },
+  )
+  correcaoSugestions: CorrecaoSugestions[];
+
   constructor(correcao?: Partial<Correcao>) {
     this.correcaoId = correcao?.correcaoId;
     this.user = correcao?.user;
     this.redacao = correcao?.redacao;
     this.correcaoComments = correcao?.correcaoComments;
+    this.correcaoHighlights = correcao?.correcaoHighlights;
+    this.correcaoSugestions = correcao?.correcaoSugestions;
   }
 }
