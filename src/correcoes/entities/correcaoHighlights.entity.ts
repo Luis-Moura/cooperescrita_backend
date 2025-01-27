@@ -22,6 +22,8 @@ export class CorrecaoHighlights {
   color: string;
 
   @CreateDateColumn()
+  createdAt: Date;
+
   @ManyToOne(() => Correcao, (correcao) => correcao.correcaoHighlights, {
     onDelete: 'CASCADE',
   })

@@ -1,4 +1,5 @@
 import { Correcao } from 'src/correcoes/entities/correcao.entity';
+import { CorrecaoFeedback } from 'src/correcoes/entities/correcaoFeedback.entity';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import {
   Column,
@@ -57,8 +58,15 @@ export class User {
   @OneToMany(() => Redacao, (redacao) => redacao.user, { cascade: true })
   redacoes: Redacao[];
 
-  @OneToMany(() => Correcao, (correcao) => correcao.user, { cascade: true })
+  @OneToMany(() => Correcao, (correcao) => correcao.corretor, { cascade: true })
   correcoes: Correcao[];
+
+  @OneToMany(
+    () => CorrecaoFeedback,
+    (correcaoFeedback) => correcaoFeedback.user,
+    { onDelete: 'CASCADE' },
+  )
+  feedbacks: CorrecaoFeedback[];
 
   constructor(user?: Partial<User>) {
     this.id = user?.id;
