@@ -2,6 +2,7 @@ import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -55,6 +56,9 @@ export class Correcao {
     { onDelete: 'CASCADE' },
   )
   correcaoFeedbacks: CorrecaoFeedback[];
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   constructor(correcao?: Partial<Correcao>) {
     this.correcaoId = correcao?.correcaoId;

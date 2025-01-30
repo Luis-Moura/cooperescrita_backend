@@ -8,8 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
 import { Correcao } from '../../entities/correcao.entity';
+import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
 
 @Injectable()
 export class CreateCorrecoesService {
@@ -39,89 +39,85 @@ export class CreateCorrecoesService {
   private async saveCorrecao(
     corretorId: string,
     createCorrecaoDto: CreateCorrecaoDto,
-    status: 'rascunho' | 'enviado',
+    status: 'enviado' | 'rascunho',
   ) {
-    const { correcaoId } = createCorrecaoDto;
+    // verificar a existência do corretor
+    if (!corretorId) throw new NotFoundException('User not found');
 
-    // Validação do usuário
-    if (!corretorId) throw new NotFoundException('Usuário não encontrado');
-
-    const user = await this.userRepository.findOne({
+    const corretor: User = await this.userRepository.findOne({
       where: { id: corretorId },
     });
 
-    if (!user) throw new NotFoundException('Usuário não encontrado');
+    if (!corretor) throw new NotFoundException('User not found');
 
-    // Validação da redação
-    const redacao = await this.redacaoRepository.findOne({
+    // verificar a existência da redação
+    if (!createCorrecaoDto.redacaoId)
+      throw new BadRequestException('Redacao not found');
+
+    const redacao: Redacao = await this.redacaoRepository.findOne({
       where: { id: createCorrecaoDto.redacaoId },
-      relations: ['correcoes'], // Carrega correções existentes
     });
 
-    if (!redacao) throw new NotFoundException('Redação não encontrada');
+    if (!redacao) throw new NotFoundException('Redacao not found');
 
-    // Validação do limite de 15 corretores (apenas para definitivo)
-    if (status === 'enviado' && redacao.correcoes.length >= 15) {
-      throw new BadRequestException('Limite de 15 corretores atingido');
-    }
-
-    // Verifica se o usuário já tem uma correção (rascunho ou enviada) para esta redação
-    const existingCorrecao = await this.correcaoRepository.findOne({
-      where: { corretor: { id: corretorId }, redacao: { id: redacao.id } },
+    // verificar se a redação já foi corrigida por esse corretor
+    const correcaoExistente: Correcao = await this.correcaoRepository.findOne({
+      where: {
+        redacao: { id: redacao.id },
+        corretor: { id: corretor.id },
+        statusEnvio: 'enviado',
+      },
     });
 
-    if (!correcaoId && existingCorrecao) {
-      throw new BadRequestException('Correção já existente');
-    }
+    if (correcaoExistente)
+      throw new BadRequestException('Correcao already exists');
+
+    // verifica se o corretor já tem uma correção em rascunho
+    const correcaoRascunho: Correcao = await this.correcaoRepository.findOne({
+      where: {
+        redacao: { id: redacao.id },
+        corretor: { id: corretor.id },
+        statusEnvio: 'rascunho',
+      },
+    });
+
+    if (correcaoRascunho && !createCorrecaoDto.correcaoId)
+      throw new BadRequestException('Draft correction already exists');
+
+    // verifica se a correção já tem 15 correções
+    const correcoes: Correcao[] = await this.correcaoRepository.find({
+      where: { redacao: { id: redacao.id }, statusEnvio: 'enviado' },
+    });
+
+    if (correcoes.length >= 15)
+      throw new BadRequestException('Redacao already has 15 corrections');
 
     let correcao: Correcao;
-    let shouldUpdateRedacaoStatus = false; // Nova flag para controle
 
-    if (correcaoId) {
-      // Atualização de rascunho existente
+    if (createCorrecaoDto.correcaoId) {
       correcao = await this.correcaoRepository.findOne({
-        where: { correcaoId, corretor: { id: corretorId } },
+        where: { correcaoId: createCorrecaoDto.correcaoId },
       });
 
-      if (!correcao) throw new NotFoundException('Correção não encontrada');
+      if (!correcao) throw new NotFoundException('Correcao not found');
 
-      if (correcao.statusEnvio === 'enviado') {
-        throw new BadRequestException(
-          'Correção definitiva não pode ser editada',
-        );
-      }
-
-      // Atualiza o status e verifica se é uma conversão para definitivo
-      if (status === 'enviado') {
-        correcao.statusEnvio = status;
-        redacao.statusCorrecao = 'corrigida'; // ✅ Atualiza status da redação
-        shouldUpdateRedacaoStatus = true;
-      }
+      correcao.statusEnvio = status;
+      correcao = this.correcaoRepository.merge(correcao, createCorrecaoDto);
     } else {
-      // Criação de nova correção
       correcao = this.correcaoRepository.create({
+        ...createCorrecaoDto,
         statusEnvio: status,
-        corretor: { id: corretorId },
-        redacao: { id: createCorrecaoDto.redacaoId },
+        redacao: { id: redacao.id },
+        corretor: { id: corretor.id },
       });
-
-      // Só marca como corrigida se for definitivo
-      if (status === 'enviado') {
-        redacao.statusCorrecao = 'corrigida'; // ✅ Apenas para envios definitivos
-        shouldUpdateRedacaoStatus = true;
-      }
     }
 
     try {
-      // Salva a redação apenas se houver mudança de status
-      if (shouldUpdateRedacaoStatus) {
-        await this.redacaoRepository.save(redacao);
-      }
-
       return await this.correcaoRepository.save(correcao);
     } catch (error) {
       throw new InternalServerErrorException(
-        `Erro ao salvar correção: ${error.message}`,
+        'Error saving correcao:\n',
+        error.message,
       );
     }
   }
