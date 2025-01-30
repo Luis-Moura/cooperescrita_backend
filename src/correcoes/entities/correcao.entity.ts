@@ -1,6 +1,12 @@
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CorrecaoComments } from './correcaoComments.entity';
 import { CorrecaoFeedback } from './correcaoFeedback.entity';
 import { CorrecaoHighlights } from './correcaoHighlights.entity';
@@ -10,6 +16,9 @@ import { CorrecaoSugestions } from './correcaoSugestions.entity';
 export class Correcao {
   @PrimaryGeneratedColumn()
   correcaoId: number;
+
+  @Column({ type: 'enum', enum: ['rascunho', 'enviado'], default: 'rascunho' })
+  statusEnvio: string;
 
   @ManyToOne(() => User, (user) => user.correcoes, { onDelete: 'CASCADE' })
   corretor: User;
@@ -49,6 +58,7 @@ export class Correcao {
 
   constructor(correcao?: Partial<Correcao>) {
     this.correcaoId = correcao?.correcaoId;
+    this.statusEnvio = correcao?.statusEnvio;
     this.corretor = correcao?.corretor;
     this.redacao = correcao?.redacao;
     this.correcaoComments = correcao?.correcaoComments;

@@ -6,6 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
 import { CorrecoesModule } from './correcoes/correcoes.module';
+import { Correcao } from './correcoes/entities/correcao.entity';
+import { CorrecaoComments } from './correcoes/entities/correcaoComments.entity';
+import { CorrecaoFeedback } from './correcoes/entities/correcaoFeedback.entity';
+import { CorrecaoHighlights } from './correcoes/entities/correcaoHighlights.entity';
+import { CorrecaoSugestions } from './correcoes/entities/correcaoSugestions.entity';
 import { EmailsModule } from './emails/emails.module';
 import { Redacao } from './redacoes/entities/redacao.entity';
 import { RedacoesModule } from './redacoes/redacoes.module';
@@ -22,7 +27,15 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, Redacao],
+      entities: [
+        User,
+        Redacao,
+        Correcao,
+        CorrecaoComments,
+        CorrecaoFeedback,
+        CorrecaoHighlights,
+        CorrecaoSugestions,
+      ],
       migrations: ['dist/migrations/*.js'],
       migrationsRun: true,
     }),
