@@ -1,32 +1,37 @@
-import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CorrecoesService } from '../service/correcoes.service';
+import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
 
-@Controller('correcoes')
+@ApiTags('correcao')
+@Controller('correcao')
 export class CorrecoesController {
   constructor(private readonly correcoesService: CorrecoesService) {}
 
-  @Post()
-  create() {
-    return this.correcoesService.create();
+  @UseGuards(JwtAuthGuard)
+  @Post('definitivo')
+  async createDefinitiveCorrecao(
+    @Request() req,
+    @Body() createDefinitiveCorrecaoDto: CreateCorrecaoDto,
+  ) {
+    const corretorId = req.user.userId;
+    return this.correcoesService.createDefinitiveCorrecao(
+      corretorId,
+      createDefinitiveCorrecaoDto,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.correcoesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.correcoesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.correcoesService.update(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.correcoesService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post('rascunho')
+  async createDraftCorrecao(
+    @Request() req,
+    @Body() createDraftCorrecaoDto: CreateCorrecaoDto,
+  ) {
+    const corretorId = req.user.userId;
+    return this.correcoesService.createDraftCorrecao(
+      corretorId,
+      createDraftCorrecaoDto,
+    );
   }
 }
