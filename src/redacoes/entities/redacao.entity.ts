@@ -1,4 +1,4 @@
-import { Correcao } from 'src/correcoes/entities/correcao.entity';
+import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,

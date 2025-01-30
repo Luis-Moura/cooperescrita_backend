@@ -9,7 +9,7 @@ import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
-import { Correcao } from '../entities/correcao.entity';
+import { Correcao } from '../../entities/correcao.entity';
 
 @Injectable()
 export class CorrecoesService {

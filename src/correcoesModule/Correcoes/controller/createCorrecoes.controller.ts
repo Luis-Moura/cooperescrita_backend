@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CorrecoesService } from '../service/correcoes.service';
 import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
+import { CorrecoesService } from '../service/createCorrecoes.service';
 
 @ApiTags('correcao')
 @Controller('correcao')

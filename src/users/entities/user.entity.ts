@@ -1,5 +1,5 @@
-import { Correcao } from 'src/correcoes/entities/correcao.entity';
-import { CorrecaoFeedback } from 'src/correcoes/entities/correcaoFeedback.entity';
+import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
+import { CorrecaoFeedback } from 'src/correcoesModule/entities/correcaoFeedback.entity';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import {
   Column,
