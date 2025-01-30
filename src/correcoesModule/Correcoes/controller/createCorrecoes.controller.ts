@@ -2,12 +2,14 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
-import { CorrecoesService } from '../service/createCorrecoes.service';
+import { CreateCorrecoesService } from '../service/createCorrecoes.service';
 
 @ApiTags('correcao')
 @Controller('correcao')
-export class CorrecoesController {
-  constructor(private readonly correcoesService: CorrecoesService) {}
+export class CreateCorrecoesController {
+  constructor(
+    private readonly createCorrecoesService: CreateCorrecoesService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('definitivo')
@@ -16,7 +18,7 @@ export class CorrecoesController {
     @Body() createDefinitiveCorrecaoDto: CreateCorrecaoDto,
   ) {
     const corretorId = req.user.userId;
-    return this.correcoesService.createDefinitiveCorrecao(
+    return this.createCorrecoesService.createDefinitiveCorrecao(
       corretorId,
       createDefinitiveCorrecaoDto,
     );
@@ -29,7 +31,7 @@ export class CorrecoesController {
     @Body() createDraftCorrecaoDto: CreateCorrecaoDto,
   ) {
     const corretorId = req.user.userId;
-    return this.correcoesService.createDraftCorrecao(
+    return this.createCorrecoesService.createDraftCorrecao(
       corretorId,
       createDraftCorrecaoDto,
     );

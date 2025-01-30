@@ -12,7 +12,7 @@ import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
 import { Correcao } from '../../entities/correcao.entity';
 
 @Injectable()
-export class CorrecoesService {
+export class CreateCorrecoesService {
   constructor(
     @InjectRepository(Correcao)
     private readonly correcaoRepository: Repository<Correcao>,
