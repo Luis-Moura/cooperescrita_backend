@@ -101,6 +101,10 @@ export class CreateCorrecoesService {
 
       if (!correcao) throw new NotFoundException('Correcao not found');
 
+      if (status === 'enviado') {
+        redacao.statusCorrecao = 'corrigida';
+      }
+
       correcao.statusEnvio = status;
       correcao = this.correcaoRepository.merge(correcao, createCorrecaoDto);
     } else {
@@ -110,9 +114,17 @@ export class CreateCorrecoesService {
         redacao: { id: redacao.id },
         corretor: { id: corretor.id },
       });
+
+      if (status === 'enviado') {
+        redacao.statusCorrecao = 'corrigida';
+      }
     }
 
     try {
+      if (status === 'enviado') {
+        await this.redacaoRepository.save(redacao);
+      }
+
       return await this.correcaoRepository.save(correcao);
     } catch (error) {
       throw new InternalServerErrorException(
