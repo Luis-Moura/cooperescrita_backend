@@ -90,4 +90,31 @@ export class GetCorrecoesService {
 
     return { correcoes, totalCorrecoes };
   }
+
+  getCorrecaoById(corretorId: string, id: number) {
+    // Verificar se o usuário existe
+    if (!corretorId) {
+      throw new NotFoundException('User not found');
+    }
+
+    const corretor = this.userRepository.findOne({
+      where: { id: corretorId },
+    });
+
+    if (!corretor) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Buscar a correção pelo ID
+    const correcao = this.correcaoRepository.findOne({
+      where: { correcaoId: id },
+      relations: ['redacao'],
+    });
+
+    if (!correcao) {
+      throw new NotFoundException('Correcao not found');
+    }
+
+    return correcao;
+  }
 }

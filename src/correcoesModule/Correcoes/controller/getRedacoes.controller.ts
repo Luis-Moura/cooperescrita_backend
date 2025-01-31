@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
@@ -12,7 +19,14 @@ export class GetCorrecoesController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getCorrecoes(@Request() req, @Body() getCorrecoesDto: GetCorrecoesDto) {
-    const corretorId = req.user.userId;
+    const corretorId: string = req.user.userId;
     return this.getCorrecoesService.getCorrecoes(corretorId, getCorrecoesDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async getCorrecaoById(@Request() req, @Param('id') id: number) {
+    const corretorId: string = req.user.userId;
+    return this.getCorrecoesService.getCorrecaoById(corretorId, id);
   }
 }
