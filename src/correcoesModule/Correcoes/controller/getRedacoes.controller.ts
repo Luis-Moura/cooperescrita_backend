@@ -5,7 +5,7 @@ import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
 import { GetCorrecoesService } from '../service/getRedacoes.service';
 
 @ApiTags('correcao')
-@Controller('correcao')
+@Controller('correcoes')
 export class GetCorrecoesController {
   constructor(private readonly getCorrecoesService: GetCorrecoesService) {}
 

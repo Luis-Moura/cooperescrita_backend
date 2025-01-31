@@ -22,10 +22,10 @@ export class GetCorrecoesService {
   ) {}
 
   async getCorrecoes(corretorId: string, getCorrecoesDto: GetCorrecoesDto) {
-    // const { limit, offset, redacaoId, ordemLancamento, likes } =
-    //   getCorrecoesDto;
+    const { limit, offset, redacaoId, ordemLancamento, likes } =
+      getCorrecoesDto;
 
-    const { limit, offset, redacaoId, ordemLancamento } = getCorrecoesDto;
+    // const { limit, offset, redacaoId, ordemLancamento } = getCorrecoesDto;
 
     if (!corretorId) {
       throw new NotFoundException('User not found');
@@ -48,33 +48,41 @@ export class GetCorrecoesService {
       throw new NotFoundException('User not found');
     }
 
-    let order = {};
-    const where: any = { corretor: { id: corretorId } };
+    const query = this.correcaoRepository
+      .createQueryBuilder('correcao')
+      .leftJoinAndSelect('correcao.redacao', 'redacao')
+      .leftJoin('correcao.correcaoFeedbacks', 'feedback')
+      .addSelect([
+        `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) as totalLikes`,
+        `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) as totalDislikes`,
+      ])
+      .where('correcao.corretor = :corretorId', { corretorId })
+      .groupBy('correcao.correcaoId') // Agrupar por ID da correção
+      .addGroupBy('redacao.id') // Garantir agrupamento correto com a redação
+      .limit(limit)
+      .offset(offset);
 
+    // Filtro por redação específica, se necessário
     if (redacaoId) {
-      where.redacao = { id: redacaoId };
+      query.andWhere('correcao.redacao = :redacaoId', { redacaoId });
+    }
+
+    // Definir ordenação (data de criação ou likes)
+    if (likes) {
+      query.orderBy('totalLikes', likes === 'asc' ? 'ASC' : 'DESC');
     }
 
     if (ordemLancamento) {
-      order =
-        ordemLancamento === 'asc'
-          ? { createdAt: 'ASC' }
-          : { createdAt: 'DESC' };
+      query.addOrderBy(
+        'correcao.createdAt',
+        ordemLancamento === 'asc' ? 'ASC' : 'DESC',
+      );
     }
 
-    // if (likes) {
-    //   order = { likes: 'DESC' };
-    // }
-
-    const correcoes: Correcao[] = await this.correcaoRepository.find({
-      where,
-      order,
-      relations: ['redacao'],
-      take: limit,
-      skip: offset,
+    const correcoes = await query.getRawMany(); // Buscar os resultados
+    const totalCorrecoes = await this.correcaoRepository.count({
+      where: { corretor: { id: corretorId } },
     });
-
-    const totalCorrecoes = await this.correcaoRepository.count({ where });
 
     if (correcoes.length === 0) {
       throw new NotFoundException('Correcoes not found');
