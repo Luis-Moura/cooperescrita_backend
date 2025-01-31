@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
-import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
@@ -15,8 +14,8 @@ export class GetCorrecoesService {
   constructor(
     @InjectRepository(Correcao)
     private readonly correcaoRepository: Repository<Correcao>,
-    @InjectRepository(Redacao)
-    private readonly redacaoRepository: Repository<Redacao>,
+    // @InjectRepository(Redacao)
+    // private readonly redacaoRepository: Repository<Redacao>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
