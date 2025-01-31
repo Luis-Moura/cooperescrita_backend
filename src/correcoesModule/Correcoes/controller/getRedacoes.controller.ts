@@ -12,7 +12,7 @@ import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
 import { GetCorrecoesService } from '../service/getRedacoes.service';
 
 @ApiTags('correcao')
-@Controller('correcoes')
+@Controller('get-correcoes')
 export class GetCorrecoesController {
   constructor(private readonly getCorrecoesService: GetCorrecoesService) {}
 
