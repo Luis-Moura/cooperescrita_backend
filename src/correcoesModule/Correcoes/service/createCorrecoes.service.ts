@@ -11,6 +11,14 @@ import { Repository } from 'typeorm';
 import { Correcao } from '../../entities/correcao.entity';
 import { CreateCorrecaoDto } from '../dto/createCorrecao.dto';
 
+// a ideia é que ao criar uma correção no front ela inicie como um draft
+// e ao clicar em enviar, ela mude para enviado
+// caso o usuário clique em apenas salvar temporariamente, ela continue como draft
+// e seja aberta usando o id da correção para edição, e a partir daí, o usuário pode enviar ou salvar novamente
+
+// o usuário ao clicar em criar comentários por exemplo,
+// o comentário se vinculará à correcao temporária, e ao enviar, ele se vinculará à correção definitiva
+
 @Injectable()
 export class CreateCorrecoesService {
   constructor(
