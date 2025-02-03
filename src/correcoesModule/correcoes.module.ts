@@ -9,18 +9,25 @@ import { CreateCorrecoesService } from './Correcoes/service/createCorrecoes.serv
 import { DeleteCorrecoesService } from './Correcoes/service/deleteCorrecoes.service';
 import { GetCorrecoesService } from './Correcoes/service/getRedacoes.service';
 import { Correcao } from './entities/correcao.entity';
+import { CreateCorrecaoCommentsController } from './CorrecaoComments/controller/createCorrecaoComment.controller';
+import { CreateCorrecaoCommentsService } from './CorrecaoComments/service/createCorrecaoComment.service';
+import { CorrecaoComments } from './entities/correcaoComments.entity';
 
 @Module({
   controllers: [
     CreateCorrecoesController,
     GetCorrecoesController,
     DeleteCorrecoesController,
+    CreateCorrecaoCommentsController,
   ],
   providers: [
     CreateCorrecoesService,
     GetCorrecoesService,
     DeleteCorrecoesService,
+    CreateCorrecaoCommentsService,
   ],
-  imports: [TypeOrmModule.forFeature([Redacao, User, Correcao])],
+  imports: [
+    TypeOrmModule.forFeature([Redacao, User, Correcao, CorrecaoComments]),
+  ],
 })
 export class CorrecoesModule {}
