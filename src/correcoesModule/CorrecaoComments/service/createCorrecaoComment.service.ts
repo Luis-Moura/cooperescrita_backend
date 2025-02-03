@@ -7,19 +7,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
-import { Redacao } from 'src/redacoes/entities/redacao.entity';
+import { CorrecaoComments } from 'src/correcoesModule/entities/correcaoComments.entity';
 import { User } from 'src/users/entities/user.entity';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateCorrecaoCommentsDto } from '../dto/createCorrecaoComments.dto';
-import { CorrecaoComments } from 'src/correcoesModule/entities/correcaoComments.entity';
 
 @Injectable()
 export class CreateCorrecaoCommentsService {
   constructor(
     @InjectRepository(Correcao)
     private readonly correcaoRepository: Repository<Correcao>,
-    @InjectRepository(Redacao)
-    private readonly redacaoRepository: Repository<Redacao>,
     @InjectRepository(CorrecaoComments)
     private readonly correcaoCommentsRepository: Repository<CorrecaoComments>,
     @InjectRepository(User)
