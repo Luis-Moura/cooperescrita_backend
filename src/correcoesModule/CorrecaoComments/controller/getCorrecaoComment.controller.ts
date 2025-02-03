@@ -34,4 +34,28 @@ export class GetCorrecaoCommentsController {
       correcaoId,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':correcaoId/:commentId')
+  async getCorrecaoCommentById(
+    @Request() req,
+    @Param('correcaoId') correcaoId: number,
+    @Param('commentId') commentId: number,
+  ) {
+    const corretorId = req.user.userId;
+
+    if (!correcaoId || isNaN(correcaoId)) {
+      throw new BadRequestException('Invalid correcaoId');
+    }
+
+    if (!commentId || isNaN(commentId)) {
+      throw new BadRequestException('Invalid commentId');
+    }
+
+    return this.getCorrecaoCommentsService.getCorrecaoCommentById(
+      corretorId,
+      correcaoId,
+      commentId,
+    );
+  }
 }

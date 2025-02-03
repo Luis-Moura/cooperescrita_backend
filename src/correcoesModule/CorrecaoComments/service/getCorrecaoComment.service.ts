@@ -56,4 +56,47 @@ export class GetCorrecaoCommentsService {
 
     return correcaoComments;
   }
+
+  async getCorrecaoCommentById(
+    corretorId: string,
+    correcaoId: number,
+    commentId: number,
+  ) {
+    // verificar a existência do corretor
+    if (!corretorId) throw new NotFoundException('User not found');
+
+    const corretor: User = await this.userRepository.findOne({
+      where: { id: corretorId },
+    });
+
+    if (!corretor) throw new NotFoundException('User not found');
+
+    // Verifica se a correção existe e carrega o corretor junto
+    const correcao = await this.correcaoRepository.findOne({
+      where: { correcaoId: correcaoId, corretor: { id: corretorId } },
+      relations: ['corretor'], // Para garantir que `correcao.corretor.id` existe
+    });
+
+    if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o usuário tem permissão para ver os comentários da correção
+    if (correcao.corretor.id !== corretorId) {
+      throw new ForbiddenException(
+        'You do not have permission to view comments on this correction',
+      );
+    }
+
+    // Busca o comentário da correção
+    const correcaoComment: CorrecaoComments =
+      await this.correcaoCommentsRepository.findOne({
+        where: {
+          correcao: { correcaoId: correcaoId },
+          correcaoCommentId: commentId,
+        },
+      });
+
+    if (!correcaoComment) throw new NotFoundException('Comment not found');
+
+    return correcaoComment;
+  }
 }
