@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Redacao } from 'src/redacoes/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
+import { CreateCorrecaoCommentsController } from './CorrecaoComments/controller/createCorrecaoComment.controller';
+import { GetCorrecaoCommentsController } from './CorrecaoComments/controller/getCorrecaoComment.controller';
+import { CreateCorrecaoCommentsService } from './CorrecaoComments/service/createCorrecaoComment.service';
+import { GetCorrecaoCommentsService } from './CorrecaoComments/service/getCorrecaoComment.service';
 import { CreateCorrecoesController } from './Correcoes/controller/createCorrecoes.controller';
 import { DeleteCorrecoesController } from './Correcoes/controller/deleteCorrecoes.controller';
 import { GetCorrecoesController } from './Correcoes/controller/getRedacoes.controller';
@@ -9,11 +13,9 @@ import { CreateCorrecoesService } from './Correcoes/service/createCorrecoes.serv
 import { DeleteCorrecoesService } from './Correcoes/service/deleteCorrecoes.service';
 import { GetCorrecoesService } from './Correcoes/service/getRedacoes.service';
 import { Correcao } from './entities/correcao.entity';
-import { CreateCorrecaoCommentsController } from './CorrecaoComments/controller/createCorrecaoComment.controller';
-import { CreateCorrecaoCommentsService } from './CorrecaoComments/service/createCorrecaoComment.service';
 import { CorrecaoComments } from './entities/correcaoComments.entity';
-import { GetCorrecaoCommentsController } from './CorrecaoComments/controller/getCorrecaoComment.controller';
-import { GetCorrecaoCommentsService } from './CorrecaoComments/service/getCorrecaoComment.service';
+import { DeleteCorrecaoCommentController } from './CorrecaoComments/controller/deleteCorrecaoComment.controller';
+import { DeleteCorrecaoCommentService } from './CorrecaoComments/service/deleteCorrecaoComment.service';
 
 @Module({
   controllers: [
@@ -22,6 +24,7 @@ import { GetCorrecaoCommentsService } from './CorrecaoComments/service/getCorrec
     DeleteCorrecoesController,
     CreateCorrecaoCommentsController,
     GetCorrecaoCommentsController,
+    DeleteCorrecaoCommentController,
   ],
   providers: [
     CreateCorrecoesService,
@@ -29,6 +32,7 @@ import { GetCorrecaoCommentsService } from './CorrecaoComments/service/getCorrec
     DeleteCorrecoesService,
     CreateCorrecaoCommentsService,
     GetCorrecaoCommentsService,
+    DeleteCorrecaoCommentService,
   ],
   imports: [
     TypeOrmModule.forFeature([Redacao, User, Correcao, CorrecaoComments]),
