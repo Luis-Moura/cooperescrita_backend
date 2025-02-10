@@ -19,6 +19,8 @@ import { DeleteCorrecaoCommentService } from './CorrecaoComments/service/deleteC
 import { CreateCorrecaoHighlightsController } from './CorrecaoHighlights/controller/createCorrecaoHighlights.controller';
 import { CreateCorrecaoHighlightsService } from './CorrecaoHighlights/service/createCorrecaoHighlights.service';
 import { CorrecaoHighlights } from './entities/correcaoHighlights.entity';
+import { GetCorrecaoHighlightsController } from './CorrecaoHighlights/controller/getCorrecaoHighlights.controller';
+import { GetCorrecaoHighlightsService } from './CorrecaoHighlights/service/getCorrecaoHighlights.service';
 
 @Module({
   controllers: [
@@ -29,6 +31,7 @@ import { CorrecaoHighlights } from './entities/correcaoHighlights.entity';
     GetCorrecaoCommentsController,
     DeleteCorrecaoCommentController,
     CreateCorrecaoHighlightsController,
+    GetCorrecaoHighlightsController,
   ],
   providers: [
     CreateCorrecoesService,
@@ -38,6 +41,7 @@ import { CorrecaoHighlights } from './entities/correcaoHighlights.entity';
     GetCorrecaoCommentsService,
     DeleteCorrecaoCommentService,
     CreateCorrecaoHighlightsService,
+    GetCorrecaoHighlightsService,
   ],
   imports: [
     TypeOrmModule.forFeature([
