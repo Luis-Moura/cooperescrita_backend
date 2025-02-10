@@ -6,7 +6,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
 import { EmailsService } from 'src/emails/emails.service';
 import { User } from 'src/users/entities/user.entity';
 import { UtilsService } from 'src/users/services/utils.service';
@@ -24,9 +23,7 @@ export class SignInService {
   ) {}
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.utilsService.findByEmailUtil(
-      signInDto.email.toLowerCase(),
-    );
+    const user = await this.validateUser(signInDto.email, signInDto.password);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -80,7 +77,10 @@ export class SignInService {
     await this.usersRepository.save(user);
 
     if (user.twoFA) {
-      const verificationCode = crypto.randomBytes(3).toString('hex');
+      const verificationCode = Math.floor(
+        100000 + Math.random() * 900000,
+      ).toString();
+
       user.verificationCode = verificationCode;
       user.verificationCodeExpires = new Date(Date.now() + 600000);
       await this.usersRepository.save(user);
