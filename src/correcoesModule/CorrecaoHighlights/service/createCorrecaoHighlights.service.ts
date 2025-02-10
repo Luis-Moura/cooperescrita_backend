@@ -74,7 +74,17 @@ export class CreateCorrecaoHighlightsService {
       );
     }
 
-    // deixando os highlights sem limites, mas caso precise de um limite, entra aqui
+    // Verifica se o limite de marcações foi atingido (máximo: 15)
+    const correcaoHighlightsCount =
+      await this.correcaoHighlightsRepository.count({
+        where: { correcao: { correcaoId: correcaoId } },
+      });
+
+    if (correcaoHighlightsCount >= 15) {
+      throw new BadRequestException(
+        'You can only add highlights up to 15 times',
+      );
+    }
 
     // cria um nobo highlight
     const correcaoHighlight: CorrecaoHighlights =

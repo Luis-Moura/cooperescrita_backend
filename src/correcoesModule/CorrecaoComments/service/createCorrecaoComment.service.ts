@@ -75,13 +75,13 @@ export class CreateCorrecaoCommentsService {
       );
     }
 
-    // Verifica se o limite de comentários foi atingido (máximo: 3)
+    // Verifica se o limite de comentários foi atingido (máximo: 15)
     const correcaoCommentsCount = await this.correcaoCommentsRepository.count({
       where: { correcao: { correcaoId: correcaoId } },
     });
 
-    if (correcaoCommentsCount >= 5) {
-      throw new BadRequestException('You can only comment up to 5 times');
+    if (correcaoCommentsCount >= 15) {
+      throw new BadRequestException('You can only comment up to 15 times');
     }
 
     // Cria o novo comentário
