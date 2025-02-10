@@ -34,4 +34,28 @@ export class GetCorrecaoHighlightsController {
       correcaoId,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':correcaoId/:highlightId')
+  async getCorrecaoHighlightById(
+    @Request() req,
+    @Param('correcaoId') correcaoId: number,
+    @Param('highlightId') highlightId: number,
+  ) {
+    const corretorId = req.user.userId;
+
+    if (!correcaoId || isNaN(correcaoId)) {
+      throw new BadRequestException('Invalid correcaoId');
+    }
+
+    if (!highlightId || isNaN(highlightId)) {
+      throw new BadRequestException('Invalid highlightId');
+    }
+
+    return this.getCorrecaoHighlightsService.getCorrecaoHighlightById(
+      corretorId,
+      correcaoId,
+      highlightId,
+    );
+  }
 }
