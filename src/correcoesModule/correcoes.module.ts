@@ -26,6 +26,10 @@ import { Correcao } from './entities/correcao.entity';
 import { CorrecaoComments } from './entities/correcaoComments.entity';
 import { CorrecaoHighlights } from './entities/correcaoHighlights.entity';
 import { CorrecaoSuggestions } from './entities/correcaoSuggestions.entity';
+import { GetCorrecaoSuggestionController } from './CorrecaoSuggestion/controller/getCorrecaosuggestion.controller';
+import { GetCorrecaoSuggestionService } from './CorrecaoSuggestion/service/getCorrecaosuggestion.service';
+import { DeleteCorrecaoSuggestionController } from './CorrecaoSuggestion/controller/deleteCorrecaoSuggestion.controller';
+import { DeleteCorrecaoSuggestionsService } from './CorrecaoSuggestion/service/deleteCorrecaoSuggestion.service';
 
 @Module({
   controllers: [
@@ -39,6 +43,8 @@ import { CorrecaoSuggestions } from './entities/correcaoSuggestions.entity';
     GetCorrecaoHighlightsController,
     DeleteCorrecaoHighlightsController,
     CreateCorrecaoSuggestionController,
+    GetCorrecaoSuggestionController,
+    DeleteCorrecaoSuggestionController,
   ],
   providers: [
     CreateCorrecoesService,
@@ -51,6 +57,8 @@ import { CorrecaoSuggestions } from './entities/correcaoSuggestions.entity';
     GetCorrecaoHighlightsService,
     DeleteCorrecaoHighlightsService,
     CreateCorrecaoSuggestionService,
+    GetCorrecaoSuggestionService,
+    DeleteCorrecaoSuggestionsService,
   ],
   imports: [
     TypeOrmModule.forFeature([
