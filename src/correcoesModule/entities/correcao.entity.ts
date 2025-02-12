@@ -11,7 +11,7 @@ import {
 import { CorrecaoComments } from './correcaoComments.entity';
 import { CorrecaoFeedback } from './correcaoFeedback.entity';
 import { CorrecaoHighlights } from './correcaoHighlights.entity';
-import { CorrecaoSugestions } from './correcaoSugestions.entity';
+import { CorrecaoSuggestions } from './correcaoSuggestions.entity';
 
 @Entity()
 export class Correcao {
@@ -44,11 +44,11 @@ export class Correcao {
   correcaoHighlights: CorrecaoHighlights[];
 
   @OneToMany(
-    () => CorrecaoSugestions,
+    () => CorrecaoSuggestions,
     (correcaoSugestions) => correcaoSugestions.correcao,
     { onDelete: 'CASCADE' },
   )
-  correcaoSugestions: CorrecaoSugestions[];
+  correcaoSuggestions: CorrecaoSuggestions[];
 
   @OneToMany(
     () => CorrecaoFeedback,
@@ -67,7 +67,7 @@ export class Correcao {
     this.redacao = correcao?.redacao;
     this.correcaoComments = correcao?.correcaoComments;
     this.correcaoHighlights = correcao?.correcaoHighlights;
-    this.correcaoSugestions = correcao?.correcaoSugestions;
+    this.correcaoSuggestions = correcao?.correcaoSuggestions;
     this.correcaoFeedbacks = correcao?.correcaoFeedbacks;
   }
 }

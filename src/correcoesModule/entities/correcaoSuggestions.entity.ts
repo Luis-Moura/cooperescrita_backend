@@ -8,9 +8,9 @@ import {
 import { Correcao } from './correcao.entity';
 
 @Entity()
-export class CorrecaoSugestions {
+export class CorrecaoSuggestions {
   @PrimaryGeneratedColumn()
-  correctionSugestionId: number;
+  correctionSuggestionId: number;
 
   @Column({ type: 'int' })
   startIndex: number;
@@ -22,12 +22,12 @@ export class CorrecaoSugestions {
   originalText: string;
 
   @Column({ type: 'varchar' })
-  sugestionText: string;
+  suggestionText: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => Correcao, (correction) => correction.correcaoSugestions, {
+  @ManyToOne(() => Correcao, (correction) => correction.correcaoSuggestions, {
     onDelete: 'CASCADE',
   })
   correcao: Correcao;

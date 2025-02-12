@@ -10,7 +10,7 @@ import { Correcao } from './correcoesModule/entities/correcao.entity';
 import { CorrecaoComments } from './correcoesModule/entities/correcaoComments.entity';
 import { CorrecaoFeedback } from './correcoesModule/entities/correcaoFeedback.entity';
 import { CorrecaoHighlights } from './correcoesModule/entities/correcaoHighlights.entity';
-import { CorrecaoSugestions } from './correcoesModule/entities/correcaoSugestions.entity';
+import { CorrecaoSuggestions } from './correcoesModule/entities/correcaoSuggestions.entity';
 import { EmailsModule } from './emails/emails.module';
 import { Redacao } from './redacoes/entities/redacao.entity';
 import { RedacoesModule } from './redacoes/redacoes.module';
@@ -34,7 +34,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
         CorrecaoComments,
         CorrecaoFeedback,
         CorrecaoHighlights,
-        CorrecaoSugestions,
+        CorrecaoSuggestions,
       ],
       migrations: ['dist/migrations/*.js'],
       migrationsRun: true,

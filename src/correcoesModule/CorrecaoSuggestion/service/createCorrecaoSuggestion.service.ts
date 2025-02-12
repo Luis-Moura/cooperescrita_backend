@@ -6,25 +6,25 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
-import { CorrecaoSugestions } from 'src/correcoesModule/entities/correcaoSugestions.entity';
+import { CorrecaoSuggestions } from 'src/correcoesModule/entities/correcaoSuggestions.entity';
 import { User } from 'src/users/entities/user.entity';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
-import { CreateCorrecaoSugestionDto } from '../dto/createCorrecaosugestion.dto';
+import { CreateCorrecaoSuggestionDto } from '../dto/createCorrecaosuggestion.dto';
 
 @Injectable()
-export class CreateCorrecaoSugestionService {
+export class CreateCorrecaoSuggestionService {
   constructor(
     @InjectRepository(Correcao)
     private readonly correcaoRepository: Repository<Correcao>,
-    @InjectRepository(CorrecaoSugestions)
-    private readonly correcaoSugestionsRepository: Repository<CorrecaoSugestions>,
+    @InjectRepository(CorrecaoSuggestions)
+    private readonly correcaoSuggestionsRepository: Repository<CorrecaoSuggestions>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createCorrecaoSugestion(
+  async createCorrecaoSuggestion(
     corretorId: string,
-    createCorrecaoSugestionDto: CreateCorrecaoSugestionDto,
+    createCorrecaoSuggestionDto: CreateCorrecaoSuggestionDto,
     correcaoId: number,
   ) {
     // verificar a existencia do corretor
@@ -52,19 +52,19 @@ export class CreateCorrecaoSugestionService {
 
     // verifica se já existe algum sugestão no mesmo trecho e se o startIndex é menor que o endIndex
     if (
-      createCorrecaoSugestionDto.startIndex >
-      createCorrecaoSugestionDto.endIndex
+      createCorrecaoSuggestionDto.startIndex >
+      createCorrecaoSuggestionDto.endIndex
     ) {
       throw new BadRequestException(
         'The startIndex must be less tahn or equal to endIndex',
       );
     }
 
-    const existingHighlight = await this.correcaoSugestionsRepository.findOne({
+    const existingHighlight = await this.correcaoSuggestionsRepository.findOne({
       where: {
         correcao: { correcaoId: correcaoId },
-        startIndex: LessThanOrEqual(createCorrecaoSugestionDto.endIndex),
-        endIndex: MoreThanOrEqual(createCorrecaoSugestionDto.startIndex),
+        startIndex: LessThanOrEqual(createCorrecaoSuggestionDto.endIndex),
+        endIndex: MoreThanOrEqual(createCorrecaoSuggestionDto.startIndex),
       },
     });
 
@@ -75,24 +75,24 @@ export class CreateCorrecaoSugestionService {
     }
 
     // Verifica se o limite de sugestões por correção foi atingido (máximo: 100)
-    const countSugestions = await this.correcaoSugestionsRepository.count({
+    const countSuggestions = await this.correcaoSuggestionsRepository.count({
       where: { correcao: { correcaoId: correcaoId } },
     });
 
-    if (countSugestions >= 100) {
+    if (countSuggestions >= 100) {
       throw new BadRequestException(
         'The limit of suggestions per correction has been reached',
       );
     }
 
-    const correcaoSugestion = this.correcaoSugestionsRepository.create({
+    const correcaoSuggestion = this.correcaoSuggestionsRepository.create({
       correcao,
-      ...createCorrecaoSugestionDto,
+      ...createCorrecaoSuggestionDto,
     });
 
     try {
-      await this.correcaoSugestionsRepository.save(correcaoSugestion);
-      return { ...correcaoSugestion, correcao: correcaoId };
+      await this.correcaoSuggestionsRepository.save(correcaoSuggestion);
+      return { ...correcaoSuggestion, correcao: correcaoId };
     } catch (error) {
       console.log(error);
 

@@ -1,6 +1,6 @@
 import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateCorrecaoSugestionDto {
+export class CreateCorrecaoSuggestionDto {
   @IsNumber()
   @IsNotEmpty()
   startIndex: number;
@@ -15,5 +15,5 @@ export class CreateCorrecaoSugestionDto {
 
   @IsNotEmpty()
   @IsString()
-  sugestionText: string;
+  suggestionText: string;
 }

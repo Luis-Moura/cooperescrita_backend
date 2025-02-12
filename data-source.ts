@@ -4,12 +4,12 @@ import * as dotenv from 'dotenv';
 // import { CorrecaoFeedback } from 'src/correcoes/entities/correcaoFeedback.entity';
 // import { CorrecaoHighlights } from 'src/correcoes/entities/correcaoHighlights.entity';
 // import { CorrecaoSugestions } from 'src/correcoes/entities/correcaoSugestions.entity';
+import { DataSource } from 'typeorm';
 import { Correcao } from './src/correcoesModule/entities/correcao.entity';
 import { CorrecaoComments } from './src/correcoesModule/entities/correcaoComments.entity';
 import { CorrecaoFeedback } from './src/correcoesModule/entities/correcaoFeedback.entity';
 import { CorrecaoHighlights } from './src/correcoesModule/entities/correcaoHighlights.entity';
-import { CorrecaoSugestions } from './src/correcoesModule/entities/correcaoSugestions.entity';
-import { DataSource } from 'typeorm';
+import { CorrecaoSuggestions } from './src/correcoesModule/entities/correcaoSuggestions.entity';
 import { Redacao } from './src/redacoes/entities/redacao.entity';
 import { User } from './src/users/entities/user.entity';
 
@@ -24,8 +24,10 @@ export const AppDataSource = new DataSource({
     Correcao,
     CorrecaoComments,
     CorrecaoHighlights,
-    CorrecaoSugestions,
+    CorrecaoSuggestions,
     CorrecaoFeedback,
   ],
   migrations: ['src/migrations/*.ts'],
 });
+
+// npm run migration:generate -- src/migrations/NomeDaMigration
