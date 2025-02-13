@@ -35,6 +35,8 @@ import { CorrecaoFeedback } from './entities/correcaoFeedback.entity';
 import { CorrecaoHighlights } from './entities/correcaoHighlights.entity';
 import { CorrecaoSuggestions } from './entities/correcaoSuggestions.entity';
 import { GetCorrecaoFeedbackService } from './CorrecaoFeedbacks/service/getCorrecaoFeedback.service';
+import { DeleteCorrecaoFeedbackController } from './CorrecaoFeedbacks/controller/deleteCorrecaoFeedback.controller';
+import { DeleteCorrecaoFeedbackService } from './CorrecaoFeedbacks/service/deleteCorrecaoFeedback.service';
 
 @Module({
   controllers: [
@@ -52,6 +54,7 @@ import { GetCorrecaoFeedbackService } from './CorrecaoFeedbacks/service/getCorre
     DeleteCorrecaoSuggestionController,
     CreateCorrecaoFeedbackController,
     GetCorrecaoFeedbackController,
+    DeleteCorrecaoFeedbackController,
   ],
   providers: [
     CreateCorrecoesService,
@@ -68,6 +71,7 @@ import { GetCorrecaoFeedbackService } from './CorrecaoFeedbacks/service/getCorre
     DeleteCorrecaoSuggestionsService,
     CreateCorrecaoFeedbackService,
     GetCorrecaoFeedbackService,
+    DeleteCorrecaoFeedbackService,
   ],
   imports: [
     TypeOrmModule.forFeature([
