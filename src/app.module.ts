@@ -18,6 +18,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
 dotenv.config();
 
 const redisUrl = new URL(process.env.REDIS_URL || '');
@@ -30,6 +31,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       entities: [
         User,
         Redacao,
+        RedacaoComments,
         Correcao,
         CorrecaoComments,
         CorrecaoFeedback,
