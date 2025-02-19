@@ -1,6 +1,6 @@
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
 import { CorrecaoFeedback } from 'src/correcoesModule/entities/correcaoFeedback.entity';
-import { Redacao } from 'src/redacoes/entities/redacao.entity';
+import { Redacao } from 'src/redacoesModule/entities/redacao.entity';
 import {
   Column,
   CreateDateColumn,

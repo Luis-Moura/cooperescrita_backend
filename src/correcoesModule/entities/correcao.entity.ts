@@ -1,4 +1,4 @@
-import { Redacao } from 'src/redacoes/entities/redacao.entity';
+import { Redacao } from 'src/redacoesModule/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,

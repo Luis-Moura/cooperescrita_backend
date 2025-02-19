@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Redacao } from 'src/redacoes/entities/redacao.entity';
+import { Redacao } from 'src/redacoesModule/entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateCorrecaoCommentsController } from './CorrecaoComments/controller/createCorrecaoComment.controller';
 import { DeleteCorrecaoCommentController } from './CorrecaoComments/controller/deleteCorrecaoComment.controller';

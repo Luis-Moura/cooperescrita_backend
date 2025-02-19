@@ -5,7 +5,7 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { createDraftRedacaoDto } from 'src/redacoes/dto/createDraftRedacaoDto';
+import { createDraftRedacaoDto } from 'src/redacoesModule/dto/createDraftRedacaoDto';
 
 export function CreateDraftDocs() {
   return applyDecorators(

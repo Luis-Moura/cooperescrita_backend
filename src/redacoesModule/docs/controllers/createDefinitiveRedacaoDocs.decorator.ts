@@ -6,7 +6,7 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
-import { createDefinitiveRedacaoDto } from 'src/redacoes/dto/createDefinitiveRedacaoDto';
+import { createDefinitiveRedacaoDto } from 'src/redacoesModule/dto/createDefinitiveRedacaoDto';
 
 export function CreateDefinitiveRedacaoDocs() {
   return applyDecorators(

@@ -12,8 +12,8 @@ import { CorrecaoFeedback } from './correcoesModule/entities/correcaoFeedback.en
 import { CorrecaoHighlights } from './correcoesModule/entities/correcaoHighlights.entity';
 import { CorrecaoSuggestions } from './correcoesModule/entities/correcaoSuggestions.entity';
 import { EmailsModule } from './emails/emails.module';
-import { Redacao } from './redacoes/entities/redacao.entity';
-import { RedacoesModule } from './redacoes/redacoes.module';
+import { Redacao } from './redacoesModule/entities/redacao.entity';
+import { RedacoesModule } from './redacoesModule/redacoes.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
