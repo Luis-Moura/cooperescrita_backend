@@ -26,7 +26,7 @@ export class GetRedacaoCommentService {
 
     if (!autor) throw new NotFoundException('User not found');
 
-    // Verifica se a redação existe e carrega o autor junto
+    // Verifica se a redação existe
     const redacao = await this.redacaoRepository.findOne({
       where: { id: redacaoId },
     });
@@ -43,5 +43,40 @@ export class GetRedacaoCommentService {
       });
 
     return redacaoComments;
+  }
+
+  async getRedacaoCommentById(
+    autorId: string,
+    redacaoId: number,
+    commentId: number,
+  ) {
+    // verificar a existência do autor
+    if (!autorId) throw new NotFoundException('User not found');
+
+    const autor: User = await this.userRepository.findOne({
+      where: { id: autorId },
+    });
+
+    if (!autor) throw new NotFoundException('User not found');
+
+    // Verifica se a redação existe
+    const redacao = await this.redacaoRepository.findOne({
+      where: { id: redacaoId },
+    });
+
+    if (!redacao) throw new NotFoundException('Essay not found');
+
+    // Busca o comentário da redação
+    const redacaoComment: RedacaoComments =
+      await this.redacaoCommentsRepository.findOne({
+        where: {
+          redacao: { id: redacaoId },
+          id: commentId,
+        },
+      });
+
+    if (!redacaoComment) throw new NotFoundException('Comment not found');
+
+    return redacaoComment;
   }
 }

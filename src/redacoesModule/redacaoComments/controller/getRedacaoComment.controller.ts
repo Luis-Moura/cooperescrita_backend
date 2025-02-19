@@ -34,4 +34,28 @@ export class GetRedacaoCommentsController {
       +redacaoId,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':redacaoId/:commentId')
+  async getRedacaoCommentById(
+    @Request() req,
+    @Param('redacaoId') redacaoId: number,
+    @Param('commentId') commentId: number,
+  ) {
+    const autorId: string = req.user.userId;
+
+    if (!commentId || isNaN(commentId)) {
+      throw new BadRequestException('Invalid commentId');
+    }
+
+    if (!redacaoId || isNaN(redacaoId)) {
+      throw new BadRequestException('Invalid redacaoId');
+    }
+
+    return this.getRedacaoCommentService.getRedacaoCommentById(
+      autorId,
+      +redacaoId,
+      +commentId,
+    );
+  }
 }
