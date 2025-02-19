@@ -7,6 +7,7 @@ import { CorrecaoHighlights } from './src/correcoesModule/entities/correcaoHighl
 import { CorrecaoSuggestions } from './src/correcoesModule/entities/correcaoSuggestions.entity';
 import { Redacao } from './src/redacoesModule/entities/redacao.entity';
 import { User } from './src/users/entities/user.entity';
+import { RedacaoComments } from 'src/redacoesModule/entities/redacaoComments.entity';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ export const AppDataSource = new DataSource({
   entities: [
     User,
     Redacao,
+    RedacaoComments,
     Correcao,
     CorrecaoComments,
     CorrecaoHighlights,

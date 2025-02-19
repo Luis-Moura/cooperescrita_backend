@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { RedacaoComments } from './redacaoComments.entity';
 
 @Entity()
 export class Redacao {
@@ -48,6 +49,11 @@ export class Redacao {
   })
   correcoes: Correcao[];
 
+  @OneToMany(() => RedacaoComments, (comentario) => comentario.redacao, {
+    onDelete: 'CASCADE',
+  })
+  comentariosRedacao: RedacaoComments[];
+
   constructor(redacao?: Partial<Redacao>) {
     this.id = redacao?.id;
     this.title = redacao?.title;
@@ -59,5 +65,6 @@ export class Redacao {
     this.updatedAt = redacao?.updatedAt;
     this.user = redacao?.user;
     this.correcoes = redacao?.correcoes;
+    this.comentariosRedacao = redacao?.comentariosRedacao;
   }
 }

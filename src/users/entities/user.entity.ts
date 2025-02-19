@@ -1,6 +1,7 @@
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
 import { CorrecaoFeedback } from 'src/correcoesModule/entities/correcaoFeedback.entity';
 import { Redacao } from 'src/redacoesModule/entities/redacao.entity';
+import { RedacaoComments } from 'src/redacoesModule/entities/redacaoComments.entity';
 import {
   Column,
   CreateDateColumn,
@@ -68,6 +69,11 @@ export class User {
   )
   feedbacks: CorrecaoFeedback[];
 
+  @OneToMany(() => RedacaoComments, (comentario) => comentario.autor, {
+    onDelete: 'CASCADE',
+  })
+  comentariosRedacao: RedacaoComments[];
+
   constructor(user?: Partial<User>) {
     this.id = user?.id;
     this.name = user?.name;
@@ -83,5 +89,8 @@ export class User {
     this.createdAt = user?.createdAt;
     this.updatedAt = user?.updatedAt;
     this.redacoes = user?.redacoes;
+    this.correcoes = user?.correcoes;
+    this.feedbacks = user?.feedbacks;
+    this.comentariosRedacao = user?.comentariosRedacao;
   }
 }
