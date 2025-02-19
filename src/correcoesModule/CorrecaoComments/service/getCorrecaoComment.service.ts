@@ -38,13 +38,6 @@ export class GetCorrecaoCommentsService {
 
     if (!correcao) throw new NotFoundException('Correction not found');
 
-    // Verifica se o usuário tem permissão para ver os comentários da correção
-    if (correcao.corretor.id !== corretorId) {
-      throw new ForbiddenException(
-        'You do not have permission to view comments on this correction',
-      );
-    }
-
     // Busca os comentários da correção
     const correcaoComments: CorrecaoComments[] =
       await this.correcaoCommentsRepository.find({

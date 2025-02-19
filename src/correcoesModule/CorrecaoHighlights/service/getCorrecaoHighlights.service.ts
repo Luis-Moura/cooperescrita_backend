@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
 import { CorrecaoHighlights } from 'src/correcoesModule/entities/correcaoHighlights.entity';
@@ -38,13 +34,6 @@ export class GetCorrecaoHighlightsService {
 
     if (!correcao) throw new NotFoundException('Correction not found');
 
-    // Verifica se o usuário tem permissão para ver os comentários da correção
-    if (correcao.corretor.id !== corretorId) {
-      throw new ForbiddenException(
-        'You do not have permission to view comments on this correction',
-      );
-    }
-
     // Busca os highlights da correcao
     const correcaoHighlights: CorrecaoHighlights[] =
       await this.correcaoHighlightsRepository.find({
@@ -78,13 +67,6 @@ export class GetCorrecaoHighlightsService {
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
-
-    // Verifica se o usuário tem permissão para ver os comentários da correção
-    if (correcao.corretor.id !== corretorId) {
-      throw new ForbiddenException(
-        'You do not have permission to view comments on this correction',
-      );
-    }
 
     // Busca o highlight da correcao
     const highlightComment: CorrecaoHighlights =

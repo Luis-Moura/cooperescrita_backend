@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
 import { CorrecaoSuggestions } from 'src/correcoesModule/entities/correcaoSuggestions.entity';
@@ -38,12 +34,6 @@ export class GetCorrecaoSuggestionService {
 
     if (!correcao) throw new NotFoundException('Correction not found');
 
-    // verifica se o usuário tem permissão para adicionar uma sugestão na correção
-    if (correcao.corretor.id !== corretorId)
-      throw new ForbiddenException(
-        'You do not have permission to suggest on this correction',
-      );
-
     // busca as sugestões da correcao
     const correcaoSuggestions: CorrecaoSuggestions[] =
       await this.correcaoSuggestionsRepository.find({
@@ -77,12 +67,6 @@ export class GetCorrecaoSuggestionService {
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
-
-    // verifica se o usuário tem permissão para adicionar uma sugestão na correção
-    if (correcao.corretor.id !== corretorId)
-      throw new ForbiddenException(
-        'You do not have permission to suggest on this correction',
-      );
 
     // busca a sugestão da correcao
     const correcaoSuggestion: CorrecaoSuggestions =
