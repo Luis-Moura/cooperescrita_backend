@@ -9,9 +9,11 @@ import { RedacaoComments } from './entities/redacaoComments.entity';
 import { CreateRedacaoCommentController } from './redacaoComments/controller/createRedacaoComment.controller';
 import { DeleteRedacaoCommentController } from './redacaoComments/controller/deleteRedacaoComment.controller';
 import { GetRedacaoCommentsController } from './redacaoComments/controller/getRedacaoComment.controller';
+import { UpdateRedacaoCommentController } from './redacaoComments/controller/updateRedacaoComment.controller';
 import { CreateRedacaoCommentService } from './redacaoComments/service/createRedacaoComment.service';
 import { DeleteRedacaoCommentService } from './redacaoComments/service/deleteRedacaoComment.service';
 import { GetRedacaoCommentService } from './redacaoComments/service/getRedacaoComment.service';
+import { UpdateRedacaoCommentService } from './redacaoComments/service/updateRedacaoComment.service';
 import { CreateRedacaoService } from './services/createRedacao.service';
 import { DeleteRedacaoService } from './services/deleteRedacao.service';
 import { GetRedacaoService } from './services/getRedacao.service';
@@ -25,6 +27,7 @@ import { GetRedacaoService } from './services/getRedacao.service';
     CreateRedacaoCommentController,
     GetRedacaoCommentsController,
     DeleteRedacaoCommentController,
+    UpdateRedacaoCommentController,
   ],
   providers: [
     CreateRedacaoService,
@@ -33,6 +36,7 @@ import { GetRedacaoService } from './services/getRedacao.service';
     CreateRedacaoCommentService,
     GetRedacaoCommentService,
     DeleteRedacaoCommentService,
+    UpdateRedacaoCommentService,
   ],
 })
 export class RedacoesModule {}
