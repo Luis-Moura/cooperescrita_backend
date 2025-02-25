@@ -49,15 +49,22 @@ export class GetCorrecoesService {
 
     const query = this.correcaoRepository
       .createQueryBuilder('correcao')
-      .leftJoinAndSelect('correcao.redacao', 'redacao')
+      .leftJoin('correcao.redacao', 'redacao')
+      .select([
+        'correcao.correcaoId',
+        'correcao.statusEnvio',
+        'correcao.createdAt',
+        'redacao.id AS redacao_id',
+        'redacao.title AS redacao_title',
+        'redacao.statusEnvio AS redacao_statusEnvio',
+      ])
       .leftJoin('correcao.correcaoFeedbacks', 'feedback')
       .addSelect([
-        `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) as totalLikes`,
-        `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) as totalDislikes`,
+        `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) AS totalLikes`,
+        `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
       ])
       .where('correcao.corretor = :corretorId', { corretorId })
-      .groupBy('correcao.correcaoId') // Agrupar por ID da correção
-      .addGroupBy('redacao.id') // Garantir agrupamento correto com a redação
+      .groupBy('correcao.correcaoId, redacao.id')
       .limit(limit)
       .offset(offset);
 

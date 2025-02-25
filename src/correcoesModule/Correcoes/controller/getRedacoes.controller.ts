@@ -9,7 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
-import { GetCorrecoesService } from '../service/getRedacoes.service';
+import { GetCorrecoesService } from '../service/getCorrecoes.service';
 
 @ApiTags('correcao')
 @Controller('get-correcoes')

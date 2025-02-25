@@ -28,7 +28,7 @@ import { DeleteCorrecoesController } from './Correcoes/controller/deleteCorrecoe
 import { GetCorrecoesController } from './Correcoes/controller/getRedacoes.controller';
 import { CreateCorrecoesService } from './Correcoes/service/createCorrecoes.service';
 import { DeleteCorrecoesService } from './Correcoes/service/deleteCorrecoes.service';
-import { GetCorrecoesService } from './Correcoes/service/getRedacoes.service';
+import { GetCorrecoesService } from './Correcoes/service/getCorrecoes.service';
 import { Correcao } from './entities/correcao.entity';
 import { CorrecaoComments } from './entities/correcaoComments.entity';
 import { CorrecaoFeedback } from './entities/correcaoFeedback.entity';
