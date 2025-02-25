@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -53,6 +54,15 @@ export class UpdateRedacaoCommentService {
 
     if (!redacaoComment.autor || redacaoComment.autor.id !== autorId) {
       throw new UnauthorizedException('Unauthorized');
+    }
+
+    // verifica se os index são válidos
+    if (
+      updateRedacaoCommentdto.startIndex > updateRedacaoCommentdto.endIndex ||
+      redacaoComment.startIndex > updateRedacaoCommentdto.endIndex ||
+      redacaoComment.endIndex < updateRedacaoCommentdto.startIndex
+    ) {
+      throw new BadRequestException('Invalid indexes');
     }
 
     // Atualiza o comentário
