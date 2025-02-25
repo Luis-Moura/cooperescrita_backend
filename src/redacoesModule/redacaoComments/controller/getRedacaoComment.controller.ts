@@ -39,6 +39,7 @@ export class GetRedacaoCommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':redacaoId/:commentId')
+  @GetRedacaoCommentsDocs()
   async getRedacaoCommentById(
     @Request() req,
     @Param('redacaoId') redacaoId: number,

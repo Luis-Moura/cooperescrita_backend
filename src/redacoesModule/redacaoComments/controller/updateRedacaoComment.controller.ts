@@ -11,6 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateRedacaoCommentDto } from '../dto/updateRedacaoComment.dto';
 import { UpdateRedacaoCommentService } from '../service/updateRedacaoComment.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UpdateRedacaoCommentDocs } from '../docs/controllers/updateRedacaoComment.decorator';
 
 @ApiTags('RedacaoComments')
 @Controller('redacao-comments')
@@ -21,6 +22,7 @@ export class UpdateRedacaoCommentController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':redacaoId/:commentId')
+  @UpdateRedacaoCommentDocs()
   async updateRedacaoComment(
     @Request() req,
     @Param('redacaoId') redacaoId: number,

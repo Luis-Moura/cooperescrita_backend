@@ -4,6 +4,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
 import { CreateRedacaoCommentsDto } from '../../dto/createRedacaoComments.dto';
 
@@ -12,40 +13,61 @@ export function CreateRedacaoCommentsDocs() {
     ApiBearerAuth(),
     ApiOperation({
       summary: 'Criar um comentário em uma redação',
-    }),
-    ApiResponse({ status: 201, description: 'Comentário criado com sucesso.' }),
-    ApiResponse({
-      status: 404,
-      description: 'Usuário ou redação não encontrados.',
-    }),
-    ApiResponse({
-      status: 403,
       description:
-        'Você não pode comentar em uma redação que não foi enviada em definitivo.',
+        'Cria um novo comentário em uma seção específica de uma redação, feita pelo próprio redator.',
+    }),
+    ApiParam({
+      name: 'redacaoId',
+      type: 'number',
+      description: 'ID da redação a ser comentada',
+      required: true,
+      example: 1,
+    }),
+    ApiBody({
+      type: CreateRedacaoCommentsDto,
+      description: 'Dados do comentário',
+      examples: {
+        example1: {
+          summary: 'Criação de comentário válida',
+          value: {
+            startIndex: 0,
+            endIndex: 100,
+            comentario:
+              'Esta seção da redação eu fiquei inseguro no desenvolvimento do argumento e na coerência.',
+          },
+        },
+      },
     }),
     ApiResponse({
-      status: 403,
-      description: 'Você não tem permissão para comentar nesta redação.',
+      status: 201,
+      description: 'Comentário criado com sucesso.',
     }),
     ApiResponse({
       status: 400,
       description:
-        'O índice de início do comentário deve ser menor que o índice de fim.',
+        'Requisição inválida - Erros de validação:\n' +
+        '- ID da redação inválido\n' +
+        '- O startIndex deve ser menor ou igual ao endIndex\n' +
+        '- Já existe um comentário neste trecho\n' +
+        '- Número máximo de comentários atingido (15)',
     }),
-    ApiResponse({ status: 500, description: 'Erro interno do servidor.' }),
-    ApiBody({
-      description: 'Dados para criação do comentário',
-      type: CreateRedacaoCommentsDto,
-      examples: {
-        exemplo1: {
-          summary: 'Exemplo de criação de comentário',
-          value: {
-            startIndex: 0,
-            endIndex: 10,
-            content: 'Este é o conteúdo do meu comentário.',
-          },
-        },
-      },
+    ApiResponse({
+      status: 403,
+      description:
+        'Proibido - Acesso negado:\n' +
+        '- Você não pode comentar em uma redação em rascunho\n' +
+        '- Você não tem permissão para comentar nesta redação',
+    }),
+    ApiResponse({
+      status: 404,
+      description:
+        'Não encontrado:\n' +
+        '- Usuário não encontrado\n' +
+        '- Redação não encontrada',
+    }),
+    ApiResponse({
+      status: 500,
+      description: 'Erro interno do servidor ao criar o comentário',
     }),
   );
 }
