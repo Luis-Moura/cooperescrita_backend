@@ -9,6 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { GetRedacaoCommentService } from '../service/getRedacaoComment.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GetRedacaoCommentsDocs } from '../docs/controllers/getRedacaoComments.decorator';
 
 @ApiTags('RedacaoComments')
 @Controller('redacao/comments')
@@ -19,6 +20,7 @@ export class GetRedacaoCommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':redacaoId')
+  @GetRedacaoCommentsDocs()
   async getRedacaoComments(
     @Request() req,
     @Param('redacaoId') redacaoId: number,
