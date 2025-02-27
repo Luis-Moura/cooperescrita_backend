@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Redacao } from '../entities/redacao.entity';
-import { IGetRedacoes } from '../interfaces/IGetRedacoes';
+import { IGetRedacoes, RedacaoDTO } from '../interfaces/IGetRedacoes';
 import { IOrderQuery } from '../interfaces/IOrderQuery';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class GetRedacaoService {
     }
 
     let order = {};
-    const where: any = { user: { id: userId } };
+    const where: any = {};
 
     if (orderQuery.order) {
       order =
@@ -71,7 +71,23 @@ export class GetRedacaoService {
       order,
       take: limit,
       skip: offset,
+      relations: ['user'],
     });
+
+    // Mapeia as redações para retornar somente o nome do usuário
+    const redacoesDTO: RedacaoDTO[] = redacoes.map((redacao) => ({
+      id: redacao.id,
+      title: redacao.title,
+      topic: redacao.topic,
+      user: redacao.user.name,
+      content: redacao.content,
+      statusEnvio: redacao.statusEnvio,
+      statusCorrecao: redacao.statusCorrecao,
+      createdAt: redacao.createdAt,
+      updatedAt: redacao.updatedAt,
+      correcoes: redacao.correcoes,
+      comentariosRedacao: redacao.comentariosRedacao,
+    }));
 
     const totalRedacoes = await this.redacaoRepository.count({ where });
 
@@ -79,7 +95,7 @@ export class GetRedacaoService {
       throw new NotFoundException('Redacoes not found');
     }
 
-    return { redacoes, totalRedacoes };
+    return { redacoes: redacoesDTO, totalRedacoes };
   }
 
   async getRedacaoById(userId: string, id: number) {
@@ -100,7 +116,7 @@ export class GetRedacaoService {
     }
 
     const redacao: Redacao = await this.redacaoRepository.findOne({
-      where: { id, user: { id: userId } },
+      where: { id },
     });
 
     if (!redacao) {
