@@ -82,7 +82,14 @@ describe('getRedacao', () => {
         statusCorrecao: 'nao-corrigidas',
       });
 
-      expect(result).toEqual({ redacoes: redacaoEntity, totalRedacoes: 1 });
+      expect(result).toEqual({
+        redacoes: redacaoEntity.map((redacao) => ({
+          ...redacao,
+          user: redacao.user.name,
+        })),
+        totalRedacoes: 1,
+      });
+
       expect(redacaoRepository.find).toHaveBeenCalledTimes(1);
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
     });
