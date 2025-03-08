@@ -63,7 +63,6 @@ export class GetCorrecoesService {
         `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) AS totalLikes`,
         `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
       ])
-      .where('correcao.corretor = :corretorId', { corretorId })
       .groupBy('correcao.correcaoId, redacao.id')
       .limit(limit)
       .offset(offset);

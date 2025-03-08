@@ -28,8 +28,7 @@ export class GetCorrecaoHighlightsService {
 
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
-      where: { correcaoId: correcaoId, corretor: { id: corretorId } },
-      relations: ['corretor'], // Para garantir que `correcao.corretor.id` existe
+      where: { correcaoId: correcaoId },
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
@@ -62,8 +61,7 @@ export class GetCorrecaoHighlightsService {
 
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
-      where: { correcaoId: correcaoId, corretor: { id: corretorId } },
-      relations: ['corretor'], // Para garantir que `correcao.corretor.id` existe
+      where: { correcaoId: correcaoId },
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
