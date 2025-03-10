@@ -3,9 +3,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetRedacaoByIdDocs } from '../docs/controllers/getRedacaoByIdDocs.decorator';
 import { GetRedacoesDecoratorsDocs } from '../docs/controllers/getRedacoesDocs.decorator';
-import { IOrderQuery } from '../interfaces/IOrderQuery';
+import { OrderQueryPublicRedacoes } from '../interfaces/OrderQueryPublicRedacoes';
 import { GetRedacaoService } from '../services/getRedacao.service';
 import { IGetRedacoes } from '../interfaces/IGetRedacoes';
+import { OrderQueryPrivateRedacoes } from '../interfaces/OrderQueryPrivateRedacoes';
 
 @ApiTags('redacao')
 @Controller('redacao')
@@ -13,20 +14,42 @@ export class GetRedacaoController {
   constructor(private readonly getRedacaoService: GetRedacaoService) {}
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
-  @Get('get-redacoes') // rota para buscar redações
+  @Get('get-public-redacoes') // rota para buscar redações
   @GetRedacoesDecoratorsDocs() // gera a documentação da rota
   getRedacoes(
     @Request() req,
     @Query('limit') limit: number,
     @Query('offset') offset: number,
-    @Query() orderQuery: IOrderQuery,
+    @Query() orderQuery: OrderQueryPublicRedacoes,
   ): Promise<IGetRedacoes> {
     const userId = req.user.userId;
     const maxLimit = 50;
 
     limit = limit > maxLimit ? maxLimit : limit;
 
-    return this.getRedacaoService.getRedacoes(
+    return this.getRedacaoService.getPublicRedacoes(
+      userId,
+      limit,
+      offset,
+      orderQuery,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Get('get-private-redacoes') // rota para buscar redações
+  @GetRedacoesDecoratorsDocs() // gera a documentação da rota
+  getPrivateRedacoes(
+    @Request() req,
+    @Query('limit') limit: number,
+    @Query('offset') offset: number,
+    @Query() orderQuery: OrderQueryPrivateRedacoes,
+  ): Promise<IGetRedacoes> {
+    const userId = req.user.userId;
+    const maxLimit = 50;
+
+    limit = limit > maxLimit ? maxLimit : limit;
+
+    return this.getRedacaoService.getMyRedacoes(
       userId,
       limit,
       offset,
@@ -41,6 +64,6 @@ export class GetRedacaoController {
     const userId = req.user.userId;
     const id = req.params.id;
 
-    return this.getRedacaoService.getRedacaoById(userId, id);
+    return this.getRedacaoService.getRedacaoById(userId, +id);
   }
 }
