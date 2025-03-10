@@ -1,61 +1,65 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/users/entities/user.entity';
-import { Redacao } from '../entities/redacao.entity';
-import { IOrderQuery } from '../interfaces/IOrderQuery';
-import { GetRedacaoService } from '../services/getRedacao.service';
 import { GetRedacaoController } from './getRedacao.controller';
-
-const userEntity = new User({
-  id: 'userId',
-  name: 'Test User',
-  email: 'test@example.com',
-  password: 'password',
-  verified: true,
-  role: 'user',
-  twoFA: false,
-  failedLoginAttempts: 0,
-  lockUntil: null,
-  verificationCode: null,
-  verificationCodeExpires: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  redacoes: [],
-});
-
-const redacaoEntity = [
-  new Redacao({
-    id: 1,
-    content: 'test content',
-    title: 'test title',
-    topic: 'test topic',
-    createdAt: new Date(),
-    statusCorrecao: 'status test',
-    statusEnvio: 'status test',
-    updatedAt: new Date(),
-    user: userEntity,
-  }),
-];
+import { GetRedacaoService } from '../services/getRedacao.service';
+import { IGetRedacoes } from '../interfaces/IGetRedacoes';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 describe('GetRedacaoController', () => {
   let controller: GetRedacaoController;
   let service: GetRedacaoService;
 
+  const mockRedacoesResponse: IGetRedacoes = {
+    redacoes: [
+      {
+        id: 1,
+        title: 'Título da Redação',
+        topic: 'Tópico',
+        user: 'Nome do Usuário',
+        content: 'Conteúdo da redação',
+        statusEnvio: 'enviado',
+        statusCorrecao: 'nao_corrigida',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        correcoes: [],
+        comentariosRedacao: [],
+      },
+    ],
+    totalRedacoes: 1,
+  };
+
+  const mockRequest = {
+    user: {
+      userId: 'test-user-id',
+    },
+    params: {
+      id: '1',
+    },
+  };
+
   beforeEach(async () => {
+    const mockService = {
+      getPublicRedacoes: jest.fn().mockResolvedValue(mockRedacoesResponse),
+      getMyRedacoes: jest.fn().mockResolvedValue(mockRedacoesResponse),
+      getRedacaoById: jest
+        .fn()
+        .mockResolvedValue(mockRedacoesResponse.redacoes[0]),
+    };
+
+    const mockAuthGuard = { canActivate: jest.fn().mockReturnValue(true) };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GetRedacaoController],
       providers: [
         {
           provide: GetRedacaoService,
-          useValue: {
-            getRedacoes: jest
-              .fn()
-              .mockResolvedValue({ redacoes: redacaoEntity, totalRedacoes: 1 }),
-            getRedacaoById: jest.fn().mockResolvedValue(redacaoEntity[0]),
-          },
+          useValue: mockService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockAuthGuard)
+      .compile();
 
     controller = module.get<GetRedacaoController>(GetRedacaoController);
     service = module.get<GetRedacaoService>(GetRedacaoService);
@@ -63,109 +67,134 @@ describe('GetRedacaoController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-    expect(service).toBeDefined();
   });
 
-  describe('getRedacoes', () => {
-    it('should return an array of redacoes and total of redacoes', async () => {
-      const req = { user: { userId: 'userId' } };
-      const limit = 10;
-      const offset = 0;
-      const orderQuery: IOrderQuery = { order: 'crescente' };
-
+  describe('getRedacoes (public)', () => {
+    it('should return public redacoes successfully', async () => {
+      // Act
       const result = await controller.getRedacoes(
-        req,
-        limit,
-        offset,
+        mockRequest as any,
+        10,
+        0,
+        {},
+      );
+
+      // Assert
+      expect(result).toEqual(mockRedacoesResponse);
+      expect(service.getPublicRedacoes).toHaveBeenCalledWith(
+        'test-user-id',
+        10,
+        0,
+        {},
+      );
+    });
+
+    it('should limit to max 50 items', async () => {
+      // Act
+      await controller.getRedacoes(mockRequest as any, 100, 0, {});
+
+      // Assert
+      expect(service.getPublicRedacoes).toHaveBeenCalledWith(
+        'test-user-id',
+        50,
+        0,
+        {},
+      );
+    });
+
+    it('should handle exceptions from service', async () => {
+      // Arrange
+      jest
+        .spyOn(service, 'getPublicRedacoes')
+        .mockRejectedValue(new NotFoundException('Redacoes not found'));
+
+      // Act & Assert
+      await expect(
+        controller.getRedacoes(mockRequest as any, 10, 0, {}),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getPrivateRedacoes', () => {
+    it('should return private redacoes successfully', async () => {
+      // Act
+      const result = await controller.getPrivateRedacoes(
+        mockRequest as any,
+        10,
+        0,
+        {},
+      );
+
+      // Assert
+      expect(result).toEqual(mockRedacoesResponse);
+      expect(service.getMyRedacoes).toHaveBeenCalledWith(
+        'test-user-id',
+        10,
+        0,
+        {},
+      );
+    });
+
+    it('should pass order queries correctly', async () => {
+      // Arrange
+      const orderQuery = {
+        order: 'decrescente' as const,
+        statusEnvio: 'rascunho' as const,
+        statusCorrecao: 'corrigidas' as const,
+      };
+
+      // Act
+      await controller.getPrivateRedacoes(
+        mockRequest as any,
+        10,
+        0,
         orderQuery,
       );
 
-      expect(result).toEqual({ redacoes: redacaoEntity, totalRedacoes: 1 });
-      expect(service.getRedacoes).toHaveBeenCalledWith(
-        req.user.userId,
-        limit,
-        offset,
+      // Assert
+      expect(service.getMyRedacoes).toHaveBeenCalledWith(
+        'test-user-id',
+        10,
+        0,
         orderQuery,
       );
-      expect(service.getRedacoes).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an NotFoundException if getRedacoes throws', async () => {
-      const req = { user: { userId: 'userId' } };
-      const limit = 10;
-      const offset = 0;
-      const orderQuery: IOrderQuery = { order: 'crescente' };
-
+    it('should handle error when service throws BadRequestException', async () => {
+      // Arrange
       jest
-        .spyOn(service, 'getRedacoes')
-        .mockRejectedValue(new NotFoundException('Test error'));
+        .spyOn(service, 'getMyRedacoes')
+        .mockRejectedValue(new BadRequestException('Invalid statusEnvio'));
 
+      // Act & Assert
       await expect(
-        controller.getRedacoes(req, limit, offset, orderQuery),
-      ).rejects.toThrowError(NotFoundException);
-    });
-
-    it('should throw an BadRequestException if limit or offset are invalid', async () => {
-      const req = { user: { userId: 'userId' } };
-      const limit = 10;
-      const offset = 0;
-      const orderQuery: IOrderQuery = { order: 'crescente' };
-
-      jest
-        .spyOn(service, 'getRedacoes')
-        .mockRejectedValue(new BadRequestException('Test error'));
-
-      await expect(
-        controller.getRedacoes(req, limit, offset, orderQuery),
-      ).rejects.toThrowError(BadRequestException);
+        controller.getPrivateRedacoes(mockRequest as any, 10, 0, {
+          statusEnvio: 'invalid' as any,
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('getRedacaoById', () => {
-    it('should return a redacao', async () => {
-      const req = {
-        user: { userId: 'userId' },
-        params: { id: 1 },
-      };
+    it('should return redacao by id', async () => {
+      // Act
+      const result = await controller.getRedacaoById(mockRequest as any);
 
-      const result = await controller.getRedacaoById(req);
-
-      expect(result).toBe(redacaoEntity[0]);
-      expect(service.getRedacaoById).toHaveBeenCalledWith(
-        req.user.userId,
-        req.params.id,
-      );
-      expect(service.getRedacaoById).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(result).toEqual(mockRedacoesResponse.redacoes[0]);
+      expect(service.getRedacaoById).toHaveBeenCalledWith('test-user-id', 1);
     });
 
-    it('should throw an NotFoundException if getRedacaoById throws', async () => {
-      const req = {
-        user: { userId: 'userId' },
-        params: { id: 1 },
-      };
-
+    it('should handle exceptions from service', async () => {
+      // Arrange
       jest
         .spyOn(service, 'getRedacaoById')
-        .mockRejectedValue(new NotFoundException('Test error'));
+        .mockRejectedValue(new NotFoundException('Redacao not found'));
 
-      await expect(controller.getRedacaoById(req)).rejects.toThrowError(
-        NotFoundException,
-      );
-    });
-
-    it('should throw an BadRequestException if getRedacaoById throws', async () => {
-      const req = {
-        user: { userId: 'userId' },
-        params: { id: 1 },
-      };
-
-      jest
-        .spyOn(service, 'getRedacaoById')
-        .mockRejectedValue(new BadRequestException('Test error'));
-
-      await expect(controller.getRedacaoById(req)).rejects.toThrowError(
-        BadRequestException,
-      );
+      // Act & Assert
+      await expect(
+        controller.getRedacaoById(mockRequest as any),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });
