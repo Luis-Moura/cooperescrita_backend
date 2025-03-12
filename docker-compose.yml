@@ -1,5 +1,39 @@
 version: '3.8'
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: cooperescrita_backend
+    restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/cooperescrita
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - JWT_SECRET=YOUR_SECRET_KEY_HERE
+      - JWT_EXPIRES_IN=1d
+      - EMAIL_USER=luistestes34@gmail.com
+      - EMAIL_PASS=jlpq smfp kpgr wxui
+      - MAX_FAILED_ATTEMPTS=5
+      - LOCK_TIME=3600000
+      - BASE_URL=http://localhost:3000
+      - BASE_URL_FRONTEND=http://localhost:5173
+      - MAIN_ADMIN=luistestes34@gmail.com
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - default
+
   postgres:
     image: postgres:17
     container_name: cooperescrita_postgres
@@ -14,8 +48,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - default
-    # para pegar o ip do container e usar no pgadmin
-    # command: docker inpect <id_do_container> | grep IPAddress
 
   redis:
     image: redis:6
