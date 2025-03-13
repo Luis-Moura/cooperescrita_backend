@@ -104,7 +104,10 @@ export class CreateCorrecoesService {
 
     if (createCorrecaoDto.correcaoId) {
       correcao = await this.correcaoRepository.findOne({
-        where: { correcaoId: createCorrecaoDto.correcaoId },
+        where: {
+          correcaoId: createCorrecaoDto.correcaoId,
+          corretor: { id: corretor.id },
+        },
       });
 
       if (!correcao) throw new NotFoundException('Correcao not found');
