@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsIn,
   IsNotEmpty,
@@ -10,18 +11,21 @@ import {
 
 export class GetCorrecoesDto {
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   @Min(1)
   @Max(50)
   limit: number;
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @Max(49)
   offset: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   redacaoId?: number;
 

@@ -33,9 +33,18 @@ export class GetCorrecaoCommentsService {
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
       where: { correcaoId: correcaoId },
+      relations: ['corretor'],
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretor.id &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
 
     // Busca os comentários da correção
     const correcaoComments: CorrecaoComments[] =
@@ -66,9 +75,18 @@ export class GetCorrecaoCommentsService {
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
       where: { correcaoId: correcaoId },
+      relations: ['corretor'],
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretorId &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
 
     // Verifica se o usuário tem permissão para ver os comentários da correção
     if (correcao.corretor.id !== corretorId) {

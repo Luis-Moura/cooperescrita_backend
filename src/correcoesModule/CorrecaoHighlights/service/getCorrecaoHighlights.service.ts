@@ -29,9 +29,18 @@ export class GetCorrecaoHighlightsService {
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
       where: { correcaoId: correcaoId },
+      relations: ['corretor'],
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretorId &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
 
     // Busca os highlights da correcao
     const correcaoHighlights: CorrecaoHighlights[] =
@@ -62,9 +71,18 @@ export class GetCorrecaoHighlightsService {
     // Verifica se a correção existe e carrega o corretor junto
     const correcao = await this.correcaoRepository.findOne({
       where: { correcaoId: correcaoId },
+      relations: ['corretor'],
     });
 
     if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretorId &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
 
     // Busca o highlight da correcao
     const highlightComment: CorrecaoHighlights =
