@@ -50,6 +50,13 @@ export class CreateCorrecaoHighlightsService {
         'You do not have permission to comment on this correction',
       );
 
+    // verifica se a correção já foi enviada por definitivo
+    if (correcao.statusEnvio === 'enviado') {
+      throw new BadRequestException(
+        'You cannot comment on a correction that has already been sent',
+      );
+    }
+
     // verifica se já existe algum comentário no mesmo trecho e se o startIndex é menor que o endIndex
     if (
       createCorrecaoHighlightsDto.startIndex >
