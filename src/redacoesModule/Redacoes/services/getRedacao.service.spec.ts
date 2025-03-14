@@ -297,7 +297,7 @@ describe('GetRedacaoService', () => {
       const result = await service.getRedacaoById('test-user-id', 2);
 
       // Assert
-      expect(result).toEqual(mockRedacaoRascunho);
+      expect(result).toEqual({ ...mockRedacaoRascunho, user: mockUser.name });
     });
 
     it('should return public redacao when user is not owner', async () => {
@@ -315,7 +315,7 @@ describe('GetRedacaoService', () => {
       const result = await service.getRedacaoById('test-user-id', 1);
 
       // Assert
-      expect(result).toEqual(publicRedacao);
+      expect(result).toEqual({ ...publicRedacao, user: mockUser.name });
     });
 
     it('should throw ForbiddenException when trying to access draft from another user', async () => {
