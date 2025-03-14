@@ -249,6 +249,6 @@ export class GetRedacaoService {
       );
     }
 
-    return redacao;
+    return { ...redacao, user: redacao.user.name };
   }
 }
