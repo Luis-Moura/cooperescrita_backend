@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreateRedacaoService } from '../services/createRedacao.service';
 import { CreateRedacaoController } from './createRedacao.controller';
 import { createDefinitiveRedacaoDto } from '../dto/createDefinitiveRedacaoDto';
-import { Redacao } from '../entities/redacao.entity';
+import { Redacao } from '../../entities/redacao.entity';
 import { User } from 'src/users/entities/user.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { createDraftRedacaoDto } from '../dto/createDraftRedacaoDto';

@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { Redacao } from '../entities/redacao.entity';
+import { Redacao } from '../../entities/redacao.entity';
 import { DeleteRedacaoService } from './deleteRedacao.service';
 
 const userEntity = new User({

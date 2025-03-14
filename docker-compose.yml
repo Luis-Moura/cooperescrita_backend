@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: cooperescrita_backend
-    restart: always
+    restart: no
     volumes:
       - .:/app
       - /app/node_modules

@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { Redacao } from '../entities/redacao.entity';
+import { Redacao } from '../../entities/redacao.entity';
 import { IGetRedacoes, RedacaoDTO } from '../interfaces/IGetRedacoes';
 import { OrderQueryPublicRedacoes } from '../interfaces/OrderQueryPublicRedacoes';
 import { OrderQueryPrivateRedacoes } from '../interfaces/OrderQueryPrivateRedacoes';

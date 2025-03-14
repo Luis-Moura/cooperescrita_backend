@@ -9,7 +9,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { createDefinitiveRedacaoDto } from '../dto/createDefinitiveRedacaoDto';
 import { createDraftRedacaoDto } from '../dto/createDraftRedacaoDto';
-import { Redacao } from '../entities/redacao.entity';
+import { Redacao } from '../../entities/redacao.entity';
 import { CreateRedacaoService } from './createRedacao.service';
 
 const userEntity = new User({

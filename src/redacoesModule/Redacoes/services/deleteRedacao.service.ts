@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { Redacao } from '../entities/redacao.entity';
+import { Redacao } from '../../entities/redacao.entity';
 
 @Injectable()
 export class DeleteRedacaoService {

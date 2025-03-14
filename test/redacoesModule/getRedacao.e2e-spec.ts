@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { GetRedacaoController } from '../../src/redacoesModule/controllers/getRedacao.controller';
-import { GetRedacaoService } from '../../src/redacoesModule/services/getRedacao.service';
+import { GetRedacaoController } from '../../src/redacoesModule/Redacoes/controllers/getRedacao.controller';
+import { GetRedacaoService } from '../../src/redacoesModule/Redacoes/services/getRedacao.service';
 import { JwtAuthGuard } from '../../src/auth/guards/jwt-auth.guard';
-import { IGetRedacoes } from '../../src/redacoesModule/interfaces/IGetRedacoes';
+import { IGetRedacoes } from '../../src/redacoesModule/Redacoes/interfaces/IGetRedacoes';
 
 describe('GetRedacaoController (Integration)', () => {
   let app: INestApplication;

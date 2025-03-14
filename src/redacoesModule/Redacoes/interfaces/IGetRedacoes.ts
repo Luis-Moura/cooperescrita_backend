@@ -1,5 +1,5 @@
 import { Correcao } from 'src/correcoesModule/entities/correcao.entity';
-import { RedacaoComments } from '../entities/redacaoComments.entity';
+import { RedacaoComments } from '../../entities/redacaoComments.entity';
 
 export interface RedacaoDTO {
   id: number;
