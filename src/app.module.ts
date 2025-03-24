@@ -51,19 +51,14 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       logging: process.env.NODE_ENV === 'development',
     }),
 
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60, // tempo em segundos
-        limit: 7, // número máximo de requisições
-        ignoreUserAgents: [/googlebot/gi], // opcional: ignorar bots específicos
-      },
-      {
-        // Regra mais rígida para rotas de autenticação
-        name: 'auth',
-        ttl: 60,
-        limit: 5,
-      },
-    ]),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
 
     BullModule.forRoot({
       redis: {
