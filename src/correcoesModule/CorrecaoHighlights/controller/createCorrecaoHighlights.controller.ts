@@ -11,6 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateCorrecaoHighlightsDto } from '../dto/createCorrecaoHighlights.dto';
 import { CreateCorrecaoHighlightsService } from '../service/createCorrecaoHighlights.service';
+import { CreateCorrecaoHighlightsDocs } from '../docs/controller/CreateCorrecaoHighlightsDocs.decorator';
 
 @ApiTags('CorrecaoHighlights')
 @Controller('correcao/highlights')
@@ -20,6 +21,7 @@ export class CreateCorrecaoHighlightsController {
   ) {}
   @UseGuards(JwtAuthGuard)
   @Post(':correcaoId')
+  @CreateCorrecaoHighlightsDocs()
   async createCorrecaoHighlights(
     @Request() req,
     @Body() createCorrecaoHighlightsDto: CreateCorrecaoHighlightsDto,

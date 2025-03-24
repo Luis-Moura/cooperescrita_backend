@@ -9,6 +9,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetCorrecaoHighlightsService } from '../service/getCorrecaoHighlights.service';
+import { GetCorrecaoHighlightsDocs } from '../docs/controller/GetCorrecaoHighlightsDocs.decorator';
+import { GetCorrecaoHighlightByIdDocs } from '../docs/controller/GetCorrecaoHighlightByIdDocs.decorator';
 
 @ApiTags('CorrecaoHighlights')
 @Controller('correcao/highlights')
@@ -19,6 +21,7 @@ export class GetCorrecaoHighlightsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':correcaoId')
+  @GetCorrecaoHighlightsDocs()
   async getCorrecaoHighlights(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
@@ -37,6 +40,7 @@ export class GetCorrecaoHighlightsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':correcaoId/:highlightId')
+  @GetCorrecaoHighlightByIdDocs()
   async getCorrecaoHighlightById(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
