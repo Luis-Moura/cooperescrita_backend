@@ -5,20 +5,28 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import * as compression from 'compression';
+
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // ====================
+  // 🚀 Middlewares Globais
+  // ====================
+
+  // 🔍 Validações Globais
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove propriedades não definidas nos DTOs
-      forbidNonWhitelisted: true, // Retorna erro se propriedades não definidas nos DTOs forem enviadas
-      stopAtFirstError: true, // Retorna erro se a primeira propriedade não for válida
-      transform: true, // Transforma os dados recebidos para o tipo esperado
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      stopAtFirstError: true,
+      transform: true,
     }),
   );
 
+  // 🛡️ Segurança com Helmet
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -29,13 +37,30 @@ async function bootstrap() {
         },
       },
       referrerPolicy: { policy: 'no-referrer' },
-      frameguard: { action: 'deny' }, // Bloqueia iframes externos
+      frameguard: { action: 'deny' },
     }),
   );
 
+  // 📦 Compressão para performance
+  app.use(
+    compression({
+      level: 6,
+      threshold: 1024,
+      filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+      },
+    }),
+  );
+
+  // ====================
+  // 🔥 Configurações Essenciais
+  // ====================
+
+  // 🎯 Logger
   app.useLogger(new Logger());
 
-  // Substituir o app.enableCors() por:
+  // 🌍 CORS (Cross-Origin Resource Sharing)
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
@@ -45,9 +70,12 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // ====================
+  // 🛠️ Swagger (Documentação)
+  // ====================
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
-      .setTitle('aplicação cooperescrita backend')
+      .setTitle('Aplicação Cooperescrita Backend')
       .setVersion('1.0')
       .addBearerAuth()
       .build();
@@ -56,6 +84,9 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
+  // 🚀 Inicializa o servidor
   await app.listen(process.env.PORT);
+  Logger.log(`🚀 Server rodando em http://localhost:${process.env.PORT}`);
 }
+
 bootstrap();

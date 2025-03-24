@@ -21,12 +21,14 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+
 dotenv.config();
 
 const redisUrl = new URL(process.env.REDIS_URL || '');
 
 @Module({
   imports: [
+    // 🔧 Banco de dados
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -51,6 +53,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       logging: process.env.NODE_ENV === 'development',
     }),
 
+    // ⚡ Controle de taxa de requisições (Throttling)
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -60,6 +63,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       ],
     }),
 
+    // 🔗 Integração com Redis
     BullModule.forRoot({
       redis: {
         host: redisUrl.hostname,
@@ -67,23 +71,28 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
         password: redisUrl.password || undefined,
       },
     }),
-
     RedisModule.forRoot({
       type: 'single',
       url: process.env.REDIS_URL,
     }),
 
+    // 🧩 Módulos internos da aplicação
     UsersModule,
     AuthModule,
     EmailsModule,
     TasksModule,
     RedacoesModule,
     CorrecoesModule,
+
+    // 🕒 Agendamentos (Scheduler)
     ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [
+    // 🛠 Serviço de tarefas
     TasksService,
+
+    // 🚦 Guard de limitação de requisições
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
