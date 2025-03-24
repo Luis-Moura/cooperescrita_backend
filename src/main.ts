@@ -86,7 +86,9 @@ async function bootstrap() {
 
   // 🚀 Inicializa o servidor
   await app.listen(process.env.PORT);
-  Logger.log(`🚀 Server rodando em http://localhost:${process.env.PORT}`);
+  Logger.log(
+    `\n\n🚀 Server rodando em http://localhost:${process.env.PORT}\n\n`,
+  );
 }
 
 bootstrap();

@@ -50,7 +50,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
           : false,
       connectTimeoutMS: 10000, // Timeout para evitar ataques DoS
       poolSize: 10, // Controle de pool de conexões
-      logging: process.env.NODE_ENV === 'development',
+      // logging: process.env.NODE_ENV === 'development',
     }),
 
     // ⚡ Controle de taxa de requisições (Throttling)
