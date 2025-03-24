@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+// import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class DeleteCorrecaoDto {
-  @IsNumber()
-  @IsNotEmpty()
-  correcaoId: number;
-}
+// export class DeleteCorrecaoDto {
+//   @IsNumber()
+//   @IsNotEmpty()
+//   correcaoId: number;
+// }

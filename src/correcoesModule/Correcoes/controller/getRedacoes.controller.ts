@@ -11,6 +11,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetCorrecoesDto } from '../dto/getCorrecoes.dto';
 import { GetCorrecoesService } from '../service/getCorrecoes.service';
+import { GetPublicCorrecoesDocs } from '../docs/controllers/getPublicCorrecoes.decorator';
+import { GetPrivateCorrecoesDocs } from '../docs/controllers/getPrivateCorrecoes.decorator';
+import { GetCorrecaoByIdDocs } from '../docs/controllers/getCorrecaoById.decorator';
 
 @ApiTags('correcao')
 @Controller('get-correcoes')
@@ -19,6 +22,7 @@ export class GetCorrecoesController {
 
   @UseGuards(JwtAuthGuard)
   @Get('public/:redacaoId')
+  @GetPublicCorrecoesDocs()
   async getPublicCorrecoes(
     @Request() req,
     @Param('redacaoId') redacaoId: number,
@@ -39,6 +43,7 @@ export class GetCorrecoesController {
 
   @UseGuards(JwtAuthGuard)
   @Get('private/:redacaoId')
+  @GetPrivateCorrecoesDocs()
   async getPrivateCorrecoes(
     @Request() req,
     @Param('redacaoId') redacaoId: number,
@@ -59,6 +64,7 @@ export class GetCorrecoesController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':correcaoId')
+  @GetCorrecaoByIdDocs()
   async getCorrecaoById(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
