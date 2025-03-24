@@ -11,6 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateCorrecaoFeedbackDto } from '../dto/createCorrecaoFeedback.dto';
 import { CreateCorrecaoFeedbackService } from '../service/createCorrecaoFeedback.service';
+import { CreateCorrecaoFeedbackDocs } from '../docs/controller/CreateCorrecaoFeedbackDocs.decorator';
 
 @ApiTags('CorrecaoFeedbacks')
 @Controller('correcao/feedbacks')
@@ -21,6 +22,7 @@ export class CreateCorrecaoFeedbackController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':correcaoId')
+  @CreateCorrecaoFeedbackDocs()
   async createCorrecaoFeedback(
     @Request() req,
     @Body() createCorrecaoFeedbackDto: CreateCorrecaoFeedbackDto,

@@ -9,6 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { DeleteCorrecaoFeedbackService } from '../service/deleteCorrecaoFeedback.service';
+import { DeleteCorrecaoFeedbackDocs } from '../docs/controller/DeleteCorrecaoFeedbackDocs.decorator';
 
 @ApiTags('CorrecaoFeedbacks')
 @Controller('correcao/feedbacks')
@@ -19,6 +20,7 @@ export class DeleteCorrecaoFeedbackController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':correcaoId/:feedbackId')
+  @DeleteCorrecaoFeedbackDocs()
   async deleteCorrecaoFeedback(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
