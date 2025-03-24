@@ -9,6 +9,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetCorrecaoSuggestionService } from '../service/getCorrecaosuggestion.service';
+import { GetCorrecaoSuggestionsDocs } from '../docs/controller/GetCorrecaoSuggestionsDocs.decorator';
+import { GetCorrecaoSuggestionByIdDocs } from '../docs/controller/GetCorrecaoSuggestionByIdDocs.decorator';
 
 @ApiTags('CorrecaoSuggestion')
 @Controller('correcao/suggestion')
@@ -19,6 +21,7 @@ export class GetCorrecaoSuggestionController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':correcaoId')
+  @GetCorrecaoSuggestionsDocs()
   async getCorrecaoSuggestions(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
@@ -37,6 +40,7 @@ export class GetCorrecaoSuggestionController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':correcaoId/:suggestionId')
+  @GetCorrecaoSuggestionByIdDocs()
   async getCorrecaoSuggestionById(
     @Request() req,
     @Param('correcaoId') correcaoId: number,
