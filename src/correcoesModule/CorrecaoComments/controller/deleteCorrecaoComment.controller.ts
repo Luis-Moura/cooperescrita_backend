@@ -9,6 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { DeleteCorrecaoCommentService } from '../service/deleteCorrecaoComment.service';
+import { DeleteCorrecaoCommentDocs } from '../docs/controller/DeleteCorrecaoCommentDocs.decorator';
 
 @ApiTags('CorrecaoComments')
 @Controller('correcao/comments')
@@ -19,6 +20,7 @@ export class DeleteCorrecaoCommentController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':correcaoId/:commentId')
+  @DeleteCorrecaoCommentDocs()
   async deleteCorrecaoComment(
     @Request() req,
     @Param('correcaoId') correcaoId: number,

@@ -10,6 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateCorrecaoCommentsDto } from '../dto/createCorrecaoComments.dto';
 import { CreateCorrecaoCommentsService } from '../service/createCorrecaoComment.service';
+import { CreateCorrecaoCommentsDocs } from '../docs/controller/CreateCorrecaoCommentsDocs.decorator';
 
 @ApiTags('CorrecaoComments')
 @Controller('correcao/comments')
@@ -20,6 +21,7 @@ export class CreateCorrecaoCommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':correcaoId')
+  @CreateCorrecaoCommentsDocs()
   async createCorrecaoComments(
     @Request() req,
     @Body() createCorrecaoCommentsDto: CreateCorrecaoCommentsDto,
