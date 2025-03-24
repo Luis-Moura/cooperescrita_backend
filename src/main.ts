@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 dotenv.config();
 
 async function bootstrap() {
@@ -18,7 +19,31 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors(); // Habilita o CORS globalmente -> isso deve ser trocado para um domínio específico em produção
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", 'trusted-scripts.com'],
+          styleSrc: ["'self'", 'trusted-styles.com'],
+        },
+      },
+      referrerPolicy: { policy: 'no-referrer' },
+      frameguard: { action: 'deny' }, // Bloqueia iframes externos
+    }),
+  );
+
+  app.useLogger(new Logger());
+
+  // Substituir o app.enableCors() por:
+  app.enableCors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? [process.env.BASE_URL_FRONTEND, process.env.BASE_URL_FRONTEND_2]
+        : true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+  });
 
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()

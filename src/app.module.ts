@@ -1,7 +1,9 @@
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auth/auth.module';
@@ -13,12 +15,12 @@ import { CorrecaoHighlights } from './correcoesModule/entities/correcaoHighlight
 import { CorrecaoSuggestions } from './correcoesModule/entities/correcaoSuggestions.entity';
 import { EmailsModule } from './emails/emails.module';
 import { Redacao } from './redacoesModule/entities/redacao.entity';
+import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
 import { RedacoesModule } from './redacoesModule/redacoes.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
 dotenv.config();
 
 const redisUrl = new URL(process.env.REDIS_URL || '');
@@ -40,7 +42,28 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       ],
       migrations: ['dist/migrations/*.js'],
       migrationsRun: true,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: true }
+          : false,
+      connectTimeoutMS: 10000, // Timeout para evitar ataques DoS
+      poolSize: 10, // Controle de pool de conexões
+      logging: process.env.NODE_ENV === 'development',
     }),
+
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60, // tempo em segundos
+        limit: 7, // número máximo de requisições
+        ignoreUserAgents: [/googlebot/gi], // opcional: ignorar bots específicos
+      },
+      {
+        // Regra mais rígida para rotas de autenticação
+        name: 'auth',
+        ttl: 60,
+        limit: 5,
+      },
+    ]),
 
     BullModule.forRoot({
       redis: {
@@ -64,6 +87,12 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     ScheduleModule.forRoot(),
   ],
   controllers: [],
-  providers: [TasksService],
+  providers: [
+    TasksService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
