@@ -20,11 +20,14 @@ import { SignUpService } from './services/signup.service';
 import { VerificationService } from './services/verification.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshToken } from './entities/refreshToken.entity';
+import { TokenService } from './services/token.service';
+import { TokenController } from './controllers/token.controller';
 dotenv.config();
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, RefreshToken]),
 
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -41,6 +44,7 @@ dotenv.config();
     VerificationController,
     PasswordController,
     SessionController,
+    TokenController,
   ],
   providers: [
     InvalidatedTokensService,
@@ -52,6 +56,7 @@ dotenv.config();
     LocalStrategy,
     JwtStrategy,
     RolesGuard,
+    TokenService,
   ],
   exports: [
     InvalidatedTokensService,
@@ -60,6 +65,7 @@ dotenv.config();
     SignInService,
     SignUpService,
     VerificationService,
+    TokenService,
   ],
 })
 export class AuthModule {}

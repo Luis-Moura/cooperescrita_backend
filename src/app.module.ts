@@ -21,6 +21,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { RefreshToken } from './auth/entities/refreshToken.entity';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
         CorrecaoFeedback,
         CorrecaoHighlights,
         CorrecaoSuggestions,
+        RefreshToken,
       ],
       migrations: ['dist/migrations/*.js'],
       migrationsRun: true,
