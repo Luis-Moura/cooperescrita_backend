@@ -63,13 +63,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User not verified');
     }
 
-    // Verificação de ambiente de execução (IP/dispositivo) - Base para maior segurança
-    // const requestInfo = this.getRequestInfo();
-    // if (requestInfo && payload.iss && requestInfo !== payload.iss) {
-    //   this.logAuthEvent('failure', payload.sub, 'Token usado em ambiente diferente do emitido');
-    //   throw new UnauthorizedException('Token environment mismatch');
-    // }
-
     this.logAuthEvent('success', payload.sub, `Autenticado com sucesso`);
 
     return {
