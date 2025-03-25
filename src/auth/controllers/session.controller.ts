@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -25,9 +26,11 @@ export class SessionController {
   @Post('signout')
   @HttpCode(200)
   @LogoutDocs()
-  async logout(@Request() req) {
-    const token = req.headers.authorization.split(' ')[1];
-    return this.sessionService.logout(token);
+  async logout(@Request() req, @Body() body: { refreshToken?: string }) {
+    const jwtToken = req.headers.authorization.split(' ')[1];
+    const refreshToken = body.refreshToken;
+
+    return this.sessionService.logout(jwtToken, refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)

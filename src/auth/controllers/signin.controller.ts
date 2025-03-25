@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SignInDocs } from '../docs/controller/signInDocs.decorator';
 import { SignInDto } from '../dto/sign-in.dto';
@@ -16,7 +23,10 @@ export class SigninController {
   @Post('')
   @HttpCode(200)
   @SignInDocs()
-  signIn(@Body() signInDto: SignInDto) {
-    return this.signInService.signIn(signInDto);
+  signIn(@Body() signInDto: SignInDto, @Req() request: any) {
+    const ipAddress = request.ip;
+    const userAgent = request.headers['user-agent'] || 'unknown';
+
+    return this.signInService.signIn(signInDto, ipAddress, userAgent);
   }
 }

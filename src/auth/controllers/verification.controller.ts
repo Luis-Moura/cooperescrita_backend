@@ -5,7 +5,9 @@ import {
   HttpCode,
   Post,
   Query,
+  Req,
   Request,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -32,15 +34,31 @@ export class VerificationController {
   @Post('2fa-code')
   @HttpCode(200)
   @Verify2FACodeDocs()
-  async verify2FACode(@Body() verify2FACodeDto: Verify2FACodeDto) {
-    return this.verificationService.verify2FACode(verify2FACodeDto);
+  async verify2FACode(
+    @Body() verify2FACodeDto: Verify2FACodeDto,
+    @Req() request: any,
+  ) {
+    const ipAddress = request.ip;
+    const userAgent = request.headers['user-agent'] || 'unknown';
+
+    return this.verificationService.verify2FACode(
+      verify2FACodeDto,
+      ipAddress,
+      userAgent,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('access-token')
   @VerifyAccessTokenDocs()
   async verifyAccessToken(@Request() req) {
-    const token = req.headers['authorization'].split(' ')[1];
+    // Obtenção segura do token com verificação de nulos
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Token inválido ou ausente');
+    }
+
+    const token = authHeader.split(' ')[1];
     return this.verificationService.verifyToken(token);
   }
 
