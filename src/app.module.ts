@@ -48,7 +48,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       migrationsRun: true,
       ssl:
         process.env.NODE_ENV === 'production'
-          ? { rejectUnauthorized: true }
+          ? { rejectUnauthorized: false } // mudar isso, tem que gerar um certificado ssl
           : false,
       connectTimeoutMS: 10000, // Timeout para evitar ataques DoS
       poolSize: 10, // Controle de pool de conexões
