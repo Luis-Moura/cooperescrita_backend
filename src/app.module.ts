@@ -22,6 +22,7 @@ import { TasksService } from './tasks/tasks.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { RefreshToken } from './auth/entities/refreshToken.entity';
+import { ConfigModule } from '@nestjs/config';
 
 dotenv.config();
 
@@ -29,6 +30,13 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
 
 @Module({
   imports: [
+    // 🔧 Configurações
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
+      cache: true,
+    }),
+
     // 🔧 Banco de dados
     TypeOrmModule.forRoot({
       type: 'postgres',
