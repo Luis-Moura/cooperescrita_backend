@@ -11,7 +11,7 @@ export class UtilsService {
 
   async findByEmailUtil(email: string) {
     const user = await this.usersRepository.findOne({
-      where: { email: email.toLowerCase() },
+      where: { email: email.toLowerCase(), active: true },
     });
 
     if (!user) {
