@@ -11,7 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { SignInDto } from '../dto/sign-in.dto';
-import { TokenService } from './token.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class SignInService {
@@ -62,6 +62,13 @@ export class SignInService {
         `Tentativa de login com email não encontrado: ${normalizedEmail}`,
       );
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.active) {
+      this.logger.warn(
+        `Tentativa de login em conta desativada: ${normalizedEmail}`,
+      );
+      throw new UnauthorizedException('Account has been deactivated');
     }
 
     if (user.lockUntil && user.lockUntil > new Date()) {

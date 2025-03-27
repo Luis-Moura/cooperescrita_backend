@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InvalidatedTokensService } from './invalidated-tokens.service';
-import { TokenService } from './token.service';
+import { InvalidatedTokensService } from '../../token/invalidated-tokens.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class SessionService {

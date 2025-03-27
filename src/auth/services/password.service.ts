@@ -14,9 +14,9 @@ import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
-import { InvalidatedTokensService } from './invalidated-tokens.service';
+import { InvalidatedTokensService } from '../../token/invalidated-tokens.service';
 import { v4 as uuidv4 } from 'uuid';
-import { TokenService } from './token.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class PasswordService {

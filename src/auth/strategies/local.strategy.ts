@@ -33,6 +33,14 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('User not verified');
       }
 
+      // Verificar se a conta está ativa
+      if (!user.active) {
+        this.logger.warn(
+          `Tentativa de login com conta desativada: ${normalizedEmail}`,
+        );
+        throw new UnauthorizedException('Account has been deactivated');
+      }
+
       this.logger.log(`Autenticação bem-sucedida para: ${normalizedEmail}`);
       return user;
     } catch (error) {

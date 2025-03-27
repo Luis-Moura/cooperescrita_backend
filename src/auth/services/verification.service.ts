@@ -13,8 +13,8 @@ import { User } from 'src/users/entities/user.entity';
 import { UtilsService } from 'src/users/services/utils.service';
 import { Repository } from 'typeorm';
 import { Verify2FACodeDto } from '../dto/verify2FACode.dto';
-import { InvalidatedTokensService } from './invalidated-tokens.service';
-import { TokenService } from './token.service';
+import { InvalidatedTokensService } from '../../token/invalidated-tokens.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class VerificationService {

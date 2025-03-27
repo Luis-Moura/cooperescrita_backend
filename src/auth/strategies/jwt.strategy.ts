@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import * as dotenv from 'dotenv';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UtilsService } from 'src/users/services/utils.service';
-import { InvalidatedTokensService } from '../services/invalidated-tokens.service';
+import { InvalidatedTokensService } from '../../token/invalidated-tokens.service';
 dotenv.config();
 
 @Injectable()
