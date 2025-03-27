@@ -7,11 +7,12 @@ import { User } from './entities/user.entity';
 import { AccountService } from './services/account.service';
 import { AdminService } from './services/admin.service';
 import { UtilsService } from './services/utils.service';
+import { TokenModule } from 'src/token/token.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), EmailsModule],
-  controllers: [AccountController, AdminController],
+  imports: [TypeOrmModule.forFeature([User]), EmailsModule, TokenModule],
   providers: [AccountService, AdminService, UtilsService],
-  exports: [UtilsService, TypeOrmModule],
+  controllers: [AccountController, AdminController],
+  exports: [UtilsService],
 })
 export class UsersModule {}
