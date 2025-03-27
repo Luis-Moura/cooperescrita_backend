@@ -1,6 +1,7 @@
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -18,11 +19,10 @@ import { Redacao } from './redacoesModule/entities/redacao.entity';
 import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
 import { RedacoesModule } from './redacoesModule/redacoes.module';
 import { TasksModule } from './tasks/tasks.module';
-import { TasksService } from './tasks/tasks.service';
+import { RefreshToken } from './token/entities/refreshToken.entity';
+import { TokenModule } from './token/token.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { RefreshToken } from './auth/entities/refreshToken.entity';
-import { ConfigModule } from '@nestjs/config';
 
 dotenv.config();
 
@@ -93,6 +93,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     TasksModule,
     RedacoesModule,
     CorrecoesModule,
+    TokenModule,
 
     // 🕒 Agendamentos (Scheduler)
     ScheduleModule.forRoot(),
@@ -100,7 +101,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
   controllers: [],
   providers: [
     // 🛠 Serviço de tarefas
-    TasksService,
+    // TasksService,
 
     // 🚦 Guard de limitação de requisições
     {
