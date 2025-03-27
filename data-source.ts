@@ -8,7 +8,7 @@ import { CorrecaoSuggestions } from './src/correcoesModule/entities/correcaoSugg
 import { Redacao } from './src/redacoesModule/entities/redacao.entity';
 import { User } from './src/users/entities/user.entity';
 import { RedacaoComments } from 'src/redacoesModule/entities/redacaoComments.entity';
-import { RefreshToken } from 'src/auth/entities/refreshToken.entity';
+import { RefreshToken } from 'src/token/entities/refreshToken.entity';
 
 dotenv.config();
 

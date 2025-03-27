@@ -30,6 +30,15 @@ export class User {
   @Column({ type: 'boolean', default: false })
   verified: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  active: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  deactivatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  passwordChangedAt: Date;
+
   @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
   role: string;
 
