@@ -14,5 +14,6 @@ import { EmailsModule } from '../emails/emails.module';
     EmailsModule,
   ],
   providers: [TasksService],
+  exports: [TasksService],
 })
 export class TasksModule {}
