@@ -9,9 +9,9 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
-import { RefreshTokenDto } from '../dto/refresh-token.dto';
-import { TokenService } from '../services/token.service';
-import { Public } from '../decorators/isPublic.decorator';
+import { RefreshTokenDto } from './dtos/refresh-token.dto';
+import { TokenService } from './token.service';
+import { Public } from '../auth/decorators/isPublic.decorator';
 
 @ApiTags('auth')
 @Controller('auth/token')
