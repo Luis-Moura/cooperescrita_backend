@@ -45,6 +45,7 @@ const redacaoCommentEntity = new RedacaoComments({
   startIndex: 0,
   endIndex: 10,
   comentario: 'Test comment',
+  color: '#FF0000',
   createdAt: new Date(),
   updatedAt: new Date(),
   autor: userEntity,
@@ -108,6 +109,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       const result = await service.updateRedacaoComment(
@@ -140,6 +142,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -155,6 +158,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -170,6 +174,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -187,6 +192,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -205,6 +211,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -228,6 +235,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 5,
         endIndex: 15,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -241,6 +249,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 15,
         endIndex: 5,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -254,6 +263,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: 20,
         endIndex: 25,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(
@@ -267,6 +277,7 @@ describe('UpdateRedacaoCommentService', () => {
         startIndex: -5,
         endIndex: -1,
         comentario: 'Updated comment',
+        color: '#FF0000',
       };
 
       await expect(

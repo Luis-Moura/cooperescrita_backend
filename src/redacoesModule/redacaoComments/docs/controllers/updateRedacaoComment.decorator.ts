@@ -41,6 +41,7 @@ export function UpdateRedacaoCommentDocs() {
             endIndex: 50,
             comentario:
               'Este é um comentário atualizado com um feedback aprimorado sobre a seção da redação.',
+            color: '#00FF00',
           },
         },
       },

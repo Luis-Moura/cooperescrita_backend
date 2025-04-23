@@ -23,6 +23,9 @@ export class RedacaoComments {
   @Column({ type: 'text' })
   comentario: string;
 
+  @Column({ type: 'varchar', length: 7 })
+  color: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -44,6 +47,7 @@ export class RedacaoComments {
     this.startIndex = comentario?.startIndex;
     this.endIndex = comentario?.endIndex;
     this.comentario = comentario?.comentario;
+    this.color = comentario?.color;
     this.createdAt = comentario?.createdAt;
     this.updatedAt = comentario?.updatedAt;
     this.autor = comentario?.autor;

@@ -34,6 +34,7 @@ export function CreateRedacaoCommentsDocs() {
             endIndex: 100,
             comentario:
               'Esta seção da redação eu fiquei inseguro no desenvolvimento do argumento e na coerência.',
+            color: '#FF0000',
           },
         },
       },

@@ -44,6 +44,7 @@ const redacaoCommentEntity = new RedacaoComments({
   startIndex: 0,
   endIndex: 10,
   comentario: 'Test comment',
+  color: '#FF0000',
   createdAt: new Date(),
   updatedAt: new Date(),
   autor: userEntity,
@@ -92,6 +93,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };
@@ -117,6 +119,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };
@@ -133,6 +136,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };
@@ -149,6 +153,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };
@@ -168,6 +173,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };
@@ -189,6 +195,7 @@ describe('CreateRedacaoCommentController', () => {
         startIndex: 0,
         endIndex: 10,
         comentario: 'Test comment',
+        color: '#FF0000',
       };
 
       const req = { user: { userId: 'userId' } };

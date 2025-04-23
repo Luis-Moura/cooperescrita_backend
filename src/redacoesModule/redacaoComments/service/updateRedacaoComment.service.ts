@@ -75,6 +75,9 @@ export class UpdateRedacaoCommentService {
     redacaoComment.comentario =
       updateRedacaoCommentdto.comentario ?? redacaoComment.comentario;
 
+    redacaoComment.color =
+      updateRedacaoCommentdto.color ?? redacaoComment.color;
+
     await this.redacaoCommentsRepository.save(redacaoComment);
 
     return { ...redacaoComment, autor: autorId, redacaoId };

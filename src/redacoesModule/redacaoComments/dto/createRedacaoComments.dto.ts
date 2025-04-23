@@ -40,4 +40,15 @@ export class CreateRedacaoCommentsDto {
   @MinLength(30)
   @MaxLength(500)
   comentario: string;
+
+  @ApiProperty({
+    description: 'Cor do comentário',
+    required: true,
+    example: '#FF5733',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(7)
+  @MaxLength(7)
+  color: string;
 }
