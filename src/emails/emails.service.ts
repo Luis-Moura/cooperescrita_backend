@@ -141,10 +141,7 @@ export class EmailsService {
         attachments: [
           {
             filename: 'logo.png',
-            path: path.resolve(
-              __dirname,
-              '../../assets/images/cooperescrita.png',
-            ),
+            path: logoPath, // Usando o mesmo caminho que já verificamos acima
             cid: 'logo', // Content-ID para referenciar no HTML
           },
         ],

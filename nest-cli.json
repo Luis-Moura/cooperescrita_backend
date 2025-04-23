@@ -7,8 +7,13 @@
       {
         "include": "views/**/*",
         "outDir": "dist"
+      },
+      {
+        "include": "assets/**/*",
+        "outDir": "dist/src"
       }
     ],
+    "watchAssets": true,
     "deleteOutDir": true
   }
 }
