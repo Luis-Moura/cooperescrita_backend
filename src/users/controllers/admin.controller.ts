@@ -25,7 +25,7 @@ import { PaginationDto } from '../dto/pagination.dto';
 import { AdminService } from '../services/admin.service';
 import { Throttle } from '@nestjs/throttler';
 
-@ApiTags('users')
+@ApiTags('admin')
 @Controller('admin/users')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
