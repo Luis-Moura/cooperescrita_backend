@@ -12,6 +12,8 @@ import { sendResetPasswordEmailHtml } from './html/sendResetPasswordEmailHtml';
 import { sendReportAlertAdminHtml } from './html/sendReportAlertAdminHtml';
 import { sendVerificationCodeHtml } from './html/sendVerificationCodeHtml';
 import { validate } from 'email-validator';
+import * as path from 'path';
+import * as fs from 'fs';
 dotenv.config();
 
 type EmailOptions = {
@@ -112,11 +114,40 @@ export class EmailsService {
 
       const normalizedEmail = email.toLowerCase().trim();
 
+      const logoPath = path.resolve(
+        __dirname,
+        '..',
+        '..',
+        'src',
+        'assets',
+        'images',
+        'cooperescrita.png',
+      );
+
+      this.logger.debug(`Caminho da logo: ${logoPath}`);
+
+      if (!fs.existsSync(logoPath)) {
+        this.logger.error(
+          `Arquivo da logo não encontrado no caminho: ${logoPath}`,
+        );
+        throw new Error('Logo file not found');
+      }
+
       const info = await this.transporter.sendMail({
         from: `"Cooperescrita" <${process.env.EMAIL_USER}>`,
         to: normalizedEmail,
         subject,
         html,
+        attachments: [
+          {
+            filename: 'logo.png',
+            path: path.resolve(
+              __dirname,
+              '../../assets/images/cooperescrita.png',
+            ),
+            cid: 'logo', // Content-ID para referenciar no HTML
+          },
+        ],
         headers: {
           'X-Priority': '1', // Alta prioridade
           'X-Cooperescrita-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,

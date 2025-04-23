@@ -5,43 +5,52 @@ export const sendReportAlertAdminHtml = (report: string) => {
         <style>
           body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
+            background-color: #021B33;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
           }
           .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #021B33;
+            color: #FFFFFF;
+            border-radius: 8px;
           }
           .header {
             text-align: center;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+          }
+          .header img {
+            max-width: 150px;
           }
           .content {
-            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
           }
           .footer {
             text-align: center;
             font-size: 12px;
             color: #888;
+            margin-top: 20px;
           }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>Alerta de Segurança</h1>
+            <img src="assets/cooperescrita.png" alt="Cooperescrita Logo mudou" />
           </div>
           <div class="content">
+            <h1>Alerta de Segurança</h1>
             <p>Caro Administrador,</p>
             <p>Detectamos um potencial problema de segurança que requer sua atenção imediata.</p>
-            <p>Por favor, revise os detalhes e tome as ações necessárias para garantir a segurança do nosso sistema.</p>
-            <p>Relatório: ${report} </p>
+            <p><strong>Relatório:</strong></p>
+            <p>${report}</p>
           </div>
           <div class="footer">
-            <p>Esta é uma mensagem automática. Por favor, não responda a este e-mail.</p>
+            <p>&copy; ${new Date().getFullYear()} Cooperescrita. Todos os direitos reservados.</p>
           </div>
         </div>
       </body>

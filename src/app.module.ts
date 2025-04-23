@@ -23,6 +23,8 @@ import { RefreshToken } from './token/entities/refreshToken.entity';
 import { TokenModule } from './token/token.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 dotenv.config();
 
@@ -30,6 +32,12 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
 
 @Module({
   imports: [
+    // 📂 Servir arquivos estáticos
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'assets'),
+      serveRoot: '/assets',
+    }),
+
     // 🔧 Configurações
     ConfigModule.forRoot({
       isGlobal: true,

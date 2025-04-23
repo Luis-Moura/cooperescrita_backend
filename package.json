@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "npx nest build",
+    "postbuild": "mkdir -p dist/assets/images && cp -r src/assets/images/* dist/assets/images/",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
