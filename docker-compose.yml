@@ -37,7 +37,7 @@ services:
   postgres:
     image: postgres:17
     container_name: cooperescrita_postgres
-    restart: always
+    restart: no
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -52,7 +52,7 @@ services:
   redis:
     image: redis:6
     container_name: cooperescrita_redis
-    restart: always
+    restart: no
     ports:
       - '6379:6379'
     networks:
@@ -61,7 +61,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: cooperescrita_pgadmin
-    restart: always
+    restart: no
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin

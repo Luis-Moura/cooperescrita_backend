@@ -1,5 +1,5 @@
 # Estágio de construção
-FROM node:20-alpine AS build
+FROM node:23-alpine AS build
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Estágio de produção
-FROM node:20-alpine AS production
+FROM node:23-alpine AS production
 
 WORKDIR /app
 
@@ -37,7 +37,7 @@ ENTRYPOINT ["/bin/sh", "./docker-entrypoint.sh"]
 CMD ["npm", "run", "start:prod"]
 
 # Estágio de desenvolvimento
-FROM node:20-alpine AS development
+FROM node:23-alpine AS development
 
 WORKDIR /app
 
