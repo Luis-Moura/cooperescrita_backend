@@ -5,7 +5,8 @@ WORKDIR /app
 
 # Copiar arquivos de dependências
 COPY package*.json ./
-RUN npm ci
+# Instalar apenas dependências de produção para o build
+RUN npm ci --only=production
 
 # Copiar o resto do código fonte
 COPY . .
@@ -41,8 +42,13 @@ FROM node:23-alpine AS development
 
 WORKDIR /app
 
+# Instalar netcat para o script de espera
+RUN apk add --no-cache netcat-openbsd
+
 # Copiar arquivos de dependências
 COPY package*.json ./
+# Instalar as dependências necessárias para o desenvolvimento
+# mas mantenha-as separadas e bem definidas no seu package.json
 RUN npm ci
 
 # Copiar script de inicialização

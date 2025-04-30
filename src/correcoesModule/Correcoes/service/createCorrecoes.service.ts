@@ -68,6 +68,12 @@ export class CreateCorrecoesService {
 
     if (!redacao) throw new NotFoundException('Redacao not found');
 
+    if (redacao.statusEnvio === 'rascunho') {
+      throw new BadRequestException(
+        'Redacao is in draft status, cannot be corrected',
+      );
+    }
+
     // verificar se a redação já foi corrigida por esse corretor
     const correcaoExistente: Correcao = await this.correcaoRepository.findOne({
       where: {

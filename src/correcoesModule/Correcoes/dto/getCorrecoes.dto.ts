@@ -62,6 +62,17 @@ export class GetCorrecoesDto {
   ordemLancamento?: 'asc' | 'desc';
 
   @ApiProperty({
+    description: 'Status de envio da correção',
+    required: false,
+    enum: ['rascunho', 'enviado'],
+    example: 'enviado',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['rascunho', 'enviado'])
+  statusEnvio?: 'rascunho' | 'enviado';
+
+  @ApiProperty({
     description: 'Ordenação por quantidade de likes',
     required: false,
     enum: ['asc', 'desc'],

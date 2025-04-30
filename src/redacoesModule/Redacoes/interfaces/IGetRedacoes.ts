@@ -12,7 +12,8 @@ export interface RedacaoDTO {
   updatedAt: Date;
   correcoes: Correcao[];
   comentariosRedacao: RedacaoComments[];
-  user: string;
+  userName: string;
+  userId: string;
 }
 
 export interface IGetRedacoes {

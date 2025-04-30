@@ -52,10 +52,13 @@ export class GetCorrecoesService {
     const query = this.correcaoRepository
       .createQueryBuilder('correcao')
       .leftJoin('correcao.redacao', 'redacao')
+      .leftJoin('correcao.corretor', 'corretor')
       .select([
         'correcao.correcaoId',
         'correcao.statusEnvio',
         'correcao.createdAt',
+        'corretor.id AS corretor_id',
+        'corretor.name AS corretor_name',
         'redacao.id AS redacao_id',
         'redacao.title AS redacao_title',
         'redacao.statusEnvio AS redacao_statusEnvio',
@@ -66,7 +69,7 @@ export class GetCorrecoesService {
         `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
       ])
       .where('correcao.statusEnvio = :statusEnvio', { statusEnvio: 'enviado' })
-      .groupBy('correcao.correcaoId, redacao.id')
+      .groupBy('correcao.correcaoId, redacao.id, corretor.id, corretor.name') // Incluindo todas as colunas do corretor
       .limit(limit)
       .offset(offset);
 
@@ -101,8 +104,10 @@ export class GetCorrecoesService {
 
   // Método para buscar apenas correções do corretor logado (qualquer status)
   async getMyCorrecoes(corretorId: string, getCorrecoesDto: GetCorrecoesDto) {
-    const { limit, offset, redacaoId, ordemLancamento, likes } =
+    const { limit, offset, redacaoId, ordemLancamento, likes, statusEnvio } =
       getCorrecoesDto;
+
+    console.log(statusEnvio);
 
     if (!corretorId) {
       throw new NotFoundException('User not found');
@@ -133,6 +138,8 @@ export class GetCorrecoesService {
         'correcao.correcaoId',
         'correcao.statusEnvio',
         'correcao.createdAt',
+        'corretor.id AS corretor_id',
+        'corretor.name AS corretor_name',
         'redacao.id AS redacao_id',
         'redacao.title AS redacao_title',
         'redacao.statusEnvio AS redacao_statusEnvio',
@@ -143,7 +150,7 @@ export class GetCorrecoesService {
         `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
       ])
       .where('corretor.id = :corretorId', { corretorId })
-      .groupBy('correcao.correcaoId, redacao.id')
+      .groupBy('correcao.correcaoId, redacao.id, corretor.id, corretor.name') // Incluindo todas as colunas do corretor
       .limit(limit)
       .offset(offset);
 
@@ -155,6 +162,13 @@ export class GetCorrecoesService {
     // Definir ordenação (data de criação ou likes)
     if (likes) {
       query.orderBy('totalLikes', likes === 'asc' ? 'ASC' : 'DESC');
+    }
+
+    // Filtro por status de envio, se necessário
+    if (statusEnvio) {
+      query.andWhere('correcao.statusEnvio = :statusEnvio', {
+        statusEnvio,
+      });
     }
 
     if (ordemLancamento) {
@@ -178,30 +192,42 @@ export class GetCorrecoesService {
     return { correcoes, totalCorrecoes };
   }
 
-  getCorrecaoById(corretorId: string, id: number) {
+  async getCorrecaoById(userId: string, correcaoId: number) {
     // Verificar se o usuário existe
-    if (!corretorId) {
+    if (!userId) {
       throw new NotFoundException('User not found');
     }
 
-    const corretor = this.userRepository.findOne({
-      where: { id: corretorId },
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
     });
 
-    if (!corretor) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
     // Buscar a correção pelo ID
-    const correcao = this.correcaoRepository.findOne({
-      where: { correcaoId: id },
-      relations: ['redacao'],
+    const correcao = await this.correcaoRepository.findOne({
+      where: { correcaoId },
+      relations: ['redacao', 'corretor'],
     });
+
+    if (
+      correcao.statusEnvio === 'rascunho' &&
+      correcao.corretor.id !== userId
+    ) {
+      throw new NotFoundException('Correcao not found');
+    }
 
     if (!correcao) {
       throw new NotFoundException('Correcao not found');
     }
 
-    return correcao;
+    return {
+      ...correcao,
+      corretor: undefined,
+      corretorId: correcao.corretor.id,
+      corretorName: correcao.corretor.name,
+    };
   }
 }

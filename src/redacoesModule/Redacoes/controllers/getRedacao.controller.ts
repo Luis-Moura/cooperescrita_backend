@@ -3,10 +3,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetRedacaoByIdDocs } from '../docs/controllers/getRedacaoByIdDocs.decorator';
 import { GetRedacoesDecoratorsDocs } from '../docs/controllers/getRedacoesDocs.decorator';
-import { OrderQueryPublicRedacoes } from '../interfaces/OrderQueryPublicRedacoes';
-import { GetRedacaoService } from '../services/getRedacao.service';
 import { IGetRedacoes } from '../interfaces/IGetRedacoes';
 import { OrderQueryPrivateRedacoes } from '../interfaces/OrderQueryPrivateRedacoes';
+import { OrderQueryPublicRedacoes } from '../interfaces/OrderQueryPublicRedacoes';
+import { GetRedacaoService } from '../services/getRedacao.service';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('redacao')
 @Controller('redacao')
@@ -14,6 +15,7 @@ export class GetRedacaoController {
   constructor(private readonly getRedacaoService: GetRedacaoService) {}
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
   @Get('get-public-redacoes') // rota para buscar redações
   @GetRedacoesDecoratorsDocs() // gera a documentação da rota
   getRedacoes(
@@ -36,6 +38,7 @@ export class GetRedacaoController {
   }
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
   @Get('get-private-redacoes') // rota para buscar redações
   @GetRedacoesDecoratorsDocs() // gera a documentação da rota
   getPrivateRedacoes(
@@ -58,6 +61,7 @@ export class GetRedacaoController {
   }
 
   @UseGuards(JwtAuthGuard) // protege a rota com JWT
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // limita o número de requisições
   @Get('get-redacao/:id') // rota para buscar redação por ID
   @GetRedacaoByIdDocs() // gera a documentação da rota
   getRedacaoById(@Request() req) {

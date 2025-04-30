@@ -92,7 +92,8 @@ export class GetRedacaoService {
       id: redacao.id,
       title: redacao.title,
       topic: redacao.topic,
-      user: redacao.user.name,
+      userName: redacao.user.name,
+      userId: redacao.user.id,
       content: redacao.content,
       statusEnvio: redacao.statusEnvio,
       statusCorrecao: redacao.statusCorrecao,
@@ -195,7 +196,8 @@ export class GetRedacaoService {
       id: redacao.id,
       title: redacao.title,
       topic: redacao.topic,
-      user: redacao.user.name,
+      userName: redacao.user.name,
+      userId: redacao.user.id,
       content: redacao.content,
       statusEnvio: redacao.statusEnvio,
       statusCorrecao: redacao.statusCorrecao,
@@ -249,6 +251,11 @@ export class GetRedacaoService {
       );
     }
 
-    return { ...redacao, user: redacao.user.name };
+    return {
+      ...redacao,
+      userName: redacao.user.name,
+      userId: redacao.user.id,
+      user: undefined,
+    };
   }
 }
