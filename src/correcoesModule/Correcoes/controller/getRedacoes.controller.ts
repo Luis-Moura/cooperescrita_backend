@@ -14,6 +14,7 @@ import { GetCorrecoesService } from '../service/getCorrecoes.service';
 import { GetPublicCorrecoesDocs } from '../docs/controllers/getPublicCorrecoes.decorator';
 import { GetPrivateCorrecoesDocs } from '../docs/controllers/getPrivateCorrecoes.decorator';
 import { GetCorrecaoByIdDocs } from '../docs/controllers/getCorrecaoById.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('correcao')
 @Controller('get-correcoes')
@@ -21,18 +22,14 @@ export class GetCorrecoesController {
   constructor(private readonly getCorrecoesService: GetCorrecoesService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('public/:redacaoId')
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
+  @Get('public')
   @GetPublicCorrecoesDocs()
   async getPublicCorrecoes(
     @Request() req,
-    @Param('redacaoId') redacaoId: number,
     @Query() getCorrecoesDto: GetCorrecoesDto,
   ) {
     const userId: string = req.user.userId;
-
-    if (!redacaoId || isNaN(redacaoId)) {
-      throw new BadRequestException('Invalid redacaoId');
-    }
 
     return this.getCorrecoesService.getPublicCorrecoes(
       userId,
@@ -42,18 +39,14 @@ export class GetCorrecoesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('private/:redacaoId')
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
+  @Get('private')
   @GetPrivateCorrecoesDocs()
   async getPrivateCorrecoes(
     @Request() req,
-    @Param('redacaoId') redacaoId: number,
     @Query() getCorrecoesDto: GetCorrecoesDto,
   ) {
     const userId: string = req.user.userId;
-
-    if (!redacaoId || isNaN(redacaoId)) {
-      throw new BadRequestException('Invalid redacaoId');
-    }
 
     return this.getCorrecoesService.getMyCorrecoes(
       userId,
@@ -63,6 +56,7 @@ export class GetCorrecoesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // limita o número de requisições
   @Get(':correcaoId')
   @GetCorrecaoByIdDocs()
   async getCorrecaoById(

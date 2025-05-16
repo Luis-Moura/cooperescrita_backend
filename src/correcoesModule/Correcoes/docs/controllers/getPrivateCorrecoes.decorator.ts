@@ -2,7 +2,6 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiParam,
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
@@ -13,12 +12,6 @@ export function GetPrivateCorrecoesDocs() {
     ApiOperation({
       summary:
         'Buscar correções privadas do usuário autenticado para uma redação específica',
-    }),
-    ApiParam({
-      name: 'redacaoId',
-      required: true,
-      description: 'ID da redação para buscar as correções',
-      type: 'number',
     }),
     ApiQuery({
       name: 'limit',
