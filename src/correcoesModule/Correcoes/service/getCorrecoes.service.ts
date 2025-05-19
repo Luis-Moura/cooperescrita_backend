@@ -65,8 +65,8 @@ export class GetCorrecoesService {
       ])
       .leftJoin('correcao.correcaoFeedbacks', 'feedback')
       .addSelect([
-        `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) AS totalLikes`,
-        `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
+        `COALESCE(COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END), 0) AS totalLikes`,
+        `COALESCE(COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END), 0) AS totalDislikes`,
       ])
       .where('correcao.statusEnvio = :statusEnvio', { statusEnvio: 'enviado' })
       .groupBy('correcao.correcaoId, redacao.id, corretor.id, corretor.name') // Incluindo todas as colunas do corretor
@@ -99,7 +99,10 @@ export class GetCorrecoesService {
       throw new NotFoundException('Correções públicas não encontradas');
     }
 
-    return { correcoes, totalCorrecoes };
+    return {
+      correcoes: correcoes.map(this.formatCorrecao),
+      totalCorrecoes,
+    };
   }
 
   // Método para buscar apenas correções do corretor logado (qualquer status)
@@ -146,8 +149,8 @@ export class GetCorrecoesService {
       ])
       .leftJoin('correcao.correcaoFeedbacks', 'feedback')
       .addSelect([
-        `COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END) AS totalLikes`,
-        `COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END) AS totalDislikes`,
+        `COALESCE(COUNT(CASE WHEN feedback.feedbackType = 'like' THEN 1 END), 0) AS totalLikes`,
+        `COALESCE(COUNT(CASE WHEN feedback.feedbackType = 'dislike' THEN 1 END), 0) AS totalDislikes`,
       ])
       .where('corretor.id = :corretorId', { corretorId })
       .groupBy('correcao.correcaoId, redacao.id, corretor.id, corretor.name') // Incluindo todas as colunas do corretor
@@ -189,7 +192,10 @@ export class GetCorrecoesService {
       );
     }
 
-    return { correcoes, totalCorrecoes };
+    return {
+      correcoes: correcoes.map(this.formatCorrecao),
+      totalCorrecoes,
+    };
   }
 
   async getCorrecaoById(userId: string, correcaoId: number) {
@@ -228,6 +234,21 @@ export class GetCorrecoesService {
       corretor: undefined,
       corretorId: correcao.corretor.id,
       corretorName: correcao.corretor.name,
+    };
+  }
+
+  private formatCorrecao(c: any) {
+    return {
+      correcao_correcaoId: Number(c.correcao_correcaoId),
+      correcao_statusEnvio: c.correcao_statusEnvio,
+      correcao_createdAt: c.correcao_createdAt,
+      corretor_id: c.corretor_id,
+      corretor_name: c.corretor_name,
+      redacao_id: Number(c.redacao_id),
+      redacao_title: c.redacao_title,
+      redacao_statusenvio: c.redacao_statusEnvio,
+      totallikes: Number(c.totallikes || c.totalLikes || 0),
+      totaldislikes: Number(c.totaldislikes || c.totalDislikes || 0),
     };
   }
 }
