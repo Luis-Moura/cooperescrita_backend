@@ -1,4 +1,5 @@
 version: '3.8'
+# Carrega automaticamente as variáveis de ambiente do arquivo .env
 services:
   backend:
     build:
@@ -13,21 +14,24 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=development
-      - PORT=3000
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/cooperescrita
       - REDIS_URL=redis://redis:6379
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
-      - JWT_SECRET=YOUR_SECRET_KEY_HERE
-      - JWT_EXPIRES_IN=1d
-      - EMAIL_USER=luistestes34@gmail.com
-      - EMAIL_PASS=jlpq smfp kpgr wxui
-      - MAX_FAILED_ATTEMPTS=5
-      - LOCK_TIME=3600000
-      - BASE_URL=http://localhost:3000
-      - BASE_URL_FRONTEND=http://localhost:5173
-      - MAIN_ADMIN=luistestes34@gmail.com
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - REFRESH_TOKEN_EXPIRES_IN_DAYS=${REFRESH_TOKEN_EXPIRES_IN_DAYS}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - MAX_FAILED_ATTEMPTS=${MAX_FAILED_ATTEMPTS}
+      - LOCK_TIME=${LOCK_TIME}
+      - USER_VERIFICATION_EXPIRY_HOURS=${USER_VERIFICATION_EXPIRY_HOURS}
+      - BASE_URL=${BASE_URL}
+      - BASE_URL_FRONTEND=${BASE_URL_FRONTEND}
+      - BASE_URL_FRONTEND_2=${BASE_URL_FRONTEND_2}
+      - MAIN_ADMIN=${MAIN_ADMIN}
     depends_on:
       - postgres
       - redis
