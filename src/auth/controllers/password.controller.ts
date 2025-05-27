@@ -13,7 +13,7 @@ export class PasswordController {
   constructor(private passwordService: PasswordService) {}
 
   @Post('forgot-password')
-  @Throttle({ default: { limit: 3, ttl: 300000 } })
+  @Throttle({ default: { limit: 10, ttl: 300000 } })
   @HttpCode(200)
   @ForgotPasswordDocs()
   async forgotPassword(
@@ -25,7 +25,7 @@ export class PasswordController {
   }
 
   @Post('reset-password')
-  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 tentativas a cada 5 minutos
+  @Throttle({ default: { limit: 10, ttl: 300000 } }) // 10 tentativas a cada 5 minutos
   @HttpCode(200)
   @PostResetPasswordDocs()
   async postResetPassword(

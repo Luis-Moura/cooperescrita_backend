@@ -50,7 +50,7 @@ export class AccountController {
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 tentativas a cada 5 minutos
+  @Throttle({ default: { limit: 15, ttl: 300000 } }) // 15 tentativas a cada 5 minutos
   @ChangePasswordDocs()
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
@@ -78,7 +78,7 @@ export class AccountController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete-account')
-  @Throttle({ default: { limit: 2, ttl: 300000 } }) // Limitar tentativas de exclusão
+  @Throttle({ default: { limit: 10, ttl: 300000 } }) // Limitar tentativas de exclusão
   @DeleteAccountDocs()
   async deleteAccount(@Request() req) {
     const email = req.user.email.toLowerCase();

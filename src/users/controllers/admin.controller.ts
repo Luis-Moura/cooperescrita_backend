@@ -60,7 +60,7 @@ export class AdminController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Delete('delete-by-email')
-  @Throttle({ default: { limit: 5, ttl: 600000 } }) // 5 tentativas a cada 10 minutos
+  @Throttle({ default: { limit: 15, ttl: 600000 } }) // 15 tentativas a cada 10 minutos
   @DeleteUserByEmailDocs()
   async deleteUserByEmail(
     @Body() findByEmailDto: FindByEmailDto,

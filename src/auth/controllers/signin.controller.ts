@@ -19,7 +19,7 @@ export class SigninController {
   constructor(private signInService: SignInService) {}
 
   @UseGuards(LocalAuthGuard)
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Post('')
   @HttpCode(200)
   @SignInDocs()

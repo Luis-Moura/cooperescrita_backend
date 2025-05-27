@@ -21,7 +21,7 @@ export class TokenController {
   @Public()
   @Post('refresh')
   @HttpCode(200)
-  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 tentativas por minuto
+  @Throttle({ default: { limit: 30, ttl: 60000 } }) // 30 tentativas por minuto
   @ApiOperation({ summary: 'Renovar access token usando refresh token' })
   @ApiResponse({
     status: 200,

@@ -22,7 +22,7 @@ export class GetCorrecoesController {
   constructor(private readonly getCorrecoesService: GetCorrecoesService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
+  @Throttle({ default: { limit: 100, ttl: 60000 } }) // limita o número de requisições
   @Get('public')
   @GetPublicCorrecoesDocs()
   async getPublicCorrecoes(
@@ -39,7 +39,7 @@ export class GetCorrecoesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Throttle({ default: { limit: 20, ttl: 60000 } }) // limita o número de requisições
+  @Throttle({ default: { limit: 100, ttl: 60000 } }) // limita o número de requisições
   @Get('private')
   @GetPrivateCorrecoesDocs()
   async getPrivateCorrecoes(
@@ -56,7 +56,7 @@ export class GetCorrecoesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) // limita o número de requisições
+  @Throttle({ default: { limit: 50, ttl: 60000 } }) // limita o número de requisições
   @Get(':correcaoId')
   @GetCorrecaoByIdDocs()
   async getCorrecaoById(

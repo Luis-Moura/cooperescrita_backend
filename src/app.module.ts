@@ -76,7 +76,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       throttlers: [
         {
           ttl: 60000,
-          limit: 10,
+          limit: 100,
         },
       ],
     }),
