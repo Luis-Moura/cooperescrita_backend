@@ -13,6 +13,24 @@ COPY . .
 # Compilar o código
 RUN npm run build
 
+# Estágio de desenvolvimento
+FROM node:22-alpine AS development
+
+WORKDIR /app
+
+# Copiar package.json e instalar todas as dependências (incluindo dev)
+COPY package*.json ./
+RUN npm ci
+
+# Copiar o código fonte
+COPY . .
+
+# Expor a porta
+EXPOSE 3000
+
+# Comando para desenvolvimento
+CMD ["sh", "-c", "npm run migration:run && npm run start:dev"]
+
 # Estágio de produção
 FROM node:22-alpine AS production
 
