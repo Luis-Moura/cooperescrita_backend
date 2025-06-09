@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Estágio de desenvolvimento
-FROM node:22-alpine AS development
+FROM node:22-slim AS development
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ EXPOSE 3000
 CMD ["sh", "-c", "npm run migration:run && npm run start:dev"]
 
 # Estágio de produção
-FROM node:22-alpine AS production
+FROM node:22-slim AS production
 
 WORKDIR /app
 
