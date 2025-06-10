@@ -135,6 +135,77 @@ export class SignInService {
     };
   }
 
+  // Método para validação apenas de credenciais (usado pelo LocalStrategy)
+  async validateUserCredentials(email: string, password: string) {
+    const normalizedEmail = email.toLowerCase();
+    const user = await this.utilsService.findByEmailUtil(normalizedEmail);
+
+    if (!user) {
+      this.logger.warn(
+        `Tentativa de login com email não encontrado: ${normalizedEmail}`,
+      );
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.active) {
+      this.logger.warn(
+        `Tentativa de login em conta desativada: ${normalizedEmail}`,
+      );
+      throw new UnauthorizedException('Account has been deactivated');
+    }
+
+    if (user.lockUntil && user.lockUntil > new Date()) {
+      const lockTimeRemaining = Math.ceil(
+        (user.lockUntil.getTime() - Date.now()) / 60000,
+      );
+      this.logger.warn(
+        `Tentativa de login em conta bloqueada: ${normalizedEmail}`,
+      );
+      throw new ForbiddenException(
+        `Account is temporarily locked. Please try again in ${lockTimeRemaining} minutes.`,
+      );
+    }
+
+    // Usar função de comparação de tempo constante para prevenir timing attacks
+    const isPasswordMatch = await this.comparePassword(password, user.password);
+
+    if (!isPasswordMatch) {
+      user.failedLoginAttempts += 1;
+
+      // Log graduais para diferentes níveis de tentativas
+      if (user.failedLoginAttempts >= 3) {
+        this.logger.warn(
+          `Múltiplas tentativas de login (${user.failedLoginAttempts}) para usuário: ${normalizedEmail}`,
+        );
+      }
+
+      if (user.failedLoginAttempts >= Number(process.env.MAX_FAILED_ATTEMPTS)) {
+        const lockTimeMinutes = Number(process.env.LOCK_TIME) / 60000;
+        user.lockUntil = new Date(Date.now() + Number(process.env.LOCK_TIME));
+        user.failedLoginAttempts = 0;
+        this.logger.warn(
+          `Conta bloqueada por ${lockTimeMinutes} minutos: ${normalizedEmail}`,
+        );
+      }
+
+      await this.usersRepository.save(user);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Reset contador de falhas após login bem-sucedido
+    if (user.failedLoginAttempts > 0 || user.lockUntil) {
+      user.failedLoginAttempts = 0;
+      user.lockUntil = null;
+      await this.usersRepository.save(user);
+    }
+
+    // IMPORTANTE: Não enviar email 2FA aqui - será feito no signIn()
+    return {
+      ...user,
+      password: undefined,
+    };
+  }
+
   // Método para prevenir timing attacks
   private async comparePassword(
     plainPassword: string,

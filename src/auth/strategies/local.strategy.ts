@@ -16,7 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       const normalizedEmail = email.toLowerCase();
       this.logger.debug(`Tentativa de autenticação para: ${normalizedEmail}`);
 
-      const user = await this.signInService.validateUser(
+      // Validação básica apenas - sem envio de email 2FA
+      const user = await this.signInService.validateUserCredentials(
         normalizedEmail,
         password,
       );
