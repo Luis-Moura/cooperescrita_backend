@@ -63,7 +63,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User not verified');
     }
 
-    this.logAuthEvent('success', payload.sub, `Autenticado com sucesso`);
+    // isso bem aqui serve pra matar um do coração
+    // this.logAuthEvent('success', payload.sub, `Autenticado com sucesso`);
 
     return {
       userId: payload.sub,
