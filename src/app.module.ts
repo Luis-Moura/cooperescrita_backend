@@ -19,6 +19,9 @@ import { EmailsModule } from './emails/emails.module';
 import { Redacao } from './redacoesModule/entities/redacao.entity';
 import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
 import { RedacoesModule } from './redacoesModule/redacoes.module';
+import { ReportsModule } from './reportsModule/reports.module';
+import { RedacaoReport } from './reportsModule/entities/redacaoReport.entity';
+import { CorrecaoReport } from './reportsModule/entities/correcaoReport.entity';
 import { TasksModule } from './tasks/tasks.module';
 import { RefreshToken } from './token/entities/refreshToken.entity';
 import { TokenModule } from './token/token.module';
@@ -60,6 +63,8 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
         CorrecaoHighlights,
         CorrecaoSuggestions,
         RefreshToken,
+        RedacaoReport,
+        CorrecaoReport,
       ],
       migrations: ['dist/migrations/*.js'],
       migrationsRun: true,
@@ -103,6 +108,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     TasksModule,
     RedacoesModule,
     CorrecoesModule,
+    ReportsModule,
     TokenModule,
 
     // 🕒 Agendamentos (Scheduler)

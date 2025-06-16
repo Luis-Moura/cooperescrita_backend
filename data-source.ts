@@ -9,6 +9,8 @@ import { Redacao } from './src/redacoesModule/entities/redacao.entity';
 import { User } from './src/users/entities/user.entity';
 import { RedacaoComments } from 'src/redacoesModule/entities/redacaoComments.entity';
 import { RefreshToken } from 'src/token/entities/refreshToken.entity';
+import { RedacaoReport } from './src/reportsModule/entities/redacaoReport.entity';
+import { CorrecaoReport } from './src/reportsModule/entities/correcaoReport.entity';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ export const AppDataSource = new DataSource({
     CorrecaoSuggestions,
     CorrecaoFeedback,
     RefreshToken,
+    RedacaoReport,
+    CorrecaoReport,
   ],
   migrations: ['src/migrations/*.ts'],
 });
