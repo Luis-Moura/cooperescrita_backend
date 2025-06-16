@@ -34,6 +34,7 @@ export class SignUpService {
       }
     }
 
+    // Validação de permissão para criação de admin
     if (createUserDto.role === 'admin' && creatorRole !== 'admin') {
       throw new ForbiddenException('Only admins can create admin accounts');
     }
@@ -44,7 +45,7 @@ export class SignUpService {
       email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
       verified: false,
-      twoFA: createUserDto.role === 'admin',
+      twoFA: createUserDto.role === 'admin', // Admins começam com 2FA ativado
     });
 
     const token = this.jwtService.sign(

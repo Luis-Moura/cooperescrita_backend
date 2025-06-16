@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { CorrecoesModule } from './correcoesModule/correcoes.module';
 import { Correcao } from './correcoesModule/entities/correcao.entity';
@@ -97,6 +98,7 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     // 🧩 Módulos internos da aplicação
     UsersModule,
     AuthModule,
+    AdminModule,
     EmailsModule,
     TasksModule,
     RedacoesModule,

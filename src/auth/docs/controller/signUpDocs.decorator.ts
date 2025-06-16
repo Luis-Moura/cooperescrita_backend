@@ -9,10 +9,5 @@ export function SignUpDocs() {
       description: 'Usuário registrado com sucesso.',
     }),
     ApiResponse({ status: 409, description: 'Usuário já existe.' }),
-    ApiResponse({
-      status: 403,
-      description:
-        'Apenas administradores podem criar contas de administrador.',
-    }),
   );
 }

@@ -8,15 +8,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailsService } from 'src/emails/emails.service';
 import { Like, Repository } from 'typeorm';
-import { FindByEmailDto } from '../dto/find-by-email.dto';
-import { FindByNameDto } from '../dto/find-by-name.dto';
-import { PaginationDto } from '../dto/pagination.dto';
-import { User } from '../entities/user.entity';
-import { UtilsService } from './utils.service';
+import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
+import { FindByNameDto } from 'src/users/dto/find-by-name.dto';
+import { PaginationDto } from 'src/users/dto/pagination.dto';
+import { User } from 'src/users/entities/user.entity';
+import { UtilsService } from 'src/users/services/utils.service';
 
 @Injectable()
-export class AdminService {
-  private readonly logger = new Logger(AdminService.name);
+export class AdminUserService {
+  private readonly logger = new Logger(AdminUserService.name);
 
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
