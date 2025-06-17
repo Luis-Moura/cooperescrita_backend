@@ -15,11 +15,11 @@ import { Throttle } from '@nestjs/throttler';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { DeleteUserByEmailDocs } from '../docs/controller/deleteUserByEmailDocs.decorator';
-import { FindByEmailDocs } from '../docs/controller/findByEmailDocs.decorator';
-import { FindByNameDocs } from '../docs/controller/findByNameDocs.decorator';
-import { ListUsersDocs } from '../docs/controller/listUsersDocs.decorator';
-import { ToggleUserStatusDocs } from '../docs/controller/toggleUserStatusDocs.decorator';
+import { DeleteUserByEmailDocs } from '../docs/controllers/deleteUserByEmailDocs.decorator';
+import { FindByEmailDocs } from '../docs/controllers/findByEmailDocs.decorator';
+import { FindByNameDocs } from '../docs/controllers/findByNameDocs.decorator';
+import { ListUsersDocs } from '../docs/controllers/listUsersDocs.decorator';
+import { ToggleUserStatusDocs } from '../docs/controllers/toggleUserStatusDocs.decorator';
 import { FindByEmailDto } from 'src/users/dto/find-by-email.dto';
 import { FindByNameDto } from 'src/users/dto/find-by-name.dto';
 import { PaginationDto } from 'src/users/dto/pagination.dto';
@@ -35,8 +35,12 @@ export class AdminUserController {
   @Get('find-by-email')
   @FindByEmailDocs()
   async findByEmail(@Body() findByEmailDto: FindByEmailDto, @Request() req) {
-    const sender = req.user.email.toLowerCase();
-    return await this.adminUserService.findByEmail(findByEmailDto, sender);
+    const adminUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+    };
+    return await this.adminUserService.findByEmail(findByEmailDto, adminUser);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,8 +48,12 @@ export class AdminUserController {
   @Get('find-by-name')
   @FindByNameDocs()
   async findByName(@Body() findByNameDto: FindByNameDto, @Request() req) {
-    const sender = req.user.email.toLowerCase();
-    return await this.adminUserService.findByName(findByNameDto, sender);
+    const adminUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+    };
+    return await this.adminUserService.findByName(findByNameDto, adminUser);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -53,8 +61,12 @@ export class AdminUserController {
   @Get('list')
   @ListUsersDocs()
   async listUsers(@Query() paginationDto: PaginationDto, @Request() req) {
-    const sender = req.user.email.toLowerCase();
-    return await this.adminUserService.listUsers(paginationDto, sender);
+    const adminUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+    };
+    return await this.adminUserService.listUsers(paginationDto, adminUser);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -66,10 +78,14 @@ export class AdminUserController {
     @Body() findByEmailDto: FindByEmailDto,
     @Request() req,
   ) {
-    const sender = req.user.email.toLowerCase();
+    const adminUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+    };
     return await this.adminUserService.deleteUserByEmail(
       findByEmailDto,
-      sender,
+      adminUser,
     );
   }
 
@@ -79,7 +95,11 @@ export class AdminUserController {
   @HttpCode(200)
   @ToggleUserStatusDocs()
   async toggleUserStatus(@Param('userId') userId: string, @Request() req) {
-    const sender = req.user.email.toLowerCase();
-    return await this.adminUserService.toggleUserStatus(userId, sender);
+    const adminUser = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+    };
+    return await this.adminUserService.toggleUserStatus(userId, adminUser);
   }
 }
