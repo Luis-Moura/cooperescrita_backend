@@ -24,7 +24,10 @@ export class AdminUserService {
     private readonly utilsService: UtilsService,
   ) {}
 
-  async findByEmail(findByEmailDto: FindByEmailDto, sender: string) {
+  async findByEmail(
+    findByEmailDto: FindByEmailDto,
+    adminUser: { id: string; name: string; email: string },
+  ) {
     const user = await this.utilsService.findByEmailUtil(findByEmailDto.email);
 
     if (!user) {
@@ -32,11 +35,11 @@ export class AdminUserService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
-      const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
+      const report = `O usuário ${adminUser.email} tentou acessar o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
       this.logger.warn(
-        `Admin ${sender} attempted to access main admin account: ${user.email}`,
+        `Admin ${adminUser.name} (ID: ${adminUser.id}) attempted to access main admin account: ${user.email}`,
       );
 
       throw new ForbiddenException(
@@ -44,11 +47,16 @@ export class AdminUserService {
       );
     }
 
-    this.logger.log(`Admin ${sender} viewed user: ${user.email}`);
+    this.logger.log(
+      `Admin ${adminUser.name} (ID: ${adminUser.id}) viewed user: ${user.email}`,
+    );
     return { ...user, password: undefined };
   }
 
-  async findByName(findByNameDto: FindByNameDto, sender: string) {
+  async findByName(
+    findByNameDto: FindByNameDto,
+    adminUser: { id: string; name: string; email: string },
+  ) {
     // Normalizar a busca e usar Like para busca parcial mais eficiente
     const normalizedName = findByNameDto.name.trim();
 
@@ -67,22 +75,27 @@ export class AdminUserService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
-      const report = `O usuário ${sender} tentou acessar o usuário ${user.email}`;
+      const report = `O usuário ${adminUser.email} tentou acessar o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
       this.logger.warn(
-        `Admin ${sender} attempted to access main admin account through name search: ${user.email}`,
+        `Admin ${adminUser.name} (ID: ${adminUser.id}) attempted to access main admin account through name search: ${user.email}`,
       );
       throw new ForbiddenException(
         'Cannot access, a security alert has been sent to the main admin',
       );
     }
 
-    this.logger.log(`Admin ${sender} viewed user by name: ${user.name}`);
+    this.logger.log(
+      `Admin ${adminUser.name} (ID: ${adminUser.id}) viewed user by name: ${user.name}`,
+    );
     return { ...user, password: undefined };
   }
 
-  async listUsers(paginationDto: PaginationDto, sender: string) {
+  async listUsers(
+    paginationDto: PaginationDto,
+    adminUser: { id: string; name: string; email: string },
+  ) {
     const { page = 1, limit = 10, search, role } = paginationDto;
 
     // Construir query base
@@ -123,7 +136,7 @@ export class AdminUserService {
       .getMany();
 
     this.logger.log(
-      `Admin ${sender} listed users, page ${page}, limit ${limit}`,
+      `Admin ${adminUser.name} (ID: ${adminUser.id}) listed users, page ${page}, limit ${limit}`,
     );
 
     return {
@@ -137,7 +150,10 @@ export class AdminUserService {
     };
   }
 
-  async deleteUserByEmail(findByEmailDto: FindByEmailDto, sender: string) {
+  async deleteUserByEmail(
+    findByEmailDto: FindByEmailDto,
+    adminUser: { id: string; name: string; email: string },
+  ) {
     const user = await this.utilsService.findByEmailUtil(findByEmailDto.email);
 
     if (!user) {
@@ -145,11 +161,11 @@ export class AdminUserService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
-      const report = `O usuário ${sender} tentou DELETAR o usuário ${user.email}`;
+      const report = `O usuário ${adminUser.email} tentou DELETAR o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
       this.logger.warn(
-        `Admin ${sender} attempted to DELETE main admin account: ${user.email}`,
+        `Admin ${adminUser.name} (ID: ${adminUser.id}) attempted to DELETE main admin account: ${user.email}`,
       );
 
       throw new ForbiddenException(
@@ -157,9 +173,9 @@ export class AdminUserService {
       );
     }
 
-    if (user.role === 'admin' && sender !== process.env.MAIN_ADMIN) {
+    if (user.role === 'admin' && adminUser.email !== process.env.MAIN_ADMIN) {
       this.logger.warn(
-        `Non-main admin ${sender} attempted to delete another admin: ${user.email}`,
+        `Non-main admin ${adminUser.name} (ID: ${adminUser.id}) attempted to delete another admin: ${user.email}`,
       );
       throw new ForbiddenException(
         'Only the main admin can delete other admin accounts',
@@ -182,11 +198,16 @@ export class AdminUserService {
       <p>If you believe this was done in error, please contact our support team.</p>`,
     );
 
-    this.logger.log(`Admin ${sender} deleted user: ${findByEmailDto.email}`);
+    this.logger.log(
+      `Admin ${adminUser.name} (ID: ${adminUser.id}) deleted user: ${findByEmailDto.email}`,
+    );
     return { message: 'User deleted successfully' };
   }
 
-  async toggleUserStatus(userId: string, sender: string) {
+  async toggleUserStatus(
+    userId: string,
+    adminUser: { id: string; name: string; email: string },
+  ) {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
     });
@@ -196,20 +217,20 @@ export class AdminUserService {
     }
 
     if (user.email === process.env.MAIN_ADMIN) {
-      const report = `O usuário ${sender} tentou suspender o usuário ${user.email}`;
+      const report = `O usuário ${adminUser.email} tentou suspender o usuário ${user.email}`;
       await this.emailService.sendReportAlertAdmin(report);
 
       this.logger.warn(
-        `Admin ${sender} attempted to change status of main admin: ${user.email}`,
+        `Admin ${adminUser.name} (ID: ${adminUser.id}) attempted to change status of main admin: ${user.email}`,
       );
       throw new ForbiddenException(
         'Cannot modify main admin, a security alert has been sent',
       );
     }
 
-    if (user.role === 'admin' && sender !== process.env.MAIN_ADMIN) {
+    if (user.role === 'admin' && adminUser.email !== process.env.MAIN_ADMIN) {
       this.logger.warn(
-        `Non-main admin ${sender} attempted to change status of admin: ${user.email}`,
+        `Non-main admin ${adminUser.name} (ID: ${adminUser.id}) attempted to change status of admin: ${user.email}`,
       );
       throw new ForbiddenException(
         'Only the main admin can modify other admin accounts',
@@ -240,7 +261,9 @@ export class AdminUserService {
       }`,
     );
 
-    this.logger.log(`Admin ${sender} ${actionText} user: ${user.email}`);
+    this.logger.log(
+      `Admin ${adminUser.name} (ID: ${adminUser.id}) ${actionText} user: ${user.email}`,
+    );
     return {
       message: `User ${actionText} successfully`,
       active: user.active,
