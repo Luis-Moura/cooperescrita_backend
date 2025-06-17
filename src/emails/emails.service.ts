@@ -11,6 +11,7 @@ import { sendVerificationEmailHtml } from './html/sendVerificationEmailHtml';
 import { sendResetPasswordEmailHtml } from './html/sendResetPasswordEmailHtml';
 import { sendReportAlertAdminHtml } from './html/sendReportAlertAdminHtml';
 import { sendVerificationCodeHtml } from './html/sendVerificationCodeHtml';
+import { sendReportResolvedNotificationHtml } from './html/sendReportResolvedNotificationHtml';
 import { validate } from 'email-validator';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -265,6 +266,42 @@ export class EmailsService {
 
     if (success) {
       this.logger.log(`Alerta de segurança enviado ao administrador`);
+    }
+    return success;
+  }
+
+  async sendReportResolvedNotification(
+    reportOwnerEmail: string,
+    reportType: 'redacao' | 'correcao',
+    reportId: string,
+    resolution: 'analisado' | 'rejeitado',
+    wasContentDeleted: boolean,
+    adminNote?: string,
+  ) {
+    const subjectMap = {
+      analisado: 'Report Analisado',
+      rejeitado: 'Report Rejeitado',
+    };
+
+    const html = sendReportResolvedNotificationHtml(
+      reportId,
+      reportType,
+      resolution,
+      wasContentDeleted,
+      adminNote,
+    );
+
+    const success = await this.queueEmail(
+      reportOwnerEmail,
+      `${subjectMap[resolution]} - Cooperescrita`,
+      html,
+      { priority: 'normal' },
+    );
+
+    if (success) {
+      this.logger.log(
+        `Notificação de report ${resolution} enviada para: ${reportOwnerEmail}`,
+      );
     }
     return success;
   }
