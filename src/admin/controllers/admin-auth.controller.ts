@@ -26,6 +26,12 @@ export class AdminAuthController {
   @SignUpAdminDocs()
   async signUpAdmin(@Body() createUserDto: CreateUserDto, @Request() req) {
     const creatorRole = req.user.role;
-    return await this.adminAuthService.signUpAdmin(createUserDto, creatorRole);
+    const creatorEmail = req.user.email;
+
+    return await this.adminAuthService.signUpAdmin(
+      createUserDto,
+      creatorRole,
+      creatorEmail,
+    );
   }
 }
