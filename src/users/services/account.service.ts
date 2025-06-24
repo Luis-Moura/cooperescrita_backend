@@ -27,6 +27,22 @@ export class AccountService {
     private readonly tokenService: TokenService,
   ) {}
 
+  async getProfile(email: string) {
+    const user = await this.utilsService.findByEmailUtil(email.toLowerCase());
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      twoFA: user.twoFA,
+    };
+  }
+
   async changePassword(changePasswordDto: ChangePasswordDto, email: string) {
     const user = await this.utilsService.findByEmailUtil(email);
 

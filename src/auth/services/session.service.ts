@@ -1,7 +1,13 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidatedTokensService } from '../../token/invalidated-tokens.service';
 import { TokenService } from 'src/token/token.service';
+import { UtilsService } from 'src/users/services/utils.service';
 
 @Injectable()
 export class SessionService {
@@ -11,6 +17,7 @@ export class SessionService {
     private readonly jwtService: JwtService,
     private readonly tokenService: TokenService,
     private readonly invalidatedTokensService: InvalidatedTokensService,
+    private readonly utilsService: UtilsService,
   ) {}
 
   async logout(jwtToken: string, refreshToken?: string) {
@@ -39,5 +46,21 @@ export class SessionService {
       this.logger.error(`Erro ao realizar logout: ${error.message}`);
       throw new BadRequestException('Error during logout');
     }
+  }
+
+  async getProfile(email: string) {
+    const user = await this.utilsService.findByEmailUtil(email.toLowerCase());
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      twoFA: user.twoFA,
+    };
   }
 }

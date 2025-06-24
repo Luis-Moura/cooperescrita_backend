@@ -29,12 +29,8 @@ export class AccountController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Request() req) {
-    return {
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-    };
+    const email = req.user.email.toLowerCase();
+    return await this.accountService.getProfile(email);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -39,6 +39,7 @@ export class SessionController {
   @ApiOperation({ summary: 'Obter detalhes do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Detalhes do usuário autenticado.' })
   async getMe(@Request() req) {
-    return req.user;
+    const email = req.user.email.toLowerCase();
+    return await this.sessionService.getProfile(email);
   }
 }
