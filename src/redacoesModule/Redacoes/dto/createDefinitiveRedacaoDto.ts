@@ -6,24 +6,24 @@ export class createDefinitiveRedacaoDto {
     description: 'Título da redação',
     required: false,
     minLength: 0,
-    maxLength: 100,
+    maxLength: 200,
     example: '"Minha Redação"',
   })
   @IsOptional()
   @IsString()
-  @Length(0, 100)
+  @Length(0, 200)
   title: string;
 
   @ApiProperty({
     description: 'Tema da redação',
     required: true,
     minLength: 5,
-    maxLength: 100,
+    maxLength: 200,
     example: '"Tema da Redação"',
   })
   @IsNotEmpty()
   @IsString()
-  @Length(5, 100)
+  @Length(5, 200)
   topic: string;
 
   @ApiProperty({
