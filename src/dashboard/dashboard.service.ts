@@ -18,7 +18,7 @@ export class DashboardService implements DashboardUseCase {
 
   public async getDashboardInfo(userId: string): Promise<DashboardResponse> {
     const essayCreatedCount = await this.redacaoRepository.count({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, statusEnvio: 'enviado' },
     });
 
     const correctionReceivedCount = await this.correcaoRepository.count({
