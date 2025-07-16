@@ -29,6 +29,7 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 dotenv.config();
 
@@ -113,6 +114,8 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
 
     // 🕒 Agendamentos (Scheduler)
     ScheduleModule.forRoot(),
+
+    DashboardModule,
   ],
   controllers: [],
   providers: [
