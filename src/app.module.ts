@@ -111,11 +111,10 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     CorrecoesModule,
     ReportsModule,
     TokenModule,
+    DashboardModule,
 
     // 🕒 Agendamentos (Scheduler)
     ScheduleModule.forRoot(),
-
-    DashboardModule,
   ],
   controllers: [],
   providers: [
