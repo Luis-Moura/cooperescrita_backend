@@ -7,7 +7,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { DashboardResponse } from './dto/DashboardResponse';
 import { GetDashboardInfoDocs } from './docs/controllers/getDashboardInfoDocs.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('dashboard')
 @Controller('dashboard')
 export class DashboardController {
   constructor(
