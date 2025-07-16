@@ -6,6 +6,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { DashboardResponse } from './dto/DashboardResponse';
+import { GetDashboardInfoDocs } from './docs/controllers/getDashboardInfoDocs.decorator';
 
 @Controller('dashboard')
 export class DashboardController {
@@ -17,6 +18,7 @@ export class DashboardController {
   @UseGuards(JwtAuthGuard)
   @Throttle({ default: { limit: 100, ttl: 60000 } })
   @Get()
+  @GetDashboardInfoDocs()
   async getDashboardInfo(@Request() req): Promise<DashboardResponse> {
     const userId = req.user.userId;
     return this.dashboardUseCase.getDashboardInfo(userId);
