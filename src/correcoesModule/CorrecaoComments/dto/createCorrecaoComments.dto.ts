@@ -13,12 +13,12 @@ export class CreateCorrecaoCommentsDto {
     required: true,
     example:
       'Este trecho precisa melhorar a argumentação e desenvolver melhor as ideias apresentadas. Sugiro incluir mais dados que embasem seu ponto de vista.',
-    minLength: 100,
+    minLength: 30,
     maxLength: 500,
   })
   @IsString()
   @IsNotEmpty()
-  @MinLength(100)
+  @MinLength(30)
   @MaxLength(500)
   comment: string;
 
