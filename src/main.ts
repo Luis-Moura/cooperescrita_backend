@@ -16,6 +16,17 @@ async function bootstrap() {
   // 🚀 Middlewares Globais
   // ====================
 
+  // 🌍 CORS (Cross-Origin Resource Sharing)
+  app.enableCors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? [process.env.BASE_URL_FRONTEND, process.env.BASE_URL_FRONTEND_2]
+        : true, // em dev libera tudo
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // adicionei OPTIONS
+    allowedHeaders: ['Content-Type', 'Authorization'], // importante pro preflight
+    credentials: true,
+  });
+
   // 🔍 Validações Globais
   app.useGlobalPipes(
     new ValidationPipe({
@@ -59,17 +70,6 @@ async function bootstrap() {
 
   // 🎯 Logger
   app.useLogger(new Logger());
-
-  // 🌍 CORS (Cross-Origin Resource Sharing)
-  app.enableCors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? [process.env.BASE_URL_FRONTEND, process.env.BASE_URL_FRONTEND_2]
-        : true, // em dev libera tudo
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // adicionei OPTIONS
-    allowedHeaders: ['Content-Type', 'Authorization'], // importante pro preflight
-    credentials: true,
-  });
 
   // ====================
   // 🛠️ Swagger (Documentação)
