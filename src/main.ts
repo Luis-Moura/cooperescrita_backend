@@ -65,8 +65,9 @@ async function bootstrap() {
     origin:
       process.env.NODE_ENV === 'production'
         ? [process.env.BASE_URL_FRONTEND, process.env.BASE_URL_FRONTEND_2]
-        : true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        : true, // em dev libera tudo
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // adicionei OPTIONS
+    allowedHeaders: ['Content-Type', 'Authorization'], // importante pro preflight
     credentials: true,
   });
 
