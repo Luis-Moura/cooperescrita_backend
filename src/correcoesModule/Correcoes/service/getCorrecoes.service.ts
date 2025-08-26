@@ -56,6 +56,8 @@ export class GetCorrecoesService {
       .select([
         'correcao.correcaoId',
         'correcao.statusEnvio',
+        'correcao.nota',
+        'correcao.comentario_final',
         'correcao.createdAt',
         'corretor.id AS corretor_id',
         'corretor.name AS corretor_name',
@@ -140,6 +142,8 @@ export class GetCorrecoesService {
       .select([
         'correcao.correcaoId',
         'correcao.statusEnvio',
+        'correcao.nota',
+        'correcao.comentario_final',
         'correcao.createdAt',
         'corretor.id AS corretor_id',
         'corretor.name AS corretor_name',
@@ -241,6 +245,8 @@ export class GetCorrecoesService {
     return {
       correcao_correcaoId: Number(c.correcao_correcaoId),
       correcao_statusEnvio: c.correcao_statusEnvio,
+      correcao_nota: c.correcao_nota ? Number(c.correcao_nota) : null,
+      correcao_comentario_final: c.correcao_comentario_final || null,
       correcao_createdAt: c.correcao_createdAt,
       corretor_id: c.corretor_id,
       corretor_name: c.corretor_name,
