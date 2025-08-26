@@ -57,6 +57,12 @@ export class Correcao {
   )
   correcaoFeedbacks: CorrecaoFeedback[];
 
+  @Column({ type: 'integer', nullable: true })
+  nota?: number;
+
+  @Column({ type: 'text', nullable: true })
+  comentario_final?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -69,5 +75,7 @@ export class Correcao {
     this.correcaoHighlights = correcao?.correcaoHighlights;
     this.correcaoSuggestions = correcao?.correcaoSuggestions;
     this.correcaoFeedbacks = correcao?.correcaoFeedbacks;
+    this.nota = correcao?.nota;
+    this.comentario_final = correcao?.comentario_final;
   }
 }
