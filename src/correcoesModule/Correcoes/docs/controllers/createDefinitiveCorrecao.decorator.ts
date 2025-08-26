@@ -29,10 +29,19 @@ export function CreateDefinitiveCorrecaoDocs() {
       type: CreateCorrecaoDto,
       examples: {
         exemplo1: {
-          summary: 'Exemplo de criação de correção definitiva',
+          summary: 'Exemplo completo de criação de correção definitiva',
           value: {
             redacaoId: 1,
             correcaoId: 2, // Opcional, apenas se estiver atualizando um rascunho existente
+            nota: 850, // Opcional, nota de 0 a 1000
+            comentario_final:
+              'Excelente texto, demonstra domínio do tema e boa argumentação. Continue praticando a estrutura dissertativa.',
+          },
+        },
+        exemplo2: {
+          summary: 'Exemplo mínimo de criação de correção definitiva',
+          value: {
+            redacaoId: 1,
           },
         },
       },

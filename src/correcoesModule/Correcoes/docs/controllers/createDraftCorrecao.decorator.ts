@@ -31,10 +31,19 @@ export function CreateDraftCorrecaoDocs() {
       type: CreateCorrecaoDto,
       examples: {
         exemplo1: {
-          summary: 'Exemplo de criação de rascunho de correção',
+          summary: 'Exemplo completo de criação de rascunho de correção',
           value: {
             redacaoId: 1,
             correcaoId: 2, // Opcional, apenas se estiver atualizando um rascunho existente
+            nota: 750, // Opcional, nota de 0 a 1000
+            comentario_final:
+              'Bom desenvolvimento do tema, mas precisa melhorar a conclusão.',
+          },
+        },
+        exemplo2: {
+          summary: 'Exemplo mínimo de criação de rascunho de correção',
+          value: {
+            redacaoId: 1,
           },
         },
       },
