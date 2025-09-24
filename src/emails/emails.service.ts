@@ -58,7 +58,7 @@ export class EmailsService {
       pool: true,
       maxConnections: isProduction ? 10 : 5,
       maxMessages: isProduction ? 200 : 100,
-      secure: isProduction, // Usar TLS em produção
+      secure: false, // Usar TLS em produção
       connectionTimeout: 10000, // 10 segundos timeout
       greetingTimeout: 5000,
       socketTimeout: 30000,
