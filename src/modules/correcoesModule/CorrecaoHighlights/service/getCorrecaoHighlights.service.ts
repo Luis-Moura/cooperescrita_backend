@@ -1,0 +1,100 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Correcao } from 'src/modules/correcoesModule/entities/correcao.entity';
+import { CorrecaoHighlights } from 'src/modules/correcoesModule/entities/correcaoHighlights.entity';
+import { User } from 'src/modules/users/entities/user.entity';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class GetCorrecaoHighlightsService {
+  constructor(
+    @InjectRepository(Correcao)
+    private readonly correcaoRepository: Repository<Correcao>,
+    @InjectRepository(CorrecaoHighlights)
+    private readonly correcaoHighlightsRepository: Repository<CorrecaoHighlights>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async getCorrecaoHighlights(corretorId: string, correcaoId: number) {
+    // verificar a existência do corretor
+    if (!corretorId) throw new NotFoundException('User not found');
+
+    const corretor: User = await this.userRepository.findOne({
+      where: { id: corretorId },
+    });
+
+    if (!corretor) throw new NotFoundException('User not found');
+
+    // Verifica se a correção existe e carrega o corretor junto
+    const correcao = await this.correcaoRepository.findOne({
+      where: { correcaoId: correcaoId },
+      relations: ['corretor'],
+    });
+
+    if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretorId &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
+
+    // Busca os highlights da correcao
+    const correcaoHighlights: CorrecaoHighlights[] =
+      await this.correcaoHighlightsRepository.find({
+        where: {
+          correcao: { correcaoId: correcaoId },
+        },
+        order: { startIndex: 'ASC' },
+      });
+
+    return correcaoHighlights;
+  }
+
+  async getCorrecaoHighlightById(
+    corretorId: string,
+    correcaoId: number,
+    highlightId: number,
+  ) {
+    // verificar a existência do corretor
+    if (!corretorId) throw new NotFoundException('User not found');
+
+    const corretor: User = await this.userRepository.findOne({
+      where: { id: corretorId },
+    });
+
+    if (!corretor) throw new NotFoundException('User not found');
+
+    // Verifica se a correção existe e carrega o corretor junto
+    const correcao = await this.correcaoRepository.findOne({
+      where: { correcaoId: correcaoId },
+      relations: ['corretor'],
+    });
+
+    if (!correcao) throw new NotFoundException('Correction not found');
+
+    // Verifica se o corretor é o dono da correção ou se a correção foi enviada
+    if (
+      correcao.corretor.id !== corretorId &&
+      correcao.statusEnvio !== 'enviado'
+    ) {
+      throw new NotFoundException('Correction not found');
+    }
+
+    // Busca o highlight da correcao
+    const highlightComment: CorrecaoHighlights =
+      await this.correcaoHighlightsRepository.findOne({
+        where: {
+          correcao: { correcaoId: correcaoId },
+          correcaoHighlightId: highlightId,
+        },
+      });
+
+    if (!highlightComment) throw new NotFoundException('Highlight not found');
+
+    return highlightComment;
+  }
+}

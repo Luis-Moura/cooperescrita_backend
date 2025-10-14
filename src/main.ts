@@ -12,22 +12,16 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // ====================
-  // 🚀 Middlewares Globais
-  // ====================
-
-  // 🌍 CORS (Cross-Origin Resource Sharing)
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
         ? [process.env.BASE_URL_FRONTEND, process.env.BASE_URL_FRONTEND_2]
-        : true, // em dev libera tudo
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // adicionei OPTIONS
-    allowedHeaders: ['Content-Type', 'Authorization'], // importante pro preflight
+        : true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  // 🔍 Validações Globais
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -37,7 +31,6 @@ async function bootstrap() {
     }),
   );
 
-  // 🛡️ Segurança com Helmet
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -52,7 +45,6 @@ async function bootstrap() {
     }),
   );
 
-  // 📦 Compressão para performance
   app.use(
     compression({
       level: 6,
@@ -64,16 +56,8 @@ async function bootstrap() {
     }),
   );
 
-  // ====================
-  // 🔥 Configurações Essenciais
-  // ====================
-
-  // 🎯 Logger
   app.useLogger(new Logger());
 
-  // ====================
-  // 🛠️ Swagger (Documentação)
-  // ====================
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
       .setTitle('Aplicação Cooperescrita Backend')
@@ -85,7 +69,6 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
-  // 🚀 Inicializa o servidor
   await app.listen(process.env.PORT);
   Logger.log(`\n\n🚀 Server rodando \n\n`);
 }

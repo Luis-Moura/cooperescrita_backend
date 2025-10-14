@@ -1,16 +1,16 @@
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
-import { Correcao } from './src/correcoesModule/entities/correcao.entity';
-import { CorrecaoComments } from './src/correcoesModule/entities/correcaoComments.entity';
-import { CorrecaoFeedback } from './src/correcoesModule/entities/correcaoFeedback.entity';
-import { CorrecaoHighlights } from './src/correcoesModule/entities/correcaoHighlights.entity';
-import { CorrecaoSuggestions } from './src/correcoesModule/entities/correcaoSuggestions.entity';
-import { Redacao } from './src/redacoesModule/entities/redacao.entity';
-import { User } from './src/users/entities/user.entity';
-import { RedacaoComments } from 'src/redacoesModule/entities/redacaoComments.entity';
-import { RefreshToken } from 'src/token/entities/refreshToken.entity';
-import { RedacaoReport } from './src/reportsModule/entities/redacaoReport.entity';
-import { CorrecaoReport } from './src/reportsModule/entities/correcaoReport.entity';
+import { Correcao } from './src/modules/correcoesModule/entities/correcao.entity';
+import { CorrecaoComments } from './src/modules/correcoesModule/entities/correcaoComments.entity';
+import { CorrecaoFeedback } from './src/modules/correcoesModule/entities/correcaoFeedback.entity';
+import { CorrecaoHighlights } from './src/modules/correcoesModule/entities/correcaoHighlights.entity';
+import { CorrecaoSuggestions } from './src/modules/correcoesModule/entities/correcaoSuggestions.entity';
+import { Redacao } from './src/modules/redacoesModule/entities/redacao.entity';
+import { User } from './src/modules/users/entities/user.entity';
+import { RedacaoComments } from 'src/modules/redacoesModule/entities/redacaoComments.entity';
+import { RefreshToken } from 'src/modules/token/entities/refreshToken.entity';
+import { RedacaoReport } from './src/modules/reportsModule/entities/redacaoReport.entity';
+import { CorrecaoReport } from './src/modules/reportsModule/entities/correcaoReport.entity';
 
 dotenv.config();
 

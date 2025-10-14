@@ -7,29 +7,29 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import { AdminModule } from './admin/admin.module';
-import { AuthModule } from './auth/auth.module';
-import { CorrecoesModule } from './correcoesModule/correcoes.module';
-import { Correcao } from './correcoesModule/entities/correcao.entity';
-import { CorrecaoComments } from './correcoesModule/entities/correcaoComments.entity';
-import { CorrecaoFeedback } from './correcoesModule/entities/correcaoFeedback.entity';
-import { CorrecaoHighlights } from './correcoesModule/entities/correcaoHighlights.entity';
-import { CorrecaoSuggestions } from './correcoesModule/entities/correcaoSuggestions.entity';
-import { EmailsModule } from './emails/emails.module';
-import { Redacao } from './redacoesModule/entities/redacao.entity';
-import { RedacaoComments } from './redacoesModule/entities/redacaoComments.entity';
-import { RedacoesModule } from './redacoesModule/redacoes.module';
-import { ReportsModule } from './reportsModule/reports.module';
-import { RedacaoReport } from './reportsModule/entities/redacaoReport.entity';
-import { CorrecaoReport } from './reportsModule/entities/correcaoReport.entity';
-import { TasksModule } from './tasks/tasks.module';
-import { RefreshToken } from './token/entities/refreshToken.entity';
-import { TokenModule } from './token/token.module';
-import { User } from './users/entities/user.entity';
-import { UsersModule } from './users/users.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CorrecoesModule } from './modules/correcoesModule/correcoes.module';
+import { Correcao } from './modules/correcoesModule/entities/correcao.entity';
+import { CorrecaoComments } from './modules/correcoesModule/entities/correcaoComments.entity';
+import { CorrecaoFeedback } from './modules/correcoesModule/entities/correcaoFeedback.entity';
+import { CorrecaoHighlights } from './modules/correcoesModule/entities/correcaoHighlights.entity';
+import { CorrecaoSuggestions } from './modules/correcoesModule/entities/correcaoSuggestions.entity';
+import { EmailsModule } from './modules/emails/emails.module';
+import { Redacao } from './modules/redacoesModule/entities/redacao.entity';
+import { RedacaoComments } from './modules/redacoesModule/entities/redacaoComments.entity';
+import { RedacoesModule } from './modules/redacoesModule/redacoes.module';
+import { ReportsModule } from './modules/reportsModule/reports.module';
+import { RedacaoReport } from './modules/reportsModule/entities/redacaoReport.entity';
+import { CorrecaoReport } from './modules/reportsModule/entities/correcaoReport.entity';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { RefreshToken } from './modules/token/entities/refreshToken.entity';
+import { TokenModule } from './modules/token/token.module';
+import { User } from './modules/users/entities/user.entity';
+import { UsersModule } from './modules/users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { DashboardModule } from './dashboard/dashboard.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 dotenv.config();
 
@@ -37,20 +37,17 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
 
 @Module({
   imports: [
-    // 📂 Servir arquivos estáticos
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'assets'),
       serveRoot: '/assets',
     }),
 
-    // 🔧 Configurações
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
       cache: true,
     }),
 
-    // 🔧 Banco de dados
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -71,14 +68,12 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       migrationsRun: true,
       ssl:
         process.env.NODE_ENV === 'production'
-          ? { rejectUnauthorized: false } // mudar isso, tem que gerar um certificado ssl
+          ? { rejectUnauthorized: false }
           : false,
-      connectTimeoutMS: 10000, // Timeout para evitar ataques DoS
-      poolSize: 10, // Controle de pool de conexões
-      // logging: process.env.NODE_ENV === 'development',
+      connectTimeoutMS: 10000,
+      poolSize: 10,
     }),
 
-    // ⚡ Controle de taxa de requisições (Throttling)
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -88,7 +83,6 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       ],
     }),
 
-    // 🔗 Integração com Redis
     BullModule.forRoot({
       redis: {
         host: redisUrl.hostname,
@@ -101,7 +95,6 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
       url: process.env.REDIS_URL,
     }),
 
-    // 🧩 Módulos internos da aplicação
     UsersModule,
     AuthModule,
     AdminModule,
@@ -113,15 +106,10 @@ const redisUrl = new URL(process.env.REDIS_URL || '');
     TokenModule,
     DashboardModule,
 
-    // 🕒 Agendamentos (Scheduler)
     ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [
-    // 🛠 Serviço de tarefas
-    // TasksService,
-
-    // 🚦 Guard de limitação de requisições
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

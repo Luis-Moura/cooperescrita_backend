@@ -1,47 +1,21 @@
-version: '3.8'
-# Carrega automaticamente as variáveis de ambiente do arquivo .env
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
+    build: .
     container_name: cooperescrita_backend
-    restart: no
     volumes:
       - .:/app
       - node_modules:/app/node_modules
     ports:
       - '3000:3000'
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - PORT=${PORT}
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/cooperescrita
-      - REDIS_URL=redis://redis:6379
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - REFRESH_TOKEN_EXPIRES_IN_DAYS=${REFRESH_TOKEN_EXPIRES_IN_DAYS}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
-      - MAX_FAILED_ATTEMPTS=${MAX_FAILED_ATTEMPTS}
-      - LOCK_TIME=${LOCK_TIME}
-      - USER_VERIFICATION_EXPIRY_HOURS=${USER_VERIFICATION_EXPIRY_HOURS}
-      - BASE_URL=${BASE_URL}
-      - BASE_URL_FRONTEND=${BASE_URL_FRONTEND}
-      - BASE_URL_FRONTEND_2=${BASE_URL_FRONTEND_2}
-      - MAIN_ADMIN=${MAIN_ADMIN}
+    env_file:
+      - .env
     depends_on:
       - postgres
       - redis
-    networks:
-      - default
 
   postgres:
     image: postgres:17
     container_name: cooperescrita_postgres
-    restart: no
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -50,34 +24,22 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - default
 
   redis:
-    image: redis:6
+    image: redis:7-alpine
     container_name: cooperescrita_redis
-    restart: no
     ports:
       - '6379:6379'
-    networks:
-      - default
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: cooperescrita_pgadmin
-    restart: no
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - '5050:80'
-    networks:
-      - default
 
 volumes:
   postgres_data:
   node_modules:
-
-networks:
-  default:
-    driver: bridge

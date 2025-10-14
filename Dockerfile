@@ -1,57 +1,16 @@
-# Estágio de construção
-FROM node:22-alpine AS build
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Instalar dependências (incluindo dev para build e migrações)
+RUN apk add --no-cache procps
+
 COPY package*.json ./
+
 RUN npm ci
 
-# Copiar o resto do código fonte
 COPY . .
 
-# Compilar o código
-RUN npm run build
-
-# Estágio de desenvolvimento
-FROM node:22-slim AS development
-
-WORKDIR /app
-
-# Copiar package.json e instalar todas as dependências (incluindo dev)
-COPY package*.json ./
-RUN npm ci
-
-# Copiar o código fonte
-COPY . .
-
-# Expor a porta
 EXPOSE 3000
 
 # Comando para desenvolvimento
 CMD ["sh", "-c", "npm run migration:run && npm run start:dev"]
-
-# Estágio de produção
-FROM node:22-slim AS production
-
-WORKDIR /app
-
-# Copiar package.json e instalar apenas dependências de produção + ferramentas para migração
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Instalar ts-node e tsconfig-paths para executar migrações
-RUN npm install ts-node tsconfig-paths
-
-# Copiar arquivos necessários do build
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/src ./src
-COPY --from=build /app/data-source.ts ./
-COPY --from=build /app/tsconfig.json ./
-COPY --from=build /app/tsconfig.build.json ./
-
-# Expor a porta
-EXPOSE 3000
-
-# Script de inicialização que roda migrações e depois inicia a app
-CMD ["sh", "-c", "npm run migration:run && node dist/src/main.js"]
