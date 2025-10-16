@@ -47,3 +47,8 @@ O projeto segue uma **arquitetura modular** seguindo os padrões do NestJS, com 
 ## Docker
 
 O projeto possui configuração completa com Docker Compose incluindo PostgreSQL, Redis e PgAdmin para desenvolvimento local.
+
+© 2025 Luis — Todos os direitos reservados.  
+O código-fonte deste projeto é disponibilizado apenas para fins de avaliação técnica.  
+Não é permitida sua cópia, modificação, uso comercial ou redistribuição.
+
