@@ -119,6 +119,7 @@ export class EmailsService {
         __dirname,
         '..',
         '..',
+        '..',
         'src',
         'assets',
         'images',
