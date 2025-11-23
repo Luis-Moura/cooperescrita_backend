@@ -11,7 +11,7 @@ O sistema de emails segue uma arquitetura baseada em filas:
 1. **EmailsService**: Interface principal para enfileirar emails
 2. **Bull Queue**: Sistema de filas para processamento assíncrono
 3. **EmailsProcessor**: Consumidor que processa os emails da fila
-4. **Nodemailer**: Biblioteca para envio efetivo dos emails
+4. **Resend**: Serviço de email transacional para envio efetivo
 
 ![Arquitetura do Módulo de Emails](https://via.placeholder.com/800x400?text=Arquitetura+do+Módulo+de+Emails)
 
@@ -44,7 +44,7 @@ import { EmailsService } from 'src/emails/emails.service';
 @Injectable()
 export class MeuServico {
   constructor(private readonly emailsService: EmailsService) {}
-  
+
   async enviarAlgoImportante() {
     // Usar o serviço de emails aqui
   }
@@ -57,13 +57,13 @@ export class MeuServico {
 // Durante o registro de usuário
 async registrarUsuario(userData) {
   // ... lógica de criação do usuário
-  
+
   // Gerar token JWT para verificação
   const token = this.jwtService.sign({ email: user.email });
-  
+
   // Enviar email de verificação
   await this.emailsService.sendVerificationEmail(user.email, token);
-  
+
   // ... retornar resposta
 }
 ```
@@ -73,13 +73,13 @@ async registrarUsuario(userData) {
 ```typescript
 async solicitarResetSenha(email: string) {
   // ... validar usuário
-  
+
   // Gerar token seguro
   const token = this.jwtService.sign({ sub: user.id, email: user.email });
-  
+
   // Enviar email de redefinição
   await this.emailsService.sendResetPasswordEmail(email, token);
-  
+
   // ... retornar resposta
 }
 ```
@@ -90,12 +90,12 @@ async solicitarResetSenha(email: string) {
 async iniciarAutenticacaoDoisFatores(user) {
   // Gerar código de verificação
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  
+
   // Salvar código no usuário
   user.verificationCode = code;
   user.verificationCodeExpires = new Date(Date.now() + 600000); // 10 minutos
   await this.usersRepository.save(user);
-  
+
   // Enviar código por email
   await this.emailsService.sendVerificationCodeEmail(user.email, code);
 }
@@ -110,7 +110,7 @@ async reportarProblemaSeguranca(detalhes: string) {
     Data: ${new Date().toISOString()}
     Detalhes: ${detalhes}
   `;
-  
+
   await this.emailsService.sendReportAlertAdmin(report);
 }
 ```
@@ -120,9 +120,9 @@ async reportarProblemaSeguranca(detalhes: string) {
 ### Variáveis de Ambiente Necessárias
 
 ```
-# Credenciais de email
-EMAIL_USER=seu-email@gmail.com
-EMAIL_PASS=sua-senha-de-app
+# Credenciais Resend
+RESEND_API_KEY=re_sua_api_key_aqui
+RESEND_FROM_EMAIL=noreply@seudominio.com
 
 # URLs da aplicação
 BASE_URL_FRONTEND=https://seuapp.com
@@ -133,10 +133,12 @@ MAIN_ADMIN=admin@seuapp.com
 
 ### Requisitos de Credenciais
 
-Para Gmail, recomendamos usar "App Passwords" em vez de senhas regulares:
-1. Ative a verificação em duas etapas na sua conta Google
-2. Acesse [Senhas de App](https://myaccount.google.com/apppasswords)
-3. Gere uma senha específica para a aplicação
+Para usar o Resend:
+
+1. Crie uma conta em [Resend](https://resend.com)
+2. Adicione e verifique seu domínio
+3. Gere uma API Key no dashboard
+4. Configure o email remetente (RESEND_FROM_EMAIL) com um endereço do seu domínio verificado
 
 ## 🔍 Monitoramento e Troubleshooting
 
@@ -152,6 +154,7 @@ O módulo de emails gera logs detalhados para facilitar a identificação de pro
 ### Monitoramento da Fila
 
 Em ambiente de produção, o sistema registra automaticamente o status da fila a cada hora, incluindo:
+
 - Número de jobs ativos
 - Número de jobs aguardando
 - Número de jobs falhos
@@ -160,14 +163,17 @@ Em ambiente de produção, o sistema registra automaticamente o status da fila a
 ## 🛡️ Segurança e Boas Práticas
 
 1. **Validação de Entradas**
+
    - Todos os endereços de email são validados antes do envio
    - URLs e tokens são gerados de forma segura
 
 2. **Rate Limiting**
+
    - Implemente rate limiting no frontend para evitar abusos
    - Limite a frequência com que um usuário pode solicitar emails
 
 3. **Tratamento de Falhas**
+
    - O sistema tenta reenviar emails automaticamente
    - Emails críticos têm mais tentativas configuradas
 
@@ -198,14 +204,17 @@ Login → Sistema solicita código 2FA → Usuário recebe código por email →
 ### Boas Práticas na UI
 
 1. **Feedback Claro ao Usuário**
+
    - Mostrar mensagens de "Email enviado" mesmo se o email não existir (segurança)
    - Incluir instruções para verificar a pasta de spam
 
 2. **Temporizadores de Reenvio**
+
    - Adicionar contador regressivo para solicitações repetidas (ex: "Reenviar em 60s")
    - Limitar o número total de reenvios por sessão
 
 3. **Validação de Formulários**
+
    - Validar formato de email no frontend antes de enviar requisição
    - Validar complexidade de senha no formulário de redefinição
 
@@ -216,15 +225,16 @@ Login → Sistema solicita código 2FA → Usuário recebe código por email →
 ### Exemplos de Componentes React (Pseudocódigo)
 
 **Formulário de Esqueci Senha:**
+
 ```jsx
 function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  
+
   async function handleSubmit(e) {
     e.preventDefault();
-    
+
     try {
       await api.post('/auth/password/forgot-password', { email });
       setIsSent(true);
@@ -235,11 +245,11 @@ function ForgotPasswordForm() {
       startCountdown(60);
     }
   }
-  
+
   function startCountdown(seconds) {
     setCountdown(seconds);
     const timer = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           return 0;
@@ -248,21 +258,21 @@ function ForgotPasswordForm() {
       });
     }, 1000);
   }
-  
+
   return (
     <div>
       {!isSent ? (
         <form onSubmit={handleSubmit}>
           <h2>Recuperar Senha</h2>
           <p>Digite seu email para receber instruções de recuperação:</p>
-          
-          <input 
-            type="email" 
-            value={email} 
-            onChange={e => setEmail(e.target.value)}
+
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
-          
+
           <button type="submit">Enviar</button>
         </form>
       ) : (
@@ -270,15 +280,11 @@ function ForgotPasswordForm() {
           <h2>Email Enviado!</h2>
           <p>Enviamos instruções para {email}.</p>
           <p>Por favor, verifique sua caixa de entrada e pasta de spam.</p>
-          
+
           {countdown > 0 ? (
-            <button disabled>
-              Reenviar em {countdown}s
-            </button>
+            <button disabled>Reenviar em {countdown}s</button>
           ) : (
-            <button onClick={handleSubmit}>
-              Reenviar instruções
-            </button>
+            <button onClick={handleSubmit}>Reenviar instruções</button>
           )}
         </div>
       )}
@@ -288,20 +294,21 @@ function ForgotPasswordForm() {
 ```
 
 **Verificação de Código 2FA:**
+
 ```jsx
 function TwoFactorVerification({ email }) {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
-  
+
   async function handleSubmit(e) {
     e.preventDefault();
-    
+
     try {
       const response = await api.post('/auth/verify/2fa-code', {
         email,
-        verificationCode: code
+        verificationCode: code,
       });
-      
+
       // Armazenar tokens e redirecionar
       storeAuthTokens(response.data);
       navigate('/dashboard');
@@ -309,24 +316,24 @@ function TwoFactorVerification({ email }) {
       setError('Código inválido ou expirado. Tente novamente.');
     }
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <h2>Verificação em Duas Etapas</h2>
       <p>Digite o código de 6 dígitos enviado para {email}</p>
-      
+
       <input
         type="text"
         pattern="[0-9]{6}"
         maxLength={6}
         value={code}
-        onChange={e => setCode(e.target.value)}
+        onChange={(e) => setCode(e.target.value)}
         placeholder="000000"
         required
       />
-      
+
       {error && <p className="error">{error}</p>}
-      
+
       <button type="submit">Verificar</button>
     </form>
   );
@@ -336,7 +343,8 @@ function TwoFactorVerification({ email }) {
 ## 📚 Referências
 
 - [Documentação do Bull Queue](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md)
-- [Documentação do Nodemailer](https://nodemailer.com/about/)
+- [Documentação do Resend](https://resend.com/docs)
+- [Resend API Reference](https://resend.com/docs/api-reference/emails/send-email)
 - [Boas Práticas para Email Transacional](https://postmarkapp.com/blog/best-practices-for-transactional-email)
 
 ---
