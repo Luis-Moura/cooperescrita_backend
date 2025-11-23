@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import * as dotenv from 'dotenv';
@@ -13,8 +13,6 @@ import { sendReportAlertAdminHtml } from './html/sendReportAlertAdminHtml';
 import { sendVerificationCodeHtml } from './html/sendVerificationCodeHtml';
 import { sendReportResolvedNotificationHtml } from './html/sendReportResolvedNotificationHtml';
 import { validate } from 'email-validator';
-import * as path from 'path';
-import * as fs from 'fs';
 dotenv.config();
 
 type EmailOptions = {
@@ -25,7 +23,7 @@ type EmailOptions = {
 
 @Injectable()
 export class EmailsService {
-  private transporter;
+  private resend: Resend;
   private readonly logger = new Logger(EmailsService.name);
   private readonly defaultOptions: EmailOptions = {
     priority: 'normal',
@@ -34,51 +32,21 @@ export class EmailsService {
   };
 
   constructor(@InjectQueue('emails') private readonly emailQueue: Queue) {
-    this.initializeTransporter();
+    this.initializeResend();
     this.monitorQueueHealth();
   }
 
-  private initializeTransporter() {
-    const isProduction = process.env.NODE_ENV === 'production';
-
+  private initializeResend() {
     // Validar configurações críticas
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!process.env.RESEND_API_KEY) {
       this.logger.error(
-        'Credenciais de email não configuradas! Sistema de emails não irá funcionar.',
+        'RESEND_API_KEY não configurada! Sistema de emails não irá funcionar.',
       );
       return;
     }
 
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      pool: true,
-      maxConnections: isProduction ? 10 : 5,
-      maxMessages: isProduction ? 200 : 100,
-      secure: false, // Usar TLS em produção
-      connectionTimeout: 10000, // 10 segundos timeout
-      greetingTimeout: 5000,
-      socketTimeout: 30000,
-      debug: !isProduction,
-    });
-
-    // Verificar conexão no startup
-    this.verifyTransporterConnection();
-  }
-
-  private async verifyTransporterConnection() {
-    try {
-      await this.transporter.verify();
-      this.logger.log('✅ Servidor de email conectado e pronto para envio');
-    } catch (error) {
-      this.logger.error(
-        `❌ Erro ao conectar ao servidor de email: ${error.message}`,
-        error.stack,
-      );
-    }
+    this.resend = new Resend(process.env.RESEND_API_KEY);
+    this.logger.log('✅ Cliente Resend inicializado e pronto para envio');
   }
 
   private monitorQueueHealth() {
@@ -115,48 +83,31 @@ export class EmailsService {
 
       const normalizedEmail = email.toLowerCase().trim();
 
-      const logoPath = path.resolve(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'src',
-        'assets',
-        'images',
-        'cooperescrita.png',
-      );
-
-      this.logger.debug(`Caminho da logo: ${logoPath}`);
-
-      if (!fs.existsSync(logoPath)) {
-        this.logger.error(
-          `Arquivo da logo não encontrado no caminho: ${logoPath}`,
-        );
-        throw new Error('Logo file not found');
+      if (!this.resend) {
+        throw new Error('Resend client not initialized');
       }
 
-      const info = await this.transporter.sendMail({
-        from: `"Cooperescrita" <${process.env.EMAIL_USER}>`,
-        to: normalizedEmail,
+      // const fromEmail =
+      //   process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+
+      const { data, error } = await this.resend.emails.send({
+        from: `contato@cooperescrita.com`,
+        to: [normalizedEmail],
         subject,
         html,
-        attachments: [
-          {
-            filename: 'logo.png',
-            path: logoPath, // Usando o mesmo caminho que já verificamos acima
-            cid: 'logo', // Content-ID para referenciar no HTML
-          },
-        ],
         headers: {
-          'X-Priority': '1', // Alta prioridade
-          'X-Cooperescrita-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,
+          'X-Entity-Ref-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,
         },
       });
 
+      if (error) {
+        throw new Error(error.message);
+      }
+
       this.logger.log(
-        `Email enviado para ${normalizedEmail} (ID: ${info.messageId})`,
+        `Email enviado para ${normalizedEmail} (ID: ${data?.id})`,
       );
-      return info;
+      return data;
     } catch (error) {
       this.logger.error(
         `Falha ao enviar email para ${email}: ${error.message}`,
